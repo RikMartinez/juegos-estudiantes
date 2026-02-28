@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Los Juegos de los Estudiantes - Proyección y Control</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dark-theme">
+    <div id="app" class="app-shell">
+        <!-- Main Navigation (Only visible for admin/staff) -->
+        <nav class="main-nav" id="main-nav">
+            <div class="nav-logo">
+                <i class="fa-solid fa-trophy"></i>
+                <span>Juegos Estudiantes</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-view="dashboard"><i class="fa-solid fa-display"></i><span>Pizarra Pública</span>
+                </li>
+                <li class="hidden" data-view="admin"><i class="fa-solid fa-gears"></i><span>Configuración</span></li>
+                <li class="hidden" data-view="capturar"><i class="fa-solid fa-edit"></i><span>Captura</span></li>
+            </ul>
+            <div class="nav-status">
+                <button id="auth-btn" onclick="window.toggleAuth()"
+                    style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); color: var(--text-muted); padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; display: flex; align-items: center; gap: 8px; transition: 0.3s; margin-right: 15px;">
+                    <i class="fa-solid fa-lock"></i> Acceso
+                </button>
+                <span class="sync-dot"></span>
+                <span class="status-text">LIVE</span>
+            </div>
+        </nav>
+
+        <div id="live-ticker" class="ticker-wrap hidden">
+            <div class="ticker">
+                <div class="ticker__item">¡Bienvenidos a Los Juegos de los Estudiantes! - La competencia ha
+                    comenzado.</div>
+            </div>
+        </div>
+        <main class="view-viewport" id="viewport">
+            <!-- Content will be injected here -->
+            <div class="loader-container">
+                <div class="athletic-spinner"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-root" class="modal-overlay hidden"></div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <!-- App Scripts -->
+    <script src="state.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>
