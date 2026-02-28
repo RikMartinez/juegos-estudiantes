@@ -20,7 +20,7 @@ const State = {
 
     init() {
         // 1. Intentar configurar Firebase
-        if (typeof firebase !== 'undefined' && firebaseConfig.apiKey !== "AIzaSyCooXgBIZ9CAGi8mdT05q_KyZAFJVbM30E") {
+        if (typeof firebase !== 'undefined' && firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('REEMPLAZAR')) {
             try {
                 firebase.initializeApp(firebaseConfig);
                 this.db = firebase.database();
