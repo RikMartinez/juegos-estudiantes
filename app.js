@@ -138,25 +138,74 @@ function renderDashboard(container) {
                 </div>
 
                 <div class="bracket-visual" style="padding-top: 20px;">
-                    <!-- Columna Octavos -->
-                    <div class="bracket-column" style="gap: 15px;">
-                        ${[1, 2, 3, 4, 5, 6, 7, 8].map(n => renderBracketMatch(`Octavos ${n}`, 'octavos', n)).join('')}
-                    </div>
-                    
-                    <!-- Columna Cuartos -->
-                    <div class="bracket-column" style="gap: 40px; justify-content: space-around;">
-                        ${[1, 2, 3, 4].map(n => renderBracketMatch(`Cuartos ${n}`, 'cuartos', n)).join('')}
-                    </div>
-                    
-                    <!-- Columna Semis -->
-                    <div class="bracket-column" style="gap: 80px; justify-content: center;">
-                        ${[1, 2].map(n => renderBracketMatch(`Semis ${n}`, 'semifinal', n)).join('')}
-                    </div>
-                    
-                    <!-- Columna Final -->
-                    <div class="bracket-column" style="justify-content: center;">
-                        ${renderBracketMatch('Gran Final', 'final', 1)}
-                    </div>
+                    ${selectedComp?.format === 'bracket' || !selectedComp?.format ? `
+                        <!-- Columna Octavos -->
+                        <div class="bracket-column" style="gap: 15px;">
+                            ${[1, 2, 3, 4, 5, 6, 7, 8].map(n => renderBracketMatch(`Octavos ${n}`, 'octavos', n)).join('')}
+                        </div>
+                        
+                        <!-- Columna Cuartos -->
+                        <div class="bracket-column" style="gap: 40px; justify-content: space-around;">
+                            ${[1, 2, 3, 4].map(n => renderBracketMatch(`Cuartos ${n}`, 'cuartos', n)).join('')}
+                        </div>
+                        
+                        <!-- Columna Semis -->
+                        <div class="bracket-column" style="gap: 80px; justify-content: center;">
+                            ${[1, 2].map(n => renderBracketMatch(`Semis ${n}`, 'semifinal', n)).join('')}
+                        </div>
+                        
+                        <!-- Columna Final -->
+                        <div class="bracket-column" style="justify-content: center;">
+                            ${renderBracketMatch('Gran Final', 'final', 1)}
+                        </div>
+                    ` : `
+                        <div style="width: 100%; max-width: 800px; margin: 0 auto;">
+                            <table class="ranking-table" style="width: 100%; border-collapse: separate; border-spacing: 0 10px;">
+                                <thead>
+                                    <tr style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">
+                                        <th style="padding: 10px; text-align: center; width: 60px;">Pos</th>
+                                        <th style="padding: 10px; text-align: left;">Equipo</th>
+                                        <th style="padding: 10px; text-align: right;">${selectedComp.format === 'ranking' ? 'Puntos' : 'Tiempo'}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${(() => {
+            const results = State.teams.map(t => {
+                const res = State.eventResults.find(r => r.competitionId === selectedComp.id && r.teamId === t.id);
+                return {
+                    team: t,
+                    value: res ? res.value : (selectedComp.format === 'ranking' ? 0 : '--:--'),
+                    advanced: res ? !!res.advanced : false
+                };
+            }).sort((a, b) => {
+                if (selectedComp.format === 'ranking') return b.value - a.value;
+                if (a.value === '--:--' || a.value === '') return 1;
+                if (b.value === '--:--' || b.value === '') return -1;
+                return a.value.localeCompare(b.value);
+            });
+
+            return results.map((r, idx) => `
+                                            <tr style="background: rgba(255,255,255,0.03); border-radius: 10px; overflow: hidden; transform: scale(1); transition: 0.3s;">
+                                                <td style="padding: 15px; text-align: center; font-weight: 900; color: ${idx < 3 ? 'var(--accent-yellow)' : 'var(--text-muted)'}; font-size: 1.2rem;">
+                                                    ${idx + 1}°
+                                                </td>
+                                                <td style="padding: 15px; display: flex; align-items: center; gap: 15px;">
+                                                    <span style="width: 4px; height: 25px; background: ${window.translateColor(r.team.color)};"></span>
+                                                    <div style="display: flex; flex-direction: column;">
+                                                        <span style="font-weight: 600;">${r.team.name}</span>
+                                                        ${r.advanced ? `<span class="pulse" style="font-size: 0.55rem; color: var(--success); font-weight: 800; letter-spacing: 0.5px;"><i class="fa-solid fa-circle-check"></i> PASA A SIGUIENTE RONDA</span>` : ''}
+                                                    </div>
+                                                </td>
+                                                <td style="padding: 15px; text-align: right; font-family: 'Outfit'; font-weight: 800; font-size: 1.1rem; color: var(--accent-blue);">
+                                                    ${r.value || (selectedComp.format === 'ranking' ? '0' : '--:--')}
+                                                </td>
+                                            </tr>
+                                        `).join('');
+        })()}
+                                </tbody>
+                            </table>
+                        </div>
+                    `}
                 </div>
                 
                 <div style="margin-top: auto; padding-top: 20px; text-align: center;">
@@ -171,10 +220,10 @@ function renderDashboard(container) {
                     <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-calendar-alt"></i> Próximos</h3>
                     <div style="display: flex; flex-direction: column; gap: 15px;">
                         ${(State.matches || []).filter(m => m.status !== 'finished').map(m => {
-        const t1 = State.teams.find(t => t.id === m.team1Id);
-        const t2 = State.teams.find(t => t.id === m.team2Id);
-        const comp = State.competitions.find(c => c.id === m.competitionId);
-        return `
+            const t1 = State.teams.find(t => t.id === m.team1Id);
+            const t2 = State.teams.find(t => t.id === m.team2Id);
+            const comp = State.competitions.find(c => c.id === m.competitionId);
+            return `
                                 <div class="item-row" style="flex-direction: column; align-items: flex-start; gap: 5px;">
                                     <div style="font-size: 0.75rem; color: var(--accent-blue)">${comp?.name || 'Competencia'}</div>
                                     <div style="display: flex; justify-content: space-between; width: 100%;">
@@ -183,7 +232,7 @@ function renderDashboard(container) {
                                     </div>
                                 </div>
                             `;
-    }).join('') || '<p>No hay encuentros próximos.</p>'}
+        }).join('') || '<p>No hay encuentros próximos.</p>'}
                     </div>
 
                     <h3 style="margin-top: 30px;"><i class="fa-solid fa-star"></i> Puntuación</h3>
@@ -302,6 +351,14 @@ function renderAdmin(container) {
                             <select id="comp-type">
                                 <option value="sport">Deportiva</option>
                                 <option value="culture">Cultural</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Formato</label>
+                            <select id="comp-format">
+                                <option value="bracket">Llaves (1 vs 1)</option>
+                                <option value="ranking">Tabla de Puntos</option>
+                                <option value="race">Carrera (Tiempos)</option>
                             </select>
                         </div>
                         <button type="submit" class="btn" style="width: 100%;"><i class="fa-solid fa-plus"></i> Añadir Disciplina</button>
@@ -428,7 +485,11 @@ function renderAdmin(container) {
     };
     document.getElementById('form-add-comp').onsubmit = (e) => {
         e.preventDefault();
-        State.addCompetition(document.getElementById('comp-name').value, document.getElementById('comp-type').value);
+        State.addCompetition(
+            document.getElementById('comp-name').value,
+            document.getElementById('comp-type').value,
+            document.getElementById('comp-format').value
+        );
     };
     document.getElementById('form-add-match').onsubmit = (e) => {
         e.preventDefault();
@@ -509,11 +570,47 @@ function renderCaptura(container) {
                     </div>
                 `}
             </div>
+
+            <!-- Sección de Captura por Tabla/Puntos -->
+            ${State.competitions.filter(c => c.format !== 'bracket' && c.format).map(comp => `
+                <div class="card" style="margin-top: 40px; padding: 25px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="color: var(--accent-yellow);"><i class="fa-solid fa-list-ol"></i> ${comp.name} (${comp.format === 'ranking' ? 'Puntos' : 'Tiempos'})</h3>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px;">
+                        ${State.teams.map(t => {
+        const res = State.eventResults.find(r => r.competitionId === comp.id && r.teamId === t.id);
+        return `
+                                <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; border: 1px solid var(--border-glass);">
+                                    <span style="width: 4px; height: 30px; background: ${window.translateColor(t.color)}; flex-shrink: 0;"></span>
+                                    <div style="flex: 1; min-width: 0;">
+                                        <div style="font-size: 0.8rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${t.name}</div>
+                                        <input type="${comp.format === 'ranking' ? 'number' : 'text'}" 
+                                            placeholder="${comp.format === 'ranking' ? '0' : '00:00.00'}"
+                                            value="${res ? res.value : ''}"
+                                            onchange="window.saveEventValue('${comp.id}', '${t.id}', this.value)"
+                                            style="width: 100%; margin-top: 8px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: var(--accent-blue); font-weight: 800; padding: 5px 10px; border-radius: 5px;">
+                                        
+                                        <div style="margin-top: 10px; display: flex; align-items: center; gap: 8px; cursor: pointer;" onclick="window.toggleAdvance('${comp.id}', '${t.id}')">
+                                            <i class="fa-solid ${res?.advanced ? 'fa-square-check' : 'fa-square'}" style="color: ${res?.advanced ? 'var(--success)' : 'var(--text-muted)'}; font-size: 1.1rem;"></i>
+                                            <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold;">Califica</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+    }).join('')}
+                    </div>
+                </div>
+            `).join('')}
         </div>
     `;
 }
 
 // Helper functions for capture
+window.toggleAdvance = (compId, teamId) => {
+    State.toggleEventAdvance(compId, teamId);
+};
+
 window.translateColor = (colorStr) => {
     if (!colorStr) return '#ffffff';
     const cleanStr = colorStr.trim().toLowerCase();
@@ -578,6 +675,10 @@ window.syncScore = (id, teamNum, val) => {
         else match.team2Score = parseInt(val) || 0;
         State.save();
     }
+};
+
+window.saveEventValue = (compId, teamId, val) => {
+    State.submitEventResult(compId, teamId, val);
 };
 
 window.savePartial = (id) => {
