@@ -18,6 +18,9 @@ const State = {
     isAdmin: false,
     db: null,
     isCloudEnabled: false,
+    // Tabla de puntos por posición (puedes ajustarla luego)
+    // Tabla de puntos por posición: 1°: 15, 2°: 12, 3°: 10, 4°: 8, 5°: 7, 6°: 6, 7°: 5, 8°: 4, 9°: 3, 10°: 2
+    pointTable: [15, 12, 10, 8, 7, 6, 5, 4, 3, 2],
 
     init() {
         // 1. Intentar configurar Firebase
@@ -60,15 +63,15 @@ const State = {
 
     setDefaults() {
         this.teams = [
-            { id: 't1', name: 'Leones Rojos', color: '#ff4b2b', sportsPoints: 0, culturalPoints: 0 },
-            { id: 't2', name: 'Águilas Azules', color: '#00d2ff', sportsPoints: 0, culturalPoints: 0 },
-            { id: 't3', name: 'Delfines Verdes', color: '#00ff88', sportsPoints: 0, culturalPoints: 0 },
-            { id: 't4', name: 'Tigres Reales', color: '#ffcc00', sportsPoints: 0, culturalPoints: 0 }
+            { id: 't1', name: 'Leones Rojos', color: '#ff4b2b', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0 },
+            { id: 't2', name: 'Águilas Azules', color: '#00d2ff', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0 },
+            { id: 't3', name: 'Delfines Verdes', color: '#00ff88', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0 },
+            { id: 't4', name: 'Tigres Reales', color: '#ffcc00', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0 }
         ];
         this.competitions = [
-            { id: 'c1', name: 'Fútbol Varonil', type: 'sport', format: 'bracket' },
-            { id: 'c2', name: 'Voleibol Femenil', type: 'sport', format: 'bracket' },
-            { id: 'c3', name: 'Cultura General', type: 'culture', format: 'ranking' }
+            { id: 'c1', name: 'Fútbol', type: 'deportiva', format: 'bracket', category: 'Varonil' },
+            { id: 'c2', name: 'Voleibol', type: 'deportiva', format: 'bracket', category: 'Femenil' },
+            { id: 'c3', name: 'Ajedrez', type: 'mental', format: 'ranking', category: 'Mixto' }
         ];
         this.matches = [
             { id: 'm1', competitionId: 'c1', round: 'cuartos', matchNum: 1, team1Id: 't1', team2Id: 't2', time: '10:00', location: 'Cancha A', status: 'finished', team1Score: 2, team2Score: 1 },
@@ -115,26 +118,56 @@ const State = {
     },
 
     addTeam(name, color) {
-        this.teams.push({ id: 'team-' + Date.now(), name, color, sportsPoints: 0, culturalPoints: 0 });
+        this.teams.push({ id: 'team-' + Date.now(), name, color, deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0 });
         this.save();
         this.notify();
     },
 
-    addCompetition(name, type, format = 'bracket') {
-        this.competitions.push({ id: 'comp-' + Date.now(), name, type, format });
+    updateTeam(id, name, color) {
+        const team = this.teams.find(t => t.id === id);
+        if (team) {
+            team.name = name;
+            team.color = color;
+            this.save();
+            this.notify();
+        }
+    },
+
+    addCompetition(name, type, format = 'bracket', category = 'Mixto') {
+        this.competitions.push({ id: 'comp-' + Date.now(), name, type, format, category });
         this.save();
         this.notify();
     },
 
-    submitEventResult(compId, teamId, value, advanced = undefined) {
-        // value puede ser puntos (number) o tiempo (string)
-        const existing = this.eventResults.find(r => r.competitionId === compId && r.teamId === teamId);
+    submitEventResult(compId, teamId, participantName, value, advanced = undefined) {
+        // Buscamos si ya existe ese participante específico en esa competencia
+        const existing = this.eventResults.find(r =>
+            r.competitionId === compId &&
+            r.teamId === teamId &&
+            r.participantName === participantName
+        );
+
         if (existing) {
             existing.value = value;
             if (advanced !== undefined) existing.advanced = advanced;
         } else {
-            this.eventResults.push({ competitionId: compId, teamId: teamId, value: value, advanced: advanced || false });
+            this.eventResults.push({
+                competitionId: compId,
+                teamId: teamId,
+                participantName: participantName || '',
+                value: value,
+                advanced: advanced || false
+            });
         }
+        this.save();
+        this.notify();
+    },
+
+    removeEventResult(compId, teamId, participantName) {
+        this.eventResults = this.eventResults.filter(r =>
+            !(r.competitionId === compId && r.teamId === teamId && r.participantName === participantName)
+        );
+        this.calculatePoints();
         this.save();
         this.notify();
     },
@@ -190,7 +223,12 @@ const State = {
         const winnerId = match.team1Score > match.team2Score ? match.team1Id : match.team2Id;
         if (!winnerId || winnerId === '?') return;
 
-        const nextRoundMap = { 'octavos': 'cuartos', 'cuartos': 'semifinal', 'semifinal': 'final' };
+        const nextRoundMap = {
+            'dieciseisavos': 'octavos',
+            'octavos': 'cuartos',
+            'cuartos': 'semifinal',
+            'semifinal': 'final'
+        };
         const nextRound = nextRoundMap[match.round];
         if (!nextRound) return;
 
@@ -224,17 +262,49 @@ const State = {
     },
 
     calculatePoints() {
-        this.teams.forEach(t => { t.sportsPoints = 0; t.culturalPoints = 0; });
+        // Reset points
+        this.teams.forEach(t => {
+            t.deportivaPoints = 0;
+            t.mentalPoints = 0;
+            t.atletismoPoints = 0;
+        });
+
+        const getField = (type) => {
+            if (type === 'deportiva') return 'deportivaPoints';
+            if (type === 'mental') return 'mentalPoints';
+            if (type === 'atletismo') return 'atletismoPoints';
+            return 'deportivaPoints';
+        };
+
+        // 1. Points from Matches (Brackets)
         this.matches.filter(m => m.status === 'finished').forEach(m => {
             const comp = this.competitions.find(c => c.id === m.competitionId);
             const team1 = this.teams.find(t => t.id === m.team1Id);
             const team2 = this.teams.find(t => t.id === m.team2Id);
             if (team1 && team2 && comp) {
-                const field = comp.type === 'sport' ? 'sportsPoints' : 'culturalPoints';
+                const field = getField(comp.type);
                 if (m.team1Score > m.team2Score) team1[field] += 3;
                 else if (m.team2Score > m.team1Score) team2[field] += 3;
                 else { team1[field] += 1; team2[field] += 1; }
             }
+        });
+
+        // 2. Points from Rankings/Races (Positions)
+        this.competitions.filter(c => c.format !== 'bracket').forEach(comp => {
+            const results = this.eventResults
+                .filter(r => r.competitionId === comp.id && r.value !== '' && r.value !== '0')
+                .sort((a, b) => {
+                    if (comp.format === 'ranking') return parseFloat(b.value) - parseFloat(a.value);
+                    return a.value.localeCompare(b.value); // For races (times)
+                });
+
+            results.forEach((res, index) => {
+                const team = this.teams.find(t => t.id === res.teamId);
+                if (team && this.pointTable[index]) {
+                    const field = getField(comp.type);
+                    team[field] += this.pointTable[index];
+                }
+            });
         });
     },
 
