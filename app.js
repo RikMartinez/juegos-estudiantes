@@ -258,16 +258,16 @@ function renderBracketBox(compId, round, num) {
         <div class="bracket-match" style="border: 1px solid ${match?.status === 'in-progress' ? 'var(--accent-blue)' : 'var(--border-glass)'};">
             <div style="font-size: 0.55rem; color: var(--text-muted); margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.05);">${round === 'final' ? 'FINAL' : 'P' + num}</div>
             <div class="team-row ${isFinished && s1 > s2 ? 'winner' : ''}">
-                <span style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
-                    <span style="width: 3px; height: 12px; background: ${window.translateColor(t1?.color || '#333')};"></span>
-                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${match?.player1Name || t1?.name || 'PENDIENTE'}</span>
+                <span style="display: flex; align-items: center; gap: 8px; overflow: hidden; flex: 1; min-width: 0;">
+                    <span style="width: 3px; height: 14px; background: ${window.translateColor(t1?.color || '#333')}; flex-shrink: 0;"></span>
+                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.8rem; font-weight: 500;">${match?.player1Name || t1?.name || 'PENDIENTE'}</span>
                 </span>
                 <span class="score">${s1}</span>
             </div>
             <div class="team-row ${isFinished && s2 > s1 ? 'winner' : ''}">
-                <span style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
-                    <span style="width: 3px; height: 12px; background: ${window.translateColor(t2?.color || '#333')};"></span>
-                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${match?.player2Name || t2?.name || 'PENDIENTE'}</span>
+                <span style="display: flex; align-items: center; gap: 8px; overflow: hidden; flex: 1; min-width: 0;">
+                    <span style="width: 3px; height: 14px; background: ${window.translateColor(t2?.color || '#333')}; flex-shrink: 0;"></span>
+                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.8rem; font-weight: 500;">${match?.player2Name || t2?.name || 'PENDIENTE'}</span>
                 </span>
                 <span class="score">${s2}</span>
             </div>
