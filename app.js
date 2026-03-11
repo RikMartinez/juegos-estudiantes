@@ -151,7 +151,7 @@ function renderDashboard(container) {
                                 <div class="item-row" style="flex-direction: column; align-items: flex-start;">
                                     <div style="font-size: 0.7rem; color: var(--accent-blue);">${comp?.name || '---'}</div>
                                     <div style="font-weight: 600; font-size: 0.9rem; width: 100%; display: flex; justify-content: space-between;">
-                                        <span>${m.player1Name || t1?.name || 'TBD'} vs ${m.player2Name || t2?.name || 'TBD'}</span>
+                                        <span>${m.player1Name || t1?.name || 'PENDIENTE'} vs ${m.player2Name || t2?.name || 'PENDIENTE'}</span>
                                         <span style="font-size: 0.7rem; color: var(--text-muted);">${m.time}</span>
                                     </div>
                                 </div>
@@ -260,14 +260,14 @@ function renderBracketBox(compId, round, num) {
             <div class="team-row ${isFinished && s1 > s2 ? 'winner' : ''}">
                 <span style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
                     <span style="width: 3px; height: 12px; background: ${window.translateColor(t1?.color || '#333')};"></span>
-                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${match?.player1Name || t1?.name || 'TBD'}</span>
+                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${match?.player1Name || t1?.name || 'PENDIENTE'}</span>
                 </span>
                 <span class="score">${s1}</span>
             </div>
             <div class="team-row ${isFinished && s2 > s1 ? 'winner' : ''}">
                 <span style="display: flex; align-items: center; gap: 6px; overflow: hidden;">
                     <span style="width: 3px; height: 12px; background: ${window.translateColor(t2?.color || '#333')};"></span>
-                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${match?.player2Name || t2?.name || 'TBD'}</span>
+                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${match?.player2Name || t2?.name || 'PENDIENTE'}</span>
                 </span>
                 <span class="score">${s2}</span>
             </div>
@@ -338,6 +338,16 @@ function renderAdmin(container) {
                                 <i class="fa-solid fa-trash" onclick="if(confirm('¿Borrar?')) {State.competitions=State.competitions.filter(it=>it.id!=='${c.id}'); State.save(); State.notify();}" style="cursor: pointer; color: var(--text-muted);"></i>
                             </div>
                         `).join('')}
+                    </div>
+                </div>
+                <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+                    <h3><i class="fa-solid fa-qrcode"></i> Acceso Público</h3>
+                    <div style="background: white; padding: 15px; border-radius: 12px; display: inline-block; margin: 15px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fwww.prepachapala.edu.mx%2F" alt="QR Code" style="display: block;">
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">Escanea este código para ver los resultados en vivo desde el sitio oficial.</p>
+                    <div style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; font-size: 0.7rem; color: var(--accent-blue); font-weight: 600; margin-top: 10px; word-break: break-all;">
+                        prepachapala.edu.mx
                     </div>
                 </div>
             </div>
@@ -469,40 +479,54 @@ function renderCaptura(container) {
     }).join('') || '<p style="color: var(--text-muted);">Sin partidos pendientes.</p>'}
             </div>
 
-            <h2 style="margin-bottom: 20px;">Ranking / Carreras / Equipos</h2>
+            <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-list-ol"></i> Ranking / Carreras / Equipos</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px;">
                 ${rankingComps.map(c => {
         const results = State.eventResults.filter(r => r.competitionId === c.id);
-        const isTeamOnly = c.type === 'deportiva' || c.type === 'atletismo';
+        const isTeamEvent = c.name.toLowerCase().includes('rally') || 
+                            c.name.toLowerCase().includes('obstaculos') || 
+                            c.name.toLowerCase().includes('conocimientos');
 
         return `
                         <div class="card">
                             <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                                 <h4 style="color: var(--accent-yellow);">${c.name} (${c.rama || c.category})</h4>
-                                <button class="btn btn-secondary" style="font-size: 0.6rem; padding: 4px 8px;" onclick="window.addParticipant('${c.id}')">+ Añadir</button>
+                                <div style="display: flex; gap: 5px;">
+                                    <button class="btn btn-secondary" style="font-size: 0.6rem; padding: 4px 8px;" onclick="window.populateTeams('${c.id}')">Cargar Equipos</button>
+                                    <button class="btn btn-secondary" style="font-size: 0.6rem; padding: 4px 8px;" onclick="window.addParticipant('${c.id}')">+ Individuo</button>
+                                </div>
                             </div>
-                            <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 10px;">${c.format === 'ranking' ? 'PUNTOS' : 'CRONÓMETRO'}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 10px;">
+                                <i class="fa-solid fa-stopwatch"></i> ${c.format === 'ranking' ? 'PUNTOS / MARCAS' : 'CRONÓMETRO (Ej. 1:20)'}
+                            </div>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 ${results.map(r => {
             const team = State.teams.find(t => t.id === r.teamId);
+            const isEntryTeamOnly = !r.participantName;
             return `
-                                        <div style="display: flex; gap: 10px; align-items: center; background: rgba(255,255,255,0.02); padding: 5px 10px; border-radius: 8px;">
+                                        <div style="display: flex; gap: 10px; align-items: center; background: rgba(255,255,255,0.02); padding: 8px 12px; border-radius: 8px; border-left: 3px solid ${window.translateColor(team?.color || '#333')};">
                                             <div style="flex: 1;">
-                                                <input type="text" value="${r.participantName}" placeholder="Nombre" 
-                                                    onchange="State.eventResults.find(it=>it===r).participantName=this.value; State.save();" 
-                                                    style="background: transparent; border: none; font-size: 0.8rem; width: 100%; padding: 0;">
-                                                <div style="font-size: 0.6rem; color: var(--text-muted);">${team?.name || '---'}</div>
+                                                ${isEntryTeamOnly ? `
+                                                    <div style="font-weight: 700; font-size: 0.9rem; color: var(--accent-blue);">${team?.name || '---'}</div>
+                                                    <div style="font-size: 0.6rem; color: var(--text-muted);">Puntuación Colectiva</div>
+                                                ` : `
+                                                    <input type="text" value="${r.participantName}" placeholder="Nombre" 
+                                                        onchange="window.updateName('${c.id}', '${r.teamId}', '${r.participantName}', this.value)" 
+                                                        style="background: transparent; border: none; font-size: 0.85rem; width: 100%; padding: 0; font-weight: 600; color: white;">
+                                                    <div style="font-size: 0.65rem; color: var(--text-muted);">${team?.name || '---'}</div>
+                                                `}
                                             </div>
-                                            <input type="text" value="${r.value}" placeholder="Valor" 
+                                            <input type="text" value="${r.value}" placeholder="0" 
                                                 onchange="window.saveEventValue('${c.id}', '${r.teamId}', '${r.participantName}', this.value)" 
-                                                style="width: 80px; text-align: right; background: rgba(0,0,0,0.3); border: 1px solid var(--border-glass); border-radius: 4px; padding: 4px;">
-                                            <i class="fa-solid fa-circle-check ${r.advanced ? 'pulse' : ''}" 
-                                                style="cursor: pointer; color: ${r.advanced ? 'var(--success)' : 'var(--text-muted)'}" 
+                                                style="width: 80px; text-align: right; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: 6px; padding: 6px; font-family: monospace; color: var(--accent-yellow); font-weight: 700;">
+                                            <i class="fa-solid fa-medal ${r.advanced ? 'pulse' : ''}" 
+                                                style="cursor: pointer; color: ${r.advanced ? 'var(--accent-yellow)' : 'var(--text-muted)'}; font-size: 1rem;" 
+                                                title="Marcar como Ganador/Pódium"
                                                 onclick="window.toggleQualifier('${c.id}', '${r.teamId}', '${r.participantName}')"></i>
-                                            <i class="fa-solid fa-times" onclick="if(confirm('¿Borrar?')) {State.eventResults=State.eventResults.filter(it=>it!==r); State.calculatePoints(); State.save(); State.notify();}" style="cursor: pointer; color: #ff4b2b; font-size: 0.7rem;"></i>
+                                            <i class="fa-solid fa-times" onclick="window.removeEntry('${c.id}', '${r.teamId}', '${r.participantName}')" style="cursor: pointer; color: #ff4b2b; font-size: 0.75rem; opacity: 0.5;"></i>
                                         </div>
                                     `;
-        }).join('') || '<p style="font-size: 0.7rem; color: var(--text-muted); text-align: center;">Pulsa + Añadir para empezar</p>'}
+        }).join('') || '<p style="font-size: 0.7rem; color: var(--text-muted); text-align: center; padding: 20px;">Pulsa "Cargar Equipos" para registrar por equipo o "+ Individuo" para personas específicas.</p>'}
                             </div>
                         </div>
                     `;
@@ -586,6 +610,19 @@ window.resetTournament = () => {
     }
 };
 
+window.populateTeams = (compId) => {
+    if (confirm("¿Cargar todos los equipos registrados para esta competencia?")) {
+        State.teams.forEach(team => {
+            // Solo añadir si no existe ya un registro para ese equipo sin nombre de participante
+            const exists = State.eventResults.find(r => r.competitionId === compId && r.teamId === team.id && !r.participantName);
+            if (!exists) {
+                State.submitEventResult(compId, team.id, "", "0");
+            }
+        });
+        alert("Equipos cargados.");
+    }
+};
+
 window.addParticipant = (compId) => {
     const tNum = prompt("Selecciona equipo (Número):\n" + State.teams.map((t, i) => `${i + 1}. ${t.name}`).join('\n'));
     if (tNum) {
@@ -609,5 +646,20 @@ window.toggleQualifier = (compId, teamId, pName) => {
         res.advanced = !res.advanced;
         State.save();
         State.notify();
+    }
+};
+
+window.removeEntry = (compId, teamId, pName) => {
+    if (confirm("¿Borrar este registro permanentemente?")) {
+        State.removeEventResult(compId, teamId, pName);
+    }
+};
+
+window.updateName = (compId, teamId, oldName, newName) => {
+    const res = State.eventResults.find(r => r.competitionId === compId && r.teamId === teamId && r.participantName === oldName);
+    if (res) {
+        res.participantName = newName;
+        State.save();
+        render(); // Re-renderizamos para actualizar las referencias en los botones de borrar
     }
 };

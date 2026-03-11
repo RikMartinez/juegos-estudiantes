@@ -31,7 +31,7 @@ const State = {
                 this.isCloudEnabled = true;
 
                 // Escuchar cambios en tiempo real desde la nube
-                this.db.ref('tournament_data').on('value', (snapshot) => {
+                this.db.ref('tournament_v2').on('value', (snapshot) => {
                     const data = snapshot.val();
                     if (data) {
                         this.teams = data.teams || [];
@@ -63,20 +63,15 @@ const State = {
 
     setDefaults() {
         this.teams = [
-            { id: 't1', name: 'Leones Rojos', color: '#ff4b2b', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0 },
-            { id: 't2', name: 'Águilas Azules', color: '#00d2ff', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0 },
-            { id: 't3', name: 'Delfines Verdes', color: '#00ff88', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0 },
-            { id: 't4', name: 'Tigres Reales', color: '#ffcc00', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0 }
+            { id: 't1', name: 'Equipo Alpha', color: 'Azul', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0 },
+            { id: 't2', name: 'Equipo Beta', color: 'Rojo', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0 },
+            { id: 't3', name: 'Equipo Gamma', color: 'Verde', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0 }
         ];
         this.competitions = [
-            { id: 'c1', name: 'Fútbol', type: 'deportiva', format: 'bracket', category: 'Varonil' },
-            { id: 'c2', name: 'Voleibol', type: 'deportiva', format: 'bracket', category: 'Femenil' },
-            { id: 'c3', name: 'Ajedrez', type: 'mental', format: 'ranking', category: 'Mixto' }
+            { id: 'c1', name: 'Ajedrez', type: 'mental', format: 'bracket', category: 'Mixto' },
+            { id: 'c2', name: 'Rally', type: 'deportiva', format: 'ranking', category: 'Mixto' }
         ];
-        this.matches = [
-            { id: 'm1', competitionId: 'c1', round: 'cuartos', matchNum: 1, team1Id: 't1', team2Id: 't2', time: '10:00', location: 'Cancha A', status: 'finished', team1Score: 2, team2Score: 1 },
-            { id: 'm2', competitionId: 'c1', round: 'cuartos', matchNum: 2, team1Id: 't3', team2Id: 't4', time: '11:00', location: 'Cancha A', status: 'upcoming', team1Score: 0, team2Score: 0 }
-        ];
+        this.matches = [];
         this.calculatePoints();
         this.save();
     },
@@ -91,11 +86,11 @@ const State = {
             };
 
             // Guardar local (caché)
-            localStorage.setItem('estudiantes-games-state', JSON.stringify(dataToSave));
+            localStorage.setItem('estudiantes-games-v2', JSON.stringify(dataToSave));
 
             // Guardar en la nube (si está configurada)
             if (this.isCloudEnabled && this.db) {
-                this.db.ref('tournament_data').set(dataToSave);
+                this.db.ref('tournament_v2').set(dataToSave);
             }
         } catch (e) {
             console.error("Save Error:", e);
