@@ -202,10 +202,12 @@ function renderBracketContent(comp) {
         `).join('');
     } else {
         // Vista Ranking/Carrera
-        const results = State.eventResults.filter(r => r.competitionId === comp.id)
+        const results = State.eventResults.filter(r => r.competitionId === comp.id && r.value !== '' && r.value !== '0')
             .sort((a, b) => {
-                if (comp.format === 'ranking') return (parseFloat(b.value) || 0) - (parseFloat(a.value) || 0);
-                return a.value.localeCompare(b.value);
+                const vA = window.parseFlexibleValue(a.value);
+                const vB = window.parseFlexibleValue(b.value);
+                if (comp.format === 'ranking') return vB - vA; // Puntos: Más es mejor
+                return vA - vB; // Carrera: Menos es mejor
             });
 
         return `
@@ -346,6 +348,7 @@ function renderAdmin(container) {
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fwww.prepachapala.edu.mx%2F" alt="QR Code" style="display: block;">
                     </div>
                     <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">Escanea este código para ver los resultados en vivo desde el sitio oficial.</p>
+                    <button class="btn btn-secondary" onclick="window.printQR()" style="margin-top: 15px; font-size: 0.8rem;"><i class="fa-solid fa-print"></i> Imprimir Cartel</button>
                     <div style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; font-size: 0.7rem; color: var(--accent-blue); font-weight: 600; margin-top: 10px; word-break: break-all;">
                         prepachapala.edu.mx
                     </div>
@@ -362,6 +365,7 @@ function renderAdmin(container) {
                     <div><label>Sujeto 1 (Opcional)</label><input type="text" id="m-p1" placeholder="Nombre"></div>
                     <div><label>Equipo 2</label><select id="m-t2">${State.teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</select></div>
                     <div><label>Sujeto 2 (Opcional)</label><input type="text" id="m-p2" placeholder="Nombre"></div>
+                    <div><label>Fecha</label><input type="date" id="m-date"></div>
                     <div><label>Hora / Lugar</label><input type="text" id="m-time" placeholder="10:00 - Cancha 1"></div>
                     <button type="submit" class="btn" style="margin-top: 20px;">Agendar</button>
                 </form>
@@ -380,7 +384,7 @@ function renderAdmin(container) {
                                         <div style="font-size: 0.95rem; font-weight: 600;">
                                             ${m.player1Name || t1?.name || '?'} vs ${m.player2Name || t2?.name || '?'}
                                         </div>
-                                        <div style="font-size: 0.7rem; color: var(--text-muted);">${m.time}</div>
+                                        <div style="font-size: 0.7rem; color: var(--text-muted);">${m.date || 'Sin fecha'} | ${m.time}</div>
                                     </div>
                                     <div style="display: flex; gap: 15px;">
                                         <i class="fa-solid fa-trash" onclick="if(confirm('¿Borrar partido?')) {State.matches=State.matches.filter(it=>it.id!=='${m.id}'); State.save(); State.notify();}" style="cursor: pointer; color: var(--text-muted);"></i>
@@ -440,6 +444,7 @@ function setupAdminListeners() {
                 team2Id: document.getElementById('m-t2').value,
                 player1Name: document.getElementById('m-p1').value,
                 player2Name: document.getElementById('m-p2').value,
+                date: document.getElementById('m-date').value,
                 time: document.getElementById('m-time').value,
                 location: ''
             });
@@ -548,6 +553,17 @@ window.translateColor = (c) => {
     return map[c.toLowerCase().trim()] || c;
 };
 
+window.parseFlexibleValue = (val) => {
+    if (!val || val === '0' || val === '') return 0;
+    if (typeof val === 'number') return val;
+    const sVal = String(val).trim();
+    if (sVal.includes(':')) {
+        const parts = sVal.split(':');
+        return (parseInt(parts[0]) * 60) + (parseFloat(parts[1] || 0));
+    }
+    return parseFloat(sVal) || 0;
+};
+
 window.loginAdmin = () => {
     if (document.getElementById('m-login')) return;
     const m = document.createElement('div');
@@ -569,7 +585,7 @@ window.loginAdmin = () => {
 
 window.verifyLogin = () => {
     const p = document.getElementById('p-pass');
-    if (p.value === '1234') { // Cambia esto si lo requieres
+    if (p.value === '1234q') { // Nueva contraseña
         State.setAdmin(true);
         document.getElementById('m-login').remove();
     } else {
@@ -603,10 +619,8 @@ window.finishMatch = (id) => {
 };
 
 window.resetTournament = () => {
-    if (confirm("¿ESTÁS SEGURO? Se borrará TODO permanentemente de la nube y local.")) {
-        if (State.db) State.db.ref('tournament_v2').remove();
-        localStorage.removeItem('estudiantes-games-v2');
-        location.reload();
+    if (confirm("¿ESTÁS SEGURO? Se borrará TODO permanentemente de la nube y local y el torneo volverá a ceros con los equipos base.")) {
+        State.clearAll();
     }
 };
 
@@ -662,4 +676,40 @@ window.updateName = (compId, teamId, oldName, newName) => {
         State.save();
         render(); // Re-renderizamos para actualizar las referencias en los botones de borrar
     }
+};
+
+window.printQR = () => {
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>QR Pizarra Pública - Prepa Chapala</title>
+                <style>
+                    @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&display=swap');
+                    body { font-family: 'Outfit', sans-serif; text-align: center; padding: 50px; color: #1a1c23; }
+                    .container { border: 10px solid #f2df0d; padding: 40px; border-radius: 30px; max-width: 600px; margin: 0 auto; }
+                    h1 { color: #0088ff; font-size: 3rem; margin-bottom: 10px; text-transform: uppercase; font-weight: 900; }
+                    h2 { font-size: 1.5rem; margin-bottom: 30px; color: #555; }
+                    .qr-box { background: #fff; padding: 20px; display: inline-block; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-radius: 20px; margin: 20px 0; }
+                    .footer { margin-top: 40px; font-weight: 700; color: #0088ff; font-size: 1.2rem; }
+                    .desc { font-size: 1.1rem; color: #666; margin: 20px 0; line-height: 1.5; }
+                    @media print { .btn-print { display: none; } }
+                    .btn-print { background: #f2df0d; border: none; padding: 10px 20px; font-weight: 700; cursor: pointer; border-radius: 10px; margin-top: 20px; }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <h1>JUEGOS ESTUDIANTILES</h1>
+                    <h2>PREPA CHAPALA</h2>
+                    <p class="desc">Sigue todos los resultados, tablas de posiciones y brackets en tiempo real escaneando este código:</p>
+                    <div class="qr-box">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=https%3A%2F%2Fwww.prepachapala.edu.mx%2F" width="300">
+                    </div>
+                    <div class="footer">prepachapala.edu.mx</div>
+                    <button class="btn-print" onclick="window.print()">IMPRIMIR AHORA</button>
+                </div>
+            </body>
+        </html>
+    `);
+    printWindow.document.close();
 };
