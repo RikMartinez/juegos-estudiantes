@@ -200,18 +200,17 @@ body {
     display: flex;
     justify-content: flex-start;
     flex: 1;
-    align-items: flex-start;
+    align-items: stretch; /* Crucial: Todas las columnas deben medir lo mismo */
     gap: 80px;
     overflow-x: auto;
     padding: 20px 40px;
-    min-height: 850px;
+    min-height: 850px; /* Altura mínima base */
 }
 
 .bracket-column {
     display: flex;
     flex-direction: column;
-    height: 800px;
-    /* Altura de referencia constante para todas las rondas */
+    min-height: 850px; /* Permitir que crezca si hay muchos partidos */
     min-width: 220px;
 }
 
