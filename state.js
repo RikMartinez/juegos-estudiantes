@@ -52,13 +52,8 @@ const State = {
             this.loadLocal();
         }
 
-        // 2. Datos por defecto si no hay nada (Local o Nube)
-        setTimeout(() => {
-            if (!this.teams || this.teams.length === 0) {
-                console.log("🆕 Inicializando con datos por defecto...");
-                this.setDefaults();
-            }
-        }, 1000); // Pequeña espera para asegurar que Firebase respondió
+        // 2. Ya NO inicializamos automáticamente con datos por defecto.
+        // Si la App está vacía, el usuario deberá pulsar "Reiniciar" manualmente si desea los equipos base.
     },
 
     clearAll() {
@@ -129,6 +124,28 @@ const State = {
         }
     },
 
+    tryRecovery() {
+        // Buscar en nombres de claves antiguos
+        const keys = ['estudiantes-games-state', 'estudiantes-games-v1', 'estudiantes-games-backup'];
+        for (const key of keys) {
+            const old = localStorage.getItem(key);
+            if (old) {
+                try {
+                    const data = JSON.parse(old);
+                    if (data.teams && data.teams.length > 4) {
+                        this.teams = data.teams;
+                        this.competitions = data.competitions || [];
+                        this.matches = data.matches || [];
+                        this.eventResults = data.eventResults || [];
+                        this.update();
+                        return true;
+                    }
+                } catch (e) {}
+            }
+        }
+        return false;
+    },
+
     addTeam(name, color) {
         this.teams.push({ id: 'team-' + Date.now(), name, color, deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0 });
         this.update();
@@ -148,25 +165,15 @@ const State = {
         this.update();
     },
 
-    submitEventResult(compId, teamId, participantName, value, advanced = undefined) {
-        // Buscamos si ya existe ese participante específico en esa competencia
+    submitEventResult(compId, teamId, participantName, value, dq = false) {
         const existing = this.eventResults.find(r =>
-            r.competitionId === compId &&
-            r.teamId === teamId &&
-            r.participantName === participantName
+            r.competitionId === compId && r.teamId === teamId && r.participantName === participantName
         );
-
         if (existing) {
             existing.value = value;
-            if (advanced !== undefined) existing.advanced = advanced;
+            existing.dq = dq;
         } else {
-            this.eventResults.push({
-                competitionId: compId,
-                teamId: teamId,
-                participantName: participantName || '',
-                value: value,
-                advanced: advanced || false
-            });
+            this.eventResults.push({ competitionId: compId, teamId, participantName: participantName || '', value, dq });
         }
         this.update();
     },
@@ -203,11 +210,13 @@ const State = {
         this.notify();
     },
 
-    updateMatchResult(matchId, s1, s2, isFinished) {
+    updateMatchResult(matchId, s1, s2, isFinished, dq1 = false, dq2 = false) {
         const match = this.matches.find(m => m.id === matchId);
         if (match) {
             match.team1Score = parseInt(s1) || 0;
             match.team2Score = parseInt(s2) || 0;
+            match.team1DQ = dq1;
+            match.team2DQ = dq2;
             if (isFinished) {
                 match.status = 'finished';
                 this.advanceWinner(match);
@@ -304,11 +313,11 @@ const State = {
                     const winnerId = s1 > s2 ? m.team1Id : m.team2Id;
                     const loserId = s1 > s2 ? m.team2Id : m.team1Id;
                     
-                    if (teamStats[winnerId]) {
+                    if (teamStats[winnerId] && !m.team1DQ && !m.team2DQ) {
                         if (m.round === 'final') teamStats[winnerId].maxRound = 5;
                         else teamStats[winnerId].maxRound = Math.max(teamStats[winnerId].maxRound, rW);
                     }
-                    if (teamStats[loserId]) {
+                    if (teamStats[loserId] && !(loserId === m.team1Id ? m.team1DQ : m.team2DQ)) {
                         teamStats[loserId].maxRound = Math.max(teamStats[loserId].maxRound, rW);
                         teamStats[loserId].diff = Math.max(teamStats[loserId].diff, -Math.abs(s1 - s2));
                     }
@@ -319,8 +328,13 @@ const State = {
                     .sort((a, b) => b.maxRound - a.maxRound || b.diff - a.diff)
                     .map(s => s.id);
             } else {
-                // Ranking o Carrera: Permitimos cualquier valor excepto vacío absoluto
-                const rawResults = this.eventResults.filter(r => r.competitionId === comp.id && r.value !== '');
+                // Ranking o Carrera: Excluimos DQ y vacíos
+                const rawResults = this.eventResults.filter(r => 
+                    r.competitionId === comp.id && 
+                    r.value !== '' && 
+                    !r.dq &&
+                    String(r.value).toUpperCase() !== 'DQ'
+                );
                 
                 rankedTeams = rawResults
                     .sort((a, b) => {

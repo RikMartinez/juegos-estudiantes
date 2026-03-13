@@ -342,17 +342,6 @@ function renderAdmin(container) {
                         `).join('')}
                     </div>
                 </div>
-                <div class="card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-                    <h3><i class="fa-solid fa-qrcode"></i> Acceso Público</h3>
-                    <div style="background: white; padding: 15px; border-radius: 12px; display: inline-block; margin: 15px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Fwww.prepachapala.edu.mx%2F" alt="QR Code" style="display: block;">
-                    </div>
-                    <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.4;">Escanea este código para ver los resultados en vivo desde el sitio oficial.</p>
-                    <button class="btn btn-secondary" onclick="window.printQR()" style="margin-top: 15px; font-size: 0.8rem;"><i class="fa-solid fa-print"></i> Imprimir Cartel</button>
-                    <div style="background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px; font-size: 0.7rem; color: var(--accent-blue); font-weight: 600; margin-top: 10px; word-break: break-all;">
-                        prepachapala.edu.mx
-                    </div>
-                </div>
             </div>
 
             <div class="card" style="margin-top: 30px;">
@@ -396,8 +385,8 @@ function renderAdmin(container) {
                 </div>
             </div>
 
-            <div style="margin-top: 60px; text-align: center; opacity: 0.5;">
-                <button class="btn btn-secondary" onclick="window.resetTournament()" style="background: #ff4b2b; color: white; border: none;">REINICIAR TODO EL TORNEO</button>
+            <div style="margin-top: 60px; text-align: center; opacity: 0.3; font-size: 0.7rem; color: var(--text-muted);">
+                <i class="fa-solid fa-lock"></i> Sistema de Gestión Protegido
             </div>
         </div>
     `;
@@ -471,12 +460,15 @@ function renderCaptura(container) {
                         <div class="card" style="padding: 20px;">
                             <div style="font-size: 0.7rem; color: var(--accent-blue); margin-bottom: 10px;">${comp?.name || '---'} | ${m.round.toUpperCase()}</div>
                             <div class="item-row">
-                                <span>${m.player1Name || t1?.name || 'TBD'}</span>
-                                <input type="number" value="${m.team1Score}" onchange="window.syncScore('${m.id}', 1, this.value)" style="width: 60px; text-align: center;">
+                            <div class="item-row">
+                                <span style="flex: 1;">${m.player1Name || t1?.name || 'TBD'}</span>
+                                <input type="number" id="s1-${m.id}" value="${m.team1Score}" onchange="window.syncScore('${m.id}', 1, this.value)" style="width: 50px; text-align: center;">
+                                <label style="font-size: 0.65rem; color: var(--text-muted); cursor: pointer;"><input type="checkbox" id="dq1-${m.id}" ${m.team1DQ ? 'checked' : ''} onchange="window.syncScore('${m.id}', 1, document.getElementById('s1-${m.id}').value)"> DQ</label>
                             </div>
                             <div class="item-row">
-                                <span>${m.player2Name || t2?.name || 'TBD'}</span>
-                                <input type="number" value="${m.team2Score}" onchange="window.syncScore('${m.id}', 2, this.value)" style="width: 60px; text-align: center;">
+                                <span style="flex: 1;">${m.player2Name || t2?.name || 'TBD'}</span>
+                                <input type="number" id="s2-${m.id}" value="${m.team2Score}" onchange="window.syncScore('${m.id}', 2, this.value)" style="width: 50px; text-align: center;">
+                                <label style="font-size: 0.65rem; color: var(--text-muted); cursor: pointer;"><input type="checkbox" id="dq2-${m.id}" ${m.team2DQ ? 'checked' : ''} onchange="window.syncScore('${m.id}', 2, document.getElementById('s2-${m.id}').value)"> DQ</label>
                             </div>
                             <button class="btn" onclick="window.finishMatch('${m.id}')" style="width: 100%; margin-top: 15px; background: var(--success); color: black;">FINALIZAR Y AVANZAR</button>
                         </div>
@@ -523,11 +515,15 @@ function renderCaptura(container) {
                                             </div>
                                             <input type="text" value="${r.value}" placeholder="0" 
                                                 onchange="window.saveEventValue('${c.id}', '${r.teamId}', '${r.participantName}', this.value)" 
-                                                style="width: 80px; text-align: right; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: 6px; padding: 6px; font-family: monospace; color: var(--accent-yellow); font-weight: 700;">
-                                            <i class="fa-solid fa-medal ${r.advanced ? 'pulse' : ''}" 
-                                                style="cursor: pointer; color: ${r.advanced ? 'var(--accent-yellow)' : 'var(--text-muted)'}; font-size: 1rem;" 
+                                                style="width: 80px; text-align: right; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: 6px; padding: 6px; font-family: monospace; color: ${r.dq ? '#ff4b2b' : 'var(--accent-yellow)'}; font-weight: 700; ${r.dq ? 'text-decoration: line-through;' : ''}">
+                                            <i class="fa-solid fa-ban" 
+                                                style="cursor: pointer; color: ${r.dq ? '#ff4b2b' : 'var(--text-muted)'}; font-size: 0.9rem;" 
+                                                title="Descalificar / Falta"
+                                                onclick="window.toggleDQ('${c.id}', '${r.teamId}', '${r.participantName}')"></i>
+                                            <i class="fa-solid fa-medal ${r.advanced && !r.dq ? 'pulse' : ''}" 
+                                                style="cursor: pointer; color: ${r.advanced && !r.dq ? 'var(--accent-yellow)' : 'var(--text-muted)'}; font-size: 1rem; opacity: ${r.dq ? '0.2' : '1'}" 
                                                 title="Marcar como Ganador/Pódium"
-                                                onclick="window.toggleQualifier('${c.id}', '${r.teamId}', '${r.participantName}')"></i>
+                                                onclick="if(!'${r.dq}') window.toggleQualifier('${c.id}', '${r.teamId}', '${r.participantName}')"></i>
                                             <i class="fa-solid fa-times" onclick="window.removeEntry('${c.id}', '${r.teamId}', '${r.participantName}')" style="cursor: pointer; color: #ff4b2b; font-size: 0.75rem; opacity: 0.5;"></i>
                                         </div>
                                     `;
@@ -607,6 +603,10 @@ window.syncScore = (id, teamNum, val) => {
     if (m) {
         if (teamNum === 1) m.team1Score = parseInt(val) || 0;
         else m.team2Score = parseInt(val) || 0;
+        
+        m.team1DQ = document.getElementById(`dq1-${id}`)?.checked || false;
+        m.team2DQ = document.getElementById(`dq2-${id}`)?.checked || false;
+        
         State.save();
     }
 };
@@ -614,7 +614,11 @@ window.syncScore = (id, teamNum, val) => {
 window.finishMatch = (id) => {
     if (confirm("¿Finalizar encuentro? El ganador avanzará en las llaves automáticamente.")) {
         const m = State.matches.find(it => it.id === id);
-        if (m) State.updateMatchResult(id, m.team1Score, m.team2Score, true);
+        if (m) {
+            const dq1 = document.getElementById(`dq1-${id}`)?.checked || false;
+            const dq2 = document.getElementById(`dq2-${id}`)?.checked || false;
+            State.updateMatchResult(id, m.team1Score, m.team2Score, true, dq1, dq2);
+        }
     }
 };
 
@@ -651,7 +655,15 @@ window.addParticipant = (compId) => {
 };
 
 window.saveEventValue = (compId, teamId, pName, val) => {
-    State.submitEventResult(compId, teamId, pName, val);
+    const res = State.eventResults.find(r => r.competitionId === compId && r.teamId === teamId && r.participantName === pName);
+    State.submitEventResult(compId, teamId, pName, val, res ? res.dq : false);
+};
+
+window.toggleDQ = (compId, teamId, pName) => {
+    const res = State.eventResults.find(r => r.competitionId === compId && r.teamId === teamId && r.participantName === pName);
+    if (res) {
+        State.submitEventResult(compId, teamId, pName, res.value, !res.dq);
+    }
 };
 
 window.toggleQualifier = (compId, teamId, pName) => {
