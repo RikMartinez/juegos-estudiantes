@@ -331,8 +331,9 @@ const State = {
                 // Ranking o Carrera: Excluimos DQ y vacíos
                 const rawResults = this.eventResults.filter(r => 
                     r.competitionId === comp.id && 
-                    r.value !== '' && 
                     !r.dq &&
+                    r.value !== '' && 
+                    r.value !== '0' &&
                     String(r.value).toUpperCase() !== 'DQ'
                 );
                 

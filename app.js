@@ -116,8 +116,8 @@ function renderDashboard(container) {
             <section class="bracket-container" style="position: relative;">
                 <div class="bracket-header">
                     <div>
-                        <h2><i class="fa-solid fa-sitemap" style="color: var(--accent-yellow)"></i> LLAVES DEL TORNEO</h2>
-                        <p style="font-size: 0.8rem; color: var(--text-muted);">Progreso en tiempo real</p>
+                        <h2><i class="${selectedComp?.format === 'bracket' ? 'fa-solid fa-sitemap' : 'fa-solid fa-list-ol'}" style="color: var(--accent-yellow)"></i> ${selectedComp?.format === 'bracket' ? 'LLAVES DEL TORNEO' : 'RESULTADOS Y POSICIONES'}</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">${selectedComp?.format === 'bracket' ? 'Progreso en tiempo real' : 'Marcas y tiempos oficiales'}</p>
                     </div>
                     <div class="comp-selector">
                         <select onchange="State.selectedDashboardComp = this.value; render();" style="background: rgba(242,223,13,0.1); border: 1px solid var(--accent-yellow); color: white; padding: 8px; border-radius: 8px; cursor: pointer;">
@@ -149,11 +149,17 @@ function renderDashboard(container) {
         const t2 = State.teams.find(t => t.id === m.team2Id);
         return `
                                 <div class="item-row" style="flex-direction: column; align-items: flex-start;">
-                                    <div style="font-size: 0.7rem; color: var(--accent-blue);">${comp?.name || '---'}</div>
+                                    <div style="font-size: 0.7rem; color: var(--accent-blue);">${comp?.name || '---'} ${m.round && m.round !== 'N/A' ? `- ${m.round.toUpperCase()}` : ''}</div>
                                     <div style="font-weight: 600; font-size: 0.9rem; width: 100%; display: flex; justify-content: space-between;">
-                                        <span>${m.player1Name || t1?.name || 'PENDIENTE'} vs ${m.player2Name || t2?.name || 'PENDIENTE'}</span>
+                                        <span>
+                                            ${(m.player1Name || t1?.name) ? 
+                                                `${m.player1Name || t1?.name || '?'} vs ${m.player2Name || t2?.name || '?'}` : 
+                                                '<span style="color: var(--accent-yellow)">Evento General / Inicio</span>'
+                                            }
+                                        </span>
                                         <span style="font-size: 0.7rem; color: var(--text-muted);">${m.time}</span>
                                     </div>
+                                    ${m.date ? `<div style="font-size: 0.6rem; color: var(--text-muted); opacity: 0.7;">${m.date}</div>` : ''}
                                 </div>
                             `;
     }).join('') || '<p style="color: var(--text-muted); font-size: 0.8rem;">No hay partidos pendientes.</p>'}
@@ -180,8 +186,7 @@ function renderDashboard(container) {
 
 function renderBracketContent(comp) {
     if (!comp) return '';
-    const hasMatches = State.matches.some(m => m.competitionId === comp.id);
-    const isBracket = comp.format === 'bracket' || hasMatches;
+    const isBracket = comp.format === 'bracket';
 
     if (isBracket) {
         const rounds = [];
@@ -345,15 +350,15 @@ function renderAdmin(container) {
             </div>
 
             <div class="card" style="margin-top: 30px;">
-                <h3><i class="fa-solid fa-calendar-plus"></i> Programar Partidos (Llaves)</h3>
+                <h3><i class="fa-solid fa-calendar-plus"></i> Programar Eventos / Partidos</h3>
                 <form id="form-match" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
-                    <div><label>Disciplina</label><select id="m-comp">${State.competitions.filter(c => c.format === 'bracket').map(c => `<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
-                    <div><label>Ronda</label><select id="m-round"><option value="dieciseisavos">16avos</option><option value="octavos">Octavos</option><option value="cuartos">Cuartos</option><option value="semifinal">Semifinal</option><option value="final">Final</option></select></div>
-                    <div><label># Partido</label><select id="m-num">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map(n => `<option>${n}</option>`).join('')}</select></div>
-                    <div><label>Equipo 1</label><select id="m-t1">${State.teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</select></div>
-                    <div><label>Sujeto 1 (Opcional)</label><input type="text" id="m-p1" placeholder="Nombre"></div>
-                    <div><label>Equipo 2</label><select id="m-t2">${State.teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</select></div>
-                    <div><label>Sujeto 2 (Opcional)</label><input type="text" id="m-p2" placeholder="Nombre"></div>
+                    <div><label>Disciplina</label><select id="m-comp" onchange="window.toggleMatchFields()">${State.competitions.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
+                    <div class="bracket-only"><label>Ronda</label><select id="m-round"><option value="N/A">---</option><option value="dieciseisavos">16avos</option><option value="octavos">Octavos</option><option value="cuartos">Cuartos</option><option value="semifinal">Semifinal</option><option value="final">Final</option></select></div>
+                    <div class="bracket-only"><label># Partido</label><select id="m-num"><option value="0">---</option>${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map(n => `<option>${n}</option>`).join('')}</select></div>
+                    <div class="bracket-only"><label>Equipo 1</label><select id="m-t1"><option value="">Ninguno / General</option>${State.teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</select></div>
+                    <div class="bracket-only"><label>Sujeto 1 (Opcional)</label><input type="text" id="m-p1" placeholder="Nombre"></div>
+                    <div class="bracket-only"><label>Equipo 2</label><select id="m-t2"><option value="">Ninguno / General</option>${State.teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</select></div>
+                    <div class="bracket-only"><label>Sujeto 2 (Opcional)</label><input type="text" id="m-p2" placeholder="Nombre"></div>
                     <div><label>Fecha</label><input type="date" id="m-date"></div>
                     <div><label>Hora / Lugar</label><input type="text" id="m-time" placeholder="10:00 - Cancha 1"></div>
                     <button type="submit" class="btn" style="margin-top: 20px;">Agendar</button>
@@ -369,9 +374,14 @@ function renderAdmin(container) {
                 return `
                                 <div class="item-row" style="padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.03);">
                                     <div style="flex: 1;">
-                                        <div style="font-size: 0.75rem; color: var(--accent-yellow); font-weight: 800;">${c?.name || '---'} - ${m.round.toUpperCase()} (P${m.matchNum})</div>
+                                        <div style="font-size: 0.75rem; color: var(--accent-yellow); font-weight: 800;">
+                                            ${c?.name || '---'} ${m.round && m.round !== 'N/A' ? `- ${m.round.toUpperCase()}` : ''}
+                                        </div>
                                         <div style="font-size: 0.95rem; font-weight: 600;">
-                                            ${m.player1Name || t1?.name || '?'} vs ${m.player2Name || t2?.name || '?'}
+                                            ${(m.player1Name || t1?.name) ? 
+                                                `${m.player1Name || t1?.name || '?'} vs ${m.player2Name || t2?.name || '?'}` : 
+                                                'Evento General'
+                                            }
                                         </div>
                                         <div style="font-size: 0.7rem; color: var(--text-muted);">${m.date || 'Sin fecha'} | ${m.time}</div>
                                     </div>
@@ -423,6 +433,9 @@ function setupAdminListeners() {
 
     const fMatch = document.getElementById('form-match');
     if (fMatch) {
+        // Ejecutar toggle al cargar para setear estado inicial
+        window.toggleMatchFields();
+
         fMatch.onsubmit = (e) => {
             e.preventDefault();
             State.addMatch({
@@ -437,13 +450,29 @@ function setupAdminListeners() {
                 time: document.getElementById('m-time').value,
                 location: ''
             });
-            alert("Partido agendado.");
+            alert("Evento/Partido agendado.");
+            render();
         };
     }
 }
 
+window.toggleMatchFields = () => {
+    const compId = document.getElementById('m-comp')?.value;
+    const comp = State.competitions.find(c => c.id === compId);
+    const bracketFields = document.querySelectorAll('.bracket-only');
+    
+    if (comp && comp.format !== 'bracket') {
+        bracketFields.forEach(f => f.style.display = 'none');
+    } else {
+        bracketFields.forEach(f => f.style.display = 'block');
+    }
+};
+
 function renderCaptura(container) {
-    const activeMatches = State.matches.filter(m => m.status !== 'finished');
+    const activeMatches = State.matches.filter(m => {
+        const comp = State.competitions.find(c => c.id === m.competitionId);
+        return m.status !== 'finished' && comp && comp.format === 'bracket';
+    });
     const rankingComps = State.competitions.filter(c => c.format !== 'bracket');
 
     container.innerHTML = `
@@ -480,14 +509,19 @@ function renderCaptura(container) {
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px;">
                 ${rankingComps.map(c => {
         const results = State.eventResults.filter(r => r.competitionId === c.id);
-        const isTeamEvent = c.name.toLowerCase().includes('rally') || 
-                            c.name.toLowerCase().includes('obstaculos') || 
-                            c.name.toLowerCase().includes('conocimientos');
+        const schedule = State.matches.find(m => m.competitionId === c.id);
 
         return `
                         <div class="card">
-                            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                                <h4 style="color: var(--accent-yellow);">${c.name} (${c.rama || c.category})</h4>
+                            <div style="display:flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                <div>
+                                    <h4 style="color: var(--accent-yellow); margin-bottom: 5px;">${c.name} (${c.rama || c.category || 'Mixto'})</h4>
+                                    ${schedule ? `
+                                        <div style="font-size: 0.65rem; color: var(--accent-blue); font-weight: 600;">
+                                            <i class="fa-solid fa-calendar-day"></i> ${schedule.date || 'Sin fecha'} | <i class="fa-solid fa-clock"></i> ${schedule.time || 'Sin hora'}
+                                        </div>
+                                    ` : ''}
+                                </div>
                                 <div style="display: flex; gap: 5px;">
                                     <button class="btn btn-secondary" style="font-size: 0.6rem; padding: 4px 8px;" onclick="window.populateTeams('${c.id}')">Cargar Equipos</button>
                                     <button class="btn btn-secondary" style="font-size: 0.6rem; padding: 4px 8px;" onclick="window.addParticipant('${c.id}')">+ Individuo</button>
