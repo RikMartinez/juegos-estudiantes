@@ -205,6 +205,14 @@ const State = {
         this.update();
     },
 
+    updateMatch(matchId, matchData) {
+        const match = this.matches.find(m => m.id === matchId);
+        if (match) {
+            Object.assign(match, matchData);
+            this.update();
+        }
+    },
+
     setAdmin(val) {
         this.isAdmin = val;
         this.notify();

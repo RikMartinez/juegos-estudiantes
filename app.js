@@ -4,6 +4,7 @@
  */
 
 let editingTeamId = null;
+let editingMatchId = null;
 
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
@@ -154,7 +155,7 @@ function renderDashboard(container) {
                                         <span>
                                             ${(m.player1Name || t1?.name) ? 
                                                 `${m.player1Name || t1?.name || '?'} vs ${m.player2Name || t2?.name || '?'}` : 
-                                                '<span style="color: var(--accent-yellow)">Evento General / Inicio</span>'
+                                                '<span style="color: var(--accent-yellow)"><i class="fa-solid fa-users"></i> Todos los equipos</span>'
                                             }
                                         </span>
                                         <span style="font-size: 0.7rem; color: var(--text-muted);">${m.time}</span>
@@ -235,8 +236,12 @@ function renderBracketContent(comp) {
                                         <div style="display: flex; align-items: center; gap: 15px;">
                                             <span style="width: 4px; height: 25px; background: ${window.translateColor(team?.color)};"></span>
                                             <div>
-                                                <div style="font-weight: 700;">${res.participantName || '---'}</div>
-                                                <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">${team?.name || '---'}</div>
+                                                ${res.participantName ? `
+                                                    <div style="font-weight: 700;">${res.participantName}</div>
+                                                    <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">${team?.name || '---'}</div>
+                                                ` : `
+                                                    <div style="font-weight: 700; color: var(--accent-blue); font-size: 1.1rem;">${team?.name || '---'}</div>
+                                                `}
                                                 ${res.advanced ? '<span class="pulse" style="font-size:0.6rem; color: var(--success); font-weight: 800;"><i class="fa-solid fa-check"></i> CALIFICA</span>' : ''}
                                             </div>
                                         </div>
@@ -352,7 +357,7 @@ function renderAdmin(container) {
             <div class="card" style="margin-top: 30px;">
                 <h3><i class="fa-solid fa-calendar-plus"></i> Programar Eventos / Partidos</h3>
                 <form id="form-match" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
-                    <div><label>Disciplina</label><select id="m-comp" onchange="window.toggleMatchFields()">${State.competitions.map(c => `<option value="${c.id}">${c.name}</option>`).join('')}</select></div>
+                    <div><label>Disciplina</label><select id="m-comp" onchange="window.toggleMatchFields()">${State.competitions.map(c => `<option value="${c.id}">${c.name}${c.category && c.category.toLowerCase() !== 'mixto' ? ' (' + c.category + ')' : ''}</option>`).join('')}</select></div>
                     <div class="bracket-only"><label>Ronda</label><select id="m-round"><option value="N/A">---</option><option value="dieciseisavos">16avos</option><option value="octavos">Octavos</option><option value="cuartos">Cuartos</option><option value="semifinal">Semifinal</option><option value="final">Final</option></select></div>
                     <div class="bracket-only"><label># Partido</label><select id="m-num"><option value="0">---</option>${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map(n => `<option>${n}</option>`).join('')}</select></div>
                     <div class="bracket-only"><label>Equipo 1</label><select id="m-t1"><option value="">Ninguno / General</option>${State.teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</select></div>
@@ -361,7 +366,10 @@ function renderAdmin(container) {
                     <div class="bracket-only"><label>Sujeto 2 (Opcional)</label><input type="text" id="m-p2" placeholder="Nombre"></div>
                     <div><label>Fecha</label><input type="date" id="m-date"></div>
                     <div><label>Hora / Lugar</label><input type="text" id="m-time" placeholder="10:00 - Cancha 1"></div>
-                    <button type="submit" class="btn" style="margin-top: 20px;">Agendar</button>
+                    <div style="display: flex; gap: 10px; margin-top: 20px; grid-column: 1 / -1;">
+                        <button id="btn-submit-match" type="submit" class="btn">${editingMatchId ? 'Guardar Cambios' : 'Agendar'}</button>
+                        ${editingMatchId ? `<button type="button" class="btn btn-secondary" onclick="editingMatchId=null; render();">Cancelar</button>` : ''}
+                    </div>
                 </form>
 
                 <div class="item-list" style="margin-top: 40px; max-height: 400px; overflow-y: auto;">
@@ -386,6 +394,7 @@ function renderAdmin(container) {
                                         <div style="font-size: 0.7rem; color: var(--text-muted);">${m.date || 'Sin fecha'} | ${m.time}</div>
                                     </div>
                                     <div style="display: flex; gap: 15px;">
+                                        <i class="fa-solid fa-edit" onclick="editingMatchId='${m.id}'; render(); document.getElementById('form-match').scrollIntoView({behavior: 'smooth'});" style="cursor: pointer; color: var(--accent-blue);"></i>
                                         <i class="fa-solid fa-trash" onclick="if(confirm('¿Borrar partido?')) {State.matches=State.matches.filter(it=>it.id!=='${m.id}'); State.save(); State.notify();}" style="cursor: pointer; color: var(--text-muted);"></i>
                                     </div>
                                 </div>
@@ -436,21 +445,48 @@ function setupAdminListeners() {
         // Ejecutar toggle al cargar para setear estado inicial
         window.toggleMatchFields();
 
+        if (editingMatchId) {
+            const m = State.matches.find(m => m.id === editingMatchId);
+            if (m) {
+                document.getElementById('m-comp').value = m.competitionId;
+                window.toggleMatchFields(); // Update vis based on selected comp
+                document.getElementById('m-round').value = m.round;
+                document.getElementById('m-num').value = m.matchNum;
+                document.getElementById('m-t1').value = m.team1Id;
+                document.getElementById('m-p1').value = m.player1Name || '';
+                document.getElementById('m-t2').value = m.team2Id;
+                document.getElementById('m-p2').value = m.player2Name || '';
+                document.getElementById('m-date').value = m.date || '';
+                document.getElementById('m-time').value = m.time || '';
+            }
+        }
+
         fMatch.onsubmit = (e) => {
             e.preventDefault();
-            State.addMatch({
+            const matchData = {
                 competitionId: document.getElementById('m-comp').value,
                 round: document.getElementById('m-round').value,
                 matchNum: document.getElementById('m-num').value,
                 team1Id: document.getElementById('m-t1').value,
+                team1Score: 0,
                 team2Id: document.getElementById('m-t2').value,
+                team2Score: 0,
                 player1Name: document.getElementById('m-p1').value,
                 player2Name: document.getElementById('m-p2').value,
                 date: document.getElementById('m-date').value,
                 time: document.getElementById('m-time').value,
                 location: ''
-            });
-            alert("Evento/Partido agendado.");
+            };
+
+            if (editingMatchId) {
+                State.updateMatch(editingMatchId, matchData);
+                alert("Evento modificado correctamente.");
+            } else {
+                State.addMatch(matchData);
+                alert("Evento agendado.");
+            }
+            
+            editingMatchId = null;
             render();
         };
     }
