@@ -383,7 +383,7 @@ function renderAdmin(container) {
                                 <div class="item-row" style="padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.03);">
                                     <div style="flex: 1;">
                                         <div style="font-size: 0.75rem; color: var(--accent-yellow); font-weight: 800;">
-                                            ${c?.name || '---'} ${m.round && m.round !== 'N/A' ? `- ${m.round.toUpperCase()}` : ''}
+                                            ${c?.name || '---'}${c?.category && c.category.toLowerCase() !== 'mixto' ? ' (' + c.category + ')' : ''} ${m.round && m.round !== 'N/A' ? `- ${m.round.toUpperCase()}` : ''}
                                         </div>
                                         <div style="font-size: 0.95rem; font-weight: 600;">
                                             ${(m.player1Name || t1?.name) ? 
@@ -515,7 +515,7 @@ function renderCaptura(container) {
         <div class="admin-container fade-in">
             <h1 style="margin-bottom: 30px;"><i class="fa-solid fa-edit" style="color: var(--accent-yellow)"></i> Captura de Resultados</h1>
             
-            <h2 style="margin-bottom: 20px;">Partidos en Vivo (Bracket)</h2>
+            <h2 style="margin-bottom: 20px;">Partidos en Vivo (Llaves)</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; margin-bottom: 50px;">
                 ${activeMatches.map(m => {
         const comp = State.competitions.find(c => c.id === m.competitionId);
@@ -523,16 +523,15 @@ function renderCaptura(container) {
         const t2 = State.teams.find(t => t.id === m.team2Id);
         return `
                         <div class="card" style="padding: 20px;">
-                            <div style="font-size: 0.7rem; color: var(--accent-blue); margin-bottom: 10px;">${comp?.name || '---'} | ${m.round.toUpperCase()}</div>
-                            <div class="item-row">
+                            <div style="font-size: 0.7rem; color: var(--accent-blue); margin-bottom: 10px;">${comp?.name || '---'}${comp?.category && comp.category.toLowerCase() !== 'mixto' ? ' (' + comp.category + ')' : ''} | ${m.round.toUpperCase()}</div>
                             <div class="item-row">
                                 <span style="flex: 1;">${m.player1Name || t1?.name || 'TBD'}</span>
-                                <input type="number" id="s1-${m.id}" value="${m.team1Score}" onchange="window.syncScore('${m.id}', 1, this.value)" style="width: 50px; text-align: center;">
+                                <input type="number" id="s1-${m.id}" value="${m.team1Score}" onchange="window.syncScore('${m.id}', 1, this.value)" style="width: 70px; text-align: center; font-size: 1.1rem; font-weight: bold; padding: 5px; background: rgba(0,0,0,0.3); border: 1px solid var(--accent-blue); color: white; border-radius: 5px;">
                                 <label style="font-size: 0.65rem; color: var(--text-muted); cursor: pointer;"><input type="checkbox" id="dq1-${m.id}" ${m.team1DQ ? 'checked' : ''} onchange="window.syncScore('${m.id}', 1, document.getElementById('s1-${m.id}').value)"> DQ</label>
                             </div>
                             <div class="item-row">
                                 <span style="flex: 1;">${m.player2Name || t2?.name || 'TBD'}</span>
-                                <input type="number" id="s2-${m.id}" value="${m.team2Score}" onchange="window.syncScore('${m.id}', 2, this.value)" style="width: 50px; text-align: center;">
+                                <input type="number" id="s2-${m.id}" value="${m.team2Score}" onchange="window.syncScore('${m.id}', 2, this.value)" style="width: 70px; text-align: center; font-size: 1.1rem; font-weight: bold; padding: 5px; background: rgba(0,0,0,0.3); border: 1px solid var(--accent-blue); color: white; border-radius: 5px;">
                                 <label style="font-size: 0.65rem; color: var(--text-muted); cursor: pointer;"><input type="checkbox" id="dq2-${m.id}" ${m.team2DQ ? 'checked' : ''} onchange="window.syncScore('${m.id}', 2, document.getElementById('s2-${m.id}').value)"> DQ</label>
                             </div>
                             <button class="btn" onclick="window.finishMatch('${m.id}')" style="width: 100%; margin-top: 15px; background: var(--success); color: black;">FINALIZAR Y AVANZAR</button>
