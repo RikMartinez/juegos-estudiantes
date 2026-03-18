@@ -150,7 +150,7 @@ function renderDashboard(container) {
         const t2 = State.teams.find(t => t.id === m.team2Id);
         return `
                                 <div class="item-row" style="flex-direction: column; align-items: flex-start;">
-                                    <div style="font-size: 0.7rem; color: var(--accent-blue);">${comp?.name || '---'} ${m.round && m.round !== 'N/A' ? `- ${m.round.toUpperCase()}` : ''}</div>
+                                    <div style="font-size: 0.7rem; color: var(--accent-blue);">${comp?.name || '---'}${comp?.category && comp.category.toLowerCase() !== 'mixto' ? ' (' + comp.category + ')' : ''} ${m.round && m.round !== 'N/A' ? `- ${m.round.toUpperCase()}` : ''}</div>
                                     <div style="font-weight: 600; font-size: 0.9rem; width: 100%; display: flex; justify-content: space-between;">
                                         <span>
                                             ${(m.player1Name || t1?.name) ? 
