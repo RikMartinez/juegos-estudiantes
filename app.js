@@ -106,29 +106,33 @@ function updateTicker() {
 
 function renderDashboard(container) {
     const competitions = State.competitions || [];
-    if (!State.selectedDashboardComp && competitions.length > 0) {
-        State.selectedDashboardComp = competitions[0].id;
+    if (!State.selectedDashboardComp) {
+        State.selectedDashboardComp = 'home';
     }
 
     const selectedComp = competitions.find(c => c.id === State.selectedDashboardComp);
+    const isHome = State.selectedDashboardComp === 'home';
 
     container.innerHTML = `
         <div class="dashboard-public fade-in">
-            <section class="bracket-container" style="position: relative;">
+            <section class="bracket-container" style="position: relative; min-height: 600px;">
                 <div class="bracket-header">
                     <div>
-                        <h2><i class="${selectedComp?.format === 'bracket' ? 'fa-solid fa-sitemap' : 'fa-solid fa-list-ol'}" style="color: var(--accent-yellow)"></i> ${selectedComp?.format === 'bracket' ? 'LLAVES DEL TORNEO' : 'RESULTADOS Y POSICIONES'}</h2>
-                        <p style="font-size: 0.8rem; color: var(--text-muted);">${selectedComp?.format === 'bracket' ? 'Progreso en tiempo real' : 'Marcas y tiempos oficiales'}</p>
+                        <h2><i class="${isHome ? 'fa-solid fa-house' : (selectedComp?.format === 'bracket' ? 'fa-solid fa-sitemap' : 'fa-solid fa-list-ol')}" style="color: var(--accent-yellow)"></i> 
+                            ${isHome ? 'BIENVENIDOS' : (selectedComp?.format === 'bracket' ? 'LLAVES DEL TORNEO' : 'RESULTADOS Y POSICIONES')}
+                        </h2>
+                        <p style="font-size: 0.8rem; color: var(--text-muted);">${isHome ? 'Portal Oficial de Resultados' : (selectedComp?.format === 'bracket' ? 'Progreso en tiempo real' : 'Marcas y tiempos oficiales')}</p>
                     </div>
                     <div class="comp-selector">
-                        <select onchange="State.selectedDashboardComp = this.value; render();" style="background: rgba(242,223,13,0.1); border: 1px solid var(--accent-yellow); color: white; padding: 8px; border-radius: 8px; cursor: pointer;">
+                        <select onchange="State.selectedDashboardComp = this.value; render();" style="background: rgba(242,223,13,0.1); border: 1px solid var(--accent-yellow); color: white; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                            <option value="home" ${isHome ? 'selected' : ''}>🏠 INICIO / INAUGURACIÓN</option>
                             ${competitions.map(c => `<option value="${c.id}" ${c.id === State.selectedDashboardComp ? 'selected' : ''}>${c.name} (${c.category})</option>`).join('')}
                         </select>
                     </div>
                 </div>
 
-                <div style="text-align: center; margin-bottom: 20px; color: var(--accent-blue); font-weight: bold; text-transform: uppercase;">
-                    ${selectedComp ? `${selectedComp.name} - RAMA: ${selectedComp.category.toUpperCase()}` : 'Sin disciplinas'}
+                <div style="text-align: center; margin-bottom: 20px; color: var(--accent-blue); font-weight: bold; text-transform: uppercase; letter-spacing: 1px;">
+                    ${isHome ? 'LOS JUEGOS DEL ESTUDIANTE 2026' : (selectedComp ? `${selectedComp.name} - RAMA: ${selectedComp.category.toUpperCase()}` : 'Sin disciplinas')}
                 </div>
 
                 <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0.04; pointer-events: none; width: 60%;">
@@ -136,7 +140,32 @@ function renderDashboard(container) {
                 </div>
 
                 <div class="bracket-visual" style="position: relative; z-index: 1;">
-                    ${renderBracketContent(selectedComp)}
+                    ${isHome ? `
+                        <div style="text-align: center; padding: 40px 20px; max-width: 600px; margin: 0 auto; background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+                            <div style="margin-bottom: 30px;">
+                                <i class="fa-solid fa-flag-checkered fa-4x" style="color: var(--accent-yellow); margin-bottom: 20px;"></i>
+                                <h1 style="font-family: 'Outfit'; font-size: 2.5rem; line-height: 1.1; margin-bottom: 10px;">GRAN DESFILE INAUGURAL</h1>
+                                <div style="height: 4px; width: 60px; background: var(--accent-orange); margin: 0 auto 20px;"></div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 40px;">
+                                <div style="background: rgba(0,242,255,0.05); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent-blue);">
+                                    <div style="font-size: 0.8rem; color: var(--accent-blue); text-transform: uppercase; margin-bottom: 5px;">Fecha y Hora</div>
+                                    <div style="font-size: 1.3rem; font-weight: 800;">Lunes 11 de Mayo, 2026</div>
+                                    <div style="font-size: 1.1rem; color: var(--accent-yellow);">07:15 AM</div>
+                                </div>
+                                <div style="background: rgba(242,223,13,0.05); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent-yellow);">
+                                    <div style="font-size: 0.8rem; color: var(--accent-yellow); text-transform: uppercase; margin-bottom: 5px;">Punto de Reunión</div>
+                                    <div style="font-size: 1.3rem; font-weight: 800;">Fuente de Pescadores</div>
+                                </div>
+                            </div>
+
+                            <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6;">
+                                ¡Acompaña a todos nuestros atletas en el inicio oficial de la competencia!<br>
+                                <span style="color: white; font-weight: 600; display: block; margin-top: 15px;">Selecciona una disciplina en el menú superior para consultar resultados y posiciones.</span>
+                            </p>
+                        </div>
+                    ` : renderBracketContent(selectedComp)}
                 </div>
             </section>
 
@@ -144,11 +173,11 @@ function renderDashboard(container) {
                 <div class="card" style="height: 100%;">
                     <h3><i class="fa-solid fa-calendar-alt"></i> Próximos Encuentros</h3>
                     
-                    <div style="margin-top: 15px; margin-bottom: 5px;">
-                        <select onchange="State.selectedUpcomingDate = this.value; render();" style="width: 100%; background: rgba(242,223,13,0.1); border: 1px solid var(--accent-yellow); color: white; padding: 6px; border-radius: 6px; cursor: pointer; font-size: 0.8rem;">
-                            <option value="all">📅 Mostrar todo el torneo</option>
+                    <div style="margin-top: 15px; margin-bottom: 10px;">
+                        <select onchange="State.selectedUpcomingDate = this.value; render();" style="width: 100%; background: #1a1c23; border: 1px solid var(--accent-yellow); color: white; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+                            <option value="all">📅 VER TODO EL TORNEO</option>
                             ${[...new Set(State.matches.filter(m => m.status !== 'finished' && m.date).map(m => m.date))].sort().map(d => 
-                                `<option value="${d}" ${State.selectedUpcomingDate === d ? 'selected' : ''}>Día: ${d}</option>`
+                                `<option value="${d}" ${State.selectedUpcomingDate === d ? 'selected' : ''}>DÍA: ${d}</option>`
                             ).join('')}
                         </select>
                     </div>
