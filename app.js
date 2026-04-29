@@ -144,7 +144,14 @@ function renderDashboard(container) {
                 <div class="card" style="height: 100%;">
                     <h3><i class="fa-solid fa-calendar-alt"></i> Próximos Encuentros</h3>
                     <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px; max-height: 300px; overflow-y: auto;" class="custom-scroll">
-                        ${State.matches.filter(m => m.status !== 'finished').map(m => {
+                        ${State.matches.filter(m => m.status !== 'finished').sort((a, b) => {
+                            const dateA = a.date || '9999-12-31';
+                            const dateB = b.date || '9999-12-31';
+                            if (dateA !== dateB) return dateA.localeCompare(dateB);
+                            const timeA = a.time || '23:59';
+                            const timeB = b.time || '23:59';
+                            return timeA.localeCompare(timeB);
+                        }).map(m => {
         const comp = State.competitions.find(c => c.id === m.competitionId);
         const t1 = State.teams.find(t => t.id === m.team1Id);
         const t2 = State.teams.find(t => t.id === m.team2Id);
