@@ -427,7 +427,7 @@ function renderAdmin(container) {
                         <div style="position: relative; display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
                             <i class="fa-solid fa-magnifying-glass" style="font-size: 0.7rem; color: var(--text-muted); margin-right: 8px;"></i>
                             <input type="text" id="match-search" placeholder="Buscar..." value="${matchSearchQuery}" 
-                                oninput="matchSearchQuery = this.value; render(); document.getElementById('match-search').focus();"
+                                oninput="matchSearchQuery = this.value; render(); const input = document.getElementById('match-search'); input.focus(); input.setSelectionRange(input.value.length, input.value.length);"
                                 style="background: transparent; border: none; color: white; font-size: 0.75rem; outline: none; width: 120px;">
                         </div>
                     </div>
