@@ -473,8 +473,8 @@ function renderAdmin(container) {
                                     </div>
                                 </div>
                             `;
-            }).join('')
-        }
+                        }).join('');
+                    })()}
                 </div>
             </div>
 
