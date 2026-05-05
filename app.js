@@ -5,6 +5,7 @@
 
 let editingTeamId = null;
 let editingMatchId = null;
+let matchSearchQuery = "";
 
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
@@ -421,13 +422,38 @@ function renderAdmin(container) {
                 </form>
 
                 <div class="item-list" style="margin-top: 40px; max-height: 400px; overflow-y: auto;">
-                    <h4 style="margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">Partidos Agendados</h4>
-                    ${State.matches.length === 0 ? '<p style="color: var(--text-muted); font-size: 0.8rem;">No hay partidos programados.</p>' :
-            State.matches.sort((a, b) => a.round.localeCompare(b.round)).map(m => {
-                const c = State.competitions.find(it => it.id === m.competitionId);
-                const t1 = State.teams.find(it => it.id === m.team1Id);
-                const t2 = State.teams.find(it => it.id === m.team2Id);
-                return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px;">
+                        <h4 style="margin: 0;">Partidos Agendados</h4>
+                        <div style="position: relative; display: flex; align-items: center; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                            <i class="fa-solid fa-magnifying-glass" style="font-size: 0.7rem; color: var(--text-muted); margin-right: 8px;"></i>
+                            <input type="text" id="match-search" placeholder="Buscar..." value="${matchSearchQuery}" 
+                                oninput="matchSearchQuery = this.value; render(); document.getElementById('match-search').focus();"
+                                style="background: transparent; border: none; color: white; font-size: 0.75rem; outline: none; width: 120px;">
+                        </div>
+                    </div>
+                    
+                    ${(() => {
+                        const filtered = State.matches.filter(m => {
+                            if (!matchSearchQuery) return true;
+                            const q = matchSearchQuery.toLowerCase();
+                            const c = State.competitions.find(it => it.id === m.competitionId);
+                            const t1 = State.teams.find(it => it.id === m.team1Id);
+                            const t2 = State.teams.find(it => it.id === m.team2Id);
+                            return (c?.name?.toLowerCase().includes(q)) || 
+                                   (t1?.name?.toLowerCase().includes(q)) || 
+                                   (t2?.name?.toLowerCase().includes(q)) ||
+                                   (m.player1Name?.toLowerCase().includes(q)) ||
+                                   (m.player2Name?.toLowerCase().includes(q)) ||
+                                   (m.round?.toLowerCase().includes(q));
+                        }).sort((a, b) => a.round.localeCompare(b.round));
+
+                        if (filtered.length === 0) return `<p style="color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 20px;">${matchSearchQuery ? 'No hay coincidencias' : 'No hay partidos programados'}</p>`;
+                        
+                        return filtered.map(m => {
+                            const c = State.competitions.find(it => it.id === m.competitionId);
+                            const t1 = State.teams.find(it => it.id === m.team1Id);
+                            const t2 = State.teams.find(it => it.id === m.team2Id);
+                            return `
                                 <div class="item-row" style="padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.03);">
                                     <div style="flex: 1;">
                                         <div style="font-size: 0.75rem; color: var(--accent-yellow); font-weight: 800;">
