@@ -147,8 +147,16 @@ const State = {
     },
 
     addTeam(name, color) {
-        this.teams.push({ id: 'team-' + Date.now(), name, color, deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0 });
+        this.teams.push({ id: 'team-' + Date.now(), name, color, deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0, amonestaciones: 0 });
         this.update();
+    },
+
+    updateAmonestaciones(teamId, delta) {
+        const team = this.teams.find(t => t.id === teamId);
+        if (team) {
+            team.amonestaciones = Math.max(0, (team.amonestaciones || 0) + delta);
+            this.update();
+        }
     },
 
     updateTeam(id, name, color) {
@@ -370,9 +378,10 @@ const State = {
             });
         });
 
-        // 2. ACTUALIZAR TOTALES GLOBALES (OBLIGATORIO)
+        // 2. ACTUALIZAR TOTALES GLOBALES (Y PENALIZACIONES)
         this.teams.forEach(t => {
-            t.totalPoints = (t.deportivaPoints || 0) + (t.mentalPoints || 0) + (t.atletismoPoints || 0);
+            const penalties = Math.floor((t.amonestaciones || 0) / 3) * 5;
+            t.totalPoints = (t.deportivaPoints || 0) + (t.mentalPoints || 0) + (t.atletismoPoints || 0) - penalties;
         });
     },
 

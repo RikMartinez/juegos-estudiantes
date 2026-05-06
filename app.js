@@ -224,7 +224,14 @@ function renderDashboard(container) {
                                     <span style="width: 8px; height: 8px; border-radius: 50%; background: ${window.translateColor(t.color)};"></span>
                                     <span style="font-size: 0.95rem; font-weight: ${idx < 3 ? '700' : '400'}">${t.name}</span>
                                 </span>
-                                <span style="font-family: 'Outfit'; font-weight: 800; color: var(--accent-yellow);">${t.totalPoints} <small style="font-size: 0.6rem; opacity: 0.5;">PTS</small></span>
+                                <div style="text-align: right;">
+                                    <div style="font-family: 'Outfit'; font-weight: 800; color: var(--accent-yellow); font-size: 1.1rem;">${t.totalPoints} <small style="font-size: 0.6rem; opacity: 0.5;">PTS</small></div>
+                                    ${t.amonestaciones > 0 ? `
+                                        <div style="font-size: 0.6rem; color: #ff4b2b; font-weight: 700;">
+                                            <i class="fa-solid fa-square" style="color: #f2df0d;"></i> ${t.amonestaciones} ${Math.floor(t.amonestaciones/3) > 0 ? `(-${Math.floor(t.amonestaciones/3)*5} pts)` : ''}
+                                        </div>
+                                    ` : ''}
+                                </div>
                             </div>
                         `).join('') || '<p>No hay equipos registrados.</p>'}
                     </div>
@@ -675,6 +682,37 @@ function renderCaptura(container) {
                         </div>
                     `;
     }).join('')}
+            </div>
+
+            <!-- CONTROL DE DISCIPLINA -->
+            <div class="card" style="margin-top: 50px; border: 1px solid rgba(255, 75, 43, 0.2); background: rgba(255, 75, 43, 0.02);">
+                <h3 style="color: #ff4b2b; display: flex; align-items: center; gap: 10px;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Control de Disciplina (Amonestaciones)
+                </h3>
+                <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 20px;">
+                    Cada 3 amonestaciones acumuladas restan automáticante 5 puntos del medallero general.
+                </p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px;">
+                    ${State.teams.sort((a,b) => a.name.localeCompare(b.name)).map(t => {
+                        const penalties = Math.floor((t.amonestaciones || 0) / 3) * 5;
+                        return `
+                            <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid ${window.translateColor(t.color)}">
+                                <div>
+                                    <div style="font-weight: 700; font-size: 0.9rem;">${t.name}</div>
+                                    <div style="font-size: 0.8rem; color: ${t.amonestaciones > 0 ? 'var(--accent-yellow)' : 'var(--text-muted)'}; font-weight: 700; margin-top: 4px;">
+                                        <i class="fa-solid fa-square" style="color: #f2df0d; font-size: 0.9rem;"></i> ${t.amonestaciones || 0}
+                                    </div>
+                                    ${penalties > 0 ? `<div style="font-size: 0.65rem; color: #ff4b2b; font-weight: 800; margin-top: 2px;">PENALIZACIÓN: -${penalties} PTS</div>` : ''}
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 5px;">
+                                    <button class="btn" style="padding: 2px 12px; font-size: 1rem; background: #ff4b2b; border: none;" onclick="State.updateAmonestaciones('${t.id}', 1)">+</button>
+                                    <button class="btn btn-secondary" style="padding: 2px 12px; font-size: 1rem;" onclick="State.updateAmonestaciones('${t.id}', -1)">-</button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
             </div>
         </div>
     `;
