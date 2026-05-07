@@ -202,9 +202,12 @@ function renderDashboard(container) {
                                     <div style="font-size: 0.7rem; color: var(--accent-blue);">${comp?.name || '---'}${comp?.category && comp.category.toLowerCase() !== 'mixto' ? ' (' + comp.category + ')' : ''} ${m.round && m.round !== 'N/A' ? `- ${m.round.toUpperCase()}` : ''}</div>
                                     <div style="font-weight: 600; font-size: 0.9rem; width: 100%; display: flex; justify-content: space-between;">
                                         <span>
-                                            ${(m.player1Name || t1?.name) ? 
+                                            ${(m.player1Name || t1?.name || t2?.name) ? 
                                                 `${m.player1Name || t1?.name || '?'} vs ${m.player2Name || t2?.name || '?'}` : 
-                                                '<span style="color: var(--accent-yellow)"><i class="fa-solid fa-users"></i> Todos los equipos</span>'
+                                                (comp?.format === 'bracket' ? 
+                                                    '<span style="color: var(--text-muted); font-style: italic; font-size: 0.8rem;"><i class="fa-solid fa-hourglass-half"></i> Equipos por definir</span>' :
+                                                    '<span style="color: var(--accent-yellow)"><i class="fa-solid fa-users"></i> Todos los equipos</span>'
+                                                )
                                             }
                                         </span>
                                         <span style="font-size: 0.7rem; color: var(--text-muted);">${m.time}</span>
