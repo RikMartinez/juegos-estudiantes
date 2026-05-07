@@ -127,7 +127,7 @@ function renderDashboard(container) {
                     <div class="comp-selector">
                         <select onchange="State.selectedDashboardComp = this.value; render();" style="background: rgba(242,223,13,0.1); border: 1px solid var(--accent-yellow); color: white; padding: 8px; border-radius: 8px; cursor: pointer; font-weight: 600;">
                             <option value="home" ${isHome ? 'selected' : ''}>🏠 INICIO / INAUGURACIÓN</option>
-                            ${competitions.map(c => `<option value="${c.id}" ${c.id === State.selectedDashboardComp ? 'selected' : ''}>${c.name} (${c.category})</option>`).join('')}
+                            ${window.sortCompetitions(competitions).map(c => `<option value="${c.id}" ${c.id === State.selectedDashboardComp ? 'selected' : ''}>${c.name} (${c.category})</option>`).join('')}
                         </select>
                     </div>
                 </div>
@@ -400,7 +400,7 @@ function renderAdmin(container) {
                         <button type="submit" class="btn" style="width: 100%;">Añadir</button>
                     </form>
                     <div class="item-list" style="margin-top: 20px; max-height: 250px; overflow-y: auto;">
-                        ${State.competitions.map(c => `
+                        ${window.sortCompetitions(State.competitions).map(c => `
                             <div class="item-row">
                                 <div>
                                     <div style="font-weight: 600;">${c.name}</div>
@@ -416,7 +416,7 @@ function renderAdmin(container) {
             <div class="card" style="margin-top: 30px;">
                 <h3><i class="fa-solid fa-calendar-plus"></i> Programar Eventos / Partidos</h3>
                 <form id="form-match" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 20px;">
-                    <div><label>Disciplina</label><select id="m-comp" onchange="window.toggleMatchFields()">${State.competitions.map(c => `<option value="${c.id}">${c.name}${c.category && c.category.toLowerCase() !== 'mixto' ? ' (' + c.category + ')' : ''}</option>`).join('')}</select></div>
+                    <div><label>Disciplina</label><select id="m-comp" onchange="window.toggleMatchFields()">${window.sortCompetitions(State.competitions).map(c => `<option value="${c.id}">${c.name}${c.category && c.category.toLowerCase() !== 'mixto' ? ' (' + c.category + ')' : ''}</option>`).join('')}</select></div>
                     <div class="bracket-only"><label>Ronda</label><select id="m-round"><option value="N/A">---</option><option value="dieciseisavos">16avos</option><option value="octavos">Octavos</option><option value="cuartos">Cuartos</option><option value="semifinal">Semifinal</option><option value="final">Final</option></select></div>
                     <div class="bracket-only"><label># Partido</label><select id="m-num"><option value="0">---</option>${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map(n => `<option>${n}</option>`).join('')}</select></div>
                     <div class="bracket-only"><label>Equipo 1</label><select id="m-t1"><option value="">Ninguno / General</option>${State.teams.map(t => `<option value="${t.id}">${t.name}</option>`).join('')}</select></div>
@@ -455,7 +455,13 @@ function renderAdmin(container) {
                                    (m.player1Name?.toLowerCase().includes(q)) ||
                                    (m.player2Name?.toLowerCase().includes(q)) ||
                                    (m.round?.toLowerCase().includes(q));
-                        }).sort((a, b) => a.round.localeCompare(b.round));
+                        }).sort((a, b) => {
+                            // Orden cronológico para administración
+                            const dA = a.date || '9999-12-31';
+                            const dB = b.date || '9999-12-31';
+                            if (dA !== dB) return dA.localeCompare(dB);
+                            return (a.time || '23:59').localeCompare(b.time || '23:59');
+                        });
 
                         if (filtered.length === 0) return `<p style="color: var(--text-muted); font-size: 0.8rem; text-align: center; padding: 20px;">${matchSearchQuery ? 'No hay coincidencias' : 'No hay partidos programados'}</p>`;
                         
@@ -722,6 +728,20 @@ function renderCaptura(container) {
 }
 
 // --- HELPERS GLOBALES ---
+
+window.sortCompetitions = (list) => {
+    const typeOrder = { 'deportiva': 1, 'mental': 2, 'atletismo': 3 };
+    const ramaOrder = { 'Varonil': 1, 'Femenil': 2, 'Mixto': 3 };
+    return [...list].sort((a, b) => {
+        const typeA = typeOrder[a.type] || 99;
+        const typeB = typeOrder[b.type] || 99;
+        if (typeA !== typeB) return typeA - typeB;
+        const ramaA = ramaOrder[a.category] || 99;
+        const ramaB = ramaOrder[b.category] || 99;
+        if (ramaA !== ramaB) return ramaA - ramaB;
+        return a.name.localeCompare(b.name);
+    });
+};
 
 window.translateColor = (c) => {
     if (!c) return '#333';
