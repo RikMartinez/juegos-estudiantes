@@ -204,7 +204,7 @@ function renderDashboard(container) {
                                         <span>
                                             ${(m.player1Name || t1?.name || t2?.name) ? 
                                                 `${m.player1Name || t1?.name || '?'} vs ${m.player2Name || t2?.name || '?'}` : 
-                                                (comp?.format === 'bracket' ? 
+                                                (m.round && m.round !== 'N/A' ? 
                                                     '<span style="color: var(--text-muted); font-style: italic; font-size: 0.8rem;"><i class="fa-solid fa-hourglass-half"></i> Equipos por definir</span>' :
                                                     '<span style="color: var(--accent-yellow)"><i class="fa-solid fa-users"></i> Todos los equipos</span>'
                                                 )
@@ -476,9 +476,12 @@ function renderAdmin(container) {
                                             ${c?.name || '---'}${c?.category && c.category.toLowerCase() !== 'mixto' ? ' (' + c.category + ')' : ''} ${m.round && m.round !== 'N/A' ? `- ${m.round.toUpperCase()}` : ''}
                                         </div>
                                         <div style="font-size: 0.95rem; font-weight: 600;">
-                                            ${(m.player1Name || t1?.name) ? 
+                                            ${(m.player1Name || t1?.name || t2?.name) ? 
                                                 `${m.player1Name || t1?.name || '?'} vs ${m.player2Name || t2?.name || '?'}` : 
-                                                'Evento General'
+                                                (m.round && m.round !== 'N/A' ? 
+                                                    '<span style="color: var(--text-muted); font-style: italic; font-size: 0.85rem;"><i class="fa-solid fa-hourglass-half"></i> Equipos por definir</span>' : 
+                                                    '<span style="color: var(--accent-yellow); font-size: 0.85rem;"><i class="fa-solid fa-users"></i> Evento General</span>'
+                                                )
                                             }
                                         </div>
                                         <div style="font-size: 0.7rem; color: var(--text-muted);">${m.date || 'Sin fecha'} | ${m.time}</div>
