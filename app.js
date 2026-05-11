@@ -93,9 +93,14 @@ function updateTicker() {
     if (recent.length > 0) {
         tCont.innerHTML = recent.map(m => {
             const comp = State.competitions.find(c => c.id === m.competitionId);
+            const t1 = State.teams.find(t => t.id === m.team1Id);
+            const t2 = State.teams.find(t => t.id === m.team2Id);
+            const name1 = m.player1Name || t1?.name || '---';
+            const name2 = m.player2Name || t2?.name || '---';
+            
             return `<div class="ticker__item">
-                <i class="fa-solid fa-trophy"></i> ${comp?.name || '---'}: 
-                ${m.player1Name || '---'} (${m.team1Score}) vs ${m.player2Name || '---'} (${m.team2Score})
+                <i class="fa-solid fa-trophy"></i> ${comp?.name || '---'} (${comp?.category || '---'}): 
+                ${name1} (${m.team1Score}) vs ${name2} (${m.team2Score})
             </div>`;
         }).join('');
     } else {
