@@ -318,30 +318,46 @@ const State = {
             let rankedTeams = []; 
 
             if (comp.format === 'bracket') {
-                const roundWeight = { 'final': 4, 'semifinal': 3, 'cuartos': 2, 'octavos': 1, 'dieciseisavos': 0 };
+                const roundWeight = { 'final': 5, 'semifinal': 4, 'cuartos': 3, 'octavos': 2, 'dieciseisavos': 1 };
                 const teamStats = {};
-                this.teams.forEach(t => teamStats[t.id] = { maxRound: -1, diff: -999, id: t.id });
+                this.teams.forEach(t => teamStats[t.id] = { maxRound: -1, pf: 0, pa: 0, diff: 0, id: t.id });
 
                 this.matches.filter(m => m.competitionId === comp.id && m.status === 'finished').forEach(m => {
                     const s1 = parseInt(m.team1Score) || 0;
                     const s2 = parseInt(m.team2Score) || 0;
                     const rW = roundWeight[m.round] || 0;
-                    const winnerId = s1 > s2 ? m.team1Id : m.team2Id;
-                    const loserId = s1 > s2 ? m.team2Id : m.team1Id;
                     
-                    if (teamStats[winnerId] && !m.team1DQ && !m.team2DQ) {
-                        if (m.round === 'final') teamStats[winnerId].maxRound = 5;
-                        else teamStats[winnerId].maxRound = Math.max(teamStats[winnerId].maxRound, rW);
+                    const t1 = teamStats[m.team1Id];
+                    const t2 = teamStats[m.team2Id];
+
+                    if (t1) {
+                        t1.pf += s1;
+                        t1.pa += s2;
+                        t1.diff = t1.pf - t1.pa;
+                        // El ganador de la final llega al peso 6 (Campeón)
+                        if (m.round === 'final' && s1 > s2) t1.maxRound = 6;
+                        else t1.maxRound = Math.max(t1.maxRound, rW);
                     }
-                    if (teamStats[loserId] && !(loserId === m.team1Id ? m.team1DQ : m.team2DQ)) {
-                        teamStats[loserId].maxRound = Math.max(teamStats[loserId].maxRound, rW);
-                        teamStats[loserId].diff = Math.max(teamStats[loserId].diff, -Math.abs(s1 - s2));
+                    if (t2) {
+                        t2.pf += s2;
+                        t2.pa += s1;
+                        t2.diff = t2.pf - t2.pa;
+                        if (m.round === 'final' && s2 > s1) t2.maxRound = 6;
+                        else t2.maxRound = Math.max(t2.maxRound, rW);
                     }
                 });
 
                 rankedTeams = Object.values(teamStats)
                     .filter(s => s.maxRound >= 0)
-                    .sort((a, b) => b.maxRound - a.maxRound || b.diff - a.diff)
+                    .sort((a, b) => {
+                        if (b.maxRound !== a.maxRound) return b.maxRound - a.maxRound;
+                        // Solo aplicar desempate por puntos en disciplinas DEPORTIVAS
+                        if (comp.type === 'deportiva') {
+                            if (b.diff !== a.diff) return b.diff - a.diff;
+                            return b.pf - a.pf;
+                        }
+                        return 0; // Sin desempate para otros tipos
+                    })
                     .map(s => s.id);
             } else {
                 // Ranking o Carrera: Excluimos DQ y vacíos
