@@ -250,16 +250,21 @@ const State = {
     advanceWinner(match) {
         if (match.status !== 'finished' || match.round === 'final') return;
 
-        // Si hay doble DQ o marcador 0-0 sin ganador claro, no avanzar a nadie
-        if (match.team1DQ && match.team2DQ) return;
-
         let winnerId = null;
-        if (match.team1Score > match.team2Score) winnerId = match.team1Id;
-        else if (match.team2Score > match.team1Score) winnerId = match.team2Id;
-        else if (match.team1DQ) winnerId = match.team2Id;
-        else if (match.team2DQ) winnerId = match.team1Id;
+        // Si hay doble DQ o marcador 0-0 sin ganador claro, el ganador es '?' (vacío)
+        if (match.team1DQ && match.team2DQ) {
+            winnerId = '?';
+        } else if (match.team1Score > match.team2Score) {
+            winnerId = match.team1Id;
+        } else if (match.team2Score > match.team1Score) {
+            winnerId = match.team2Id;
+        } else if (match.team1DQ) {
+            winnerId = match.team2Id;
+        } else if (match.team2DQ) {
+            winnerId = match.team1Id;
+        }
 
-        if (!winnerId || winnerId === '?') return;
+        if (!winnerId) return; // Si por alguna razón no hay winnerId (ni siquiera '?')
 
         const nextRoundMap = {
             'dieciseisavos': 'octavos',
