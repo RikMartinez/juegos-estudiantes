@@ -425,6 +425,8 @@ function renderAdmin(container) {
                     <div class="bracket-only"><label>Sujeto 2 (Opcional)</label><input type="text" id="m-p2" placeholder="Nombre"></div>
                     <div><label>Fecha</label><input type="date" id="m-date"></div>
                     <div><label>Hora / Lugar</label><input type="text" id="m-time" placeholder="10:00 - Cancha 1"></div>
+                    <div><label>Marcador Eq. 1</label><input type="number" id="m-s1" placeholder="0"></div>
+                    <div><label>Marcador Eq. 2</label><input type="number" id="m-s2" placeholder="0"></div>
                     <div style="display: flex; gap: 10px; margin-top: 20px; grid-column: 1 / -1;">
                         <button id="btn-submit-match" type="submit" class="btn">${editingMatchId ? 'Guardar Cambios' : 'Agendar'}</button>
                         ${editingMatchId ? `<button type="button" class="btn btn-secondary" onclick="editingMatchId=null; render();">Cancelar</button>` : ''}
@@ -551,6 +553,8 @@ function setupAdminListeners() {
                 document.getElementById('m-p2').value = m.player2Name || '';
                 document.getElementById('m-date').value = m.date || '';
                 document.getElementById('m-time').value = m.time || '';
+                document.getElementById('m-s1').value = m.team1Score || 0;
+                document.getElementById('m-s2').value = m.team2Score || 0;
             }
         }
 
@@ -561,9 +565,9 @@ function setupAdminListeners() {
                 round: document.getElementById('m-round').value,
                 matchNum: document.getElementById('m-num').value,
                 team1Id: document.getElementById('m-t1').value,
-                team1Score: 0,
+                team1Score: parseInt(document.getElementById('m-s1').value) || 0,
                 team2Id: document.getElementById('m-t2').value,
-                team2Score: 0,
+                team2Score: parseInt(document.getElementById('m-s2').value) || 0,
                 player1Name: document.getElementById('m-p1').value,
                 player2Name: document.getElementById('m-p2').value,
                 date: document.getElementById('m-date').value,
@@ -572,7 +576,8 @@ function setupAdminListeners() {
             };
 
             if (editingMatchId) {
-                State.updateMatch(editingMatchId, matchData);
+                const current = State.matches.find(m => m.id === editingMatchId);
+                State.updateMatch(editingMatchId, { ...matchData, status: current.status });
                 alert("Evento modificado correctamente.");
             } else {
                 State.addMatch(matchData);
