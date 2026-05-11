@@ -217,8 +217,9 @@ const State = {
         const match = this.matches.find(m => m.id === matchId);
         if (match) {
             Object.assign(match, matchData);
-            // Si el partido está finalizado, re-calcular el avance a la siguiente ronda
-            if (match.status === 'finished' && match.format === 'bracket') {
+            const comp = this.competitions.find(c => c.id === match.competitionId);
+            // Si el partido está finalizado y es de formato llave, re-calcular avance
+            if (match.status === 'finished' && comp && comp.format === 'bracket') {
                 this.advanceWinner(match);
             }
             this.update();
