@@ -217,6 +217,10 @@ const State = {
         const match = this.matches.find(m => m.id === matchId);
         if (match) {
             Object.assign(match, matchData);
+            // Si el partido está finalizado, re-calcular el avance a la siguiente ronda
+            if (match.status === 'finished' && match.format === 'bracket') {
+                this.advanceWinner(match);
+            }
             this.update();
         }
     },
@@ -246,7 +250,15 @@ const State = {
     advanceWinner(match) {
         if (match.status !== 'finished' || match.round === 'final') return;
 
-        const winnerId = match.team1Score > match.team2Score ? match.team1Id : match.team2Id;
+        // Si hay doble DQ o marcador 0-0 sin ganador claro, no avanzar a nadie
+        if (match.team1DQ && match.team2DQ) return;
+
+        let winnerId = null;
+        if (match.team1Score > match.team2Score) winnerId = match.team1Id;
+        else if (match.team2Score > match.team1Score) winnerId = match.team2Id;
+        else if (match.team1DQ) winnerId = match.team2Id;
+        else if (match.team2DQ) winnerId = match.team1Id;
+
         if (!winnerId || winnerId === '?') return;
 
         const nextRoundMap = {
@@ -255,29 +267,31 @@ const State = {
             'cuartos': 'semifinal',
             'semifinal': 'final'
         };
+
         const nextRound = nextRoundMap[match.round];
         if (!nextRound) return;
 
-        const currentMatchNum = parseInt(match.matchNum);
-        const nextMatchNum = Math.ceil(currentMatchNum / 2);
-        const teamPos = currentMatchNum % 2 === 1 ? 'team1Id' : 'team2Id';
-
-        let nextMatch = this.matches.find(m =>
-            m.competitionId === match.competitionId &&
-            m.round === nextRound &&
+        const nextMatchNum = Math.ceil(parseInt(match.matchNum) / 2);
+        const nextMatch = this.matches.find(m => 
+            m.competitionId === match.competitionId && 
+            m.round === nextRound && 
             parseInt(m.matchNum) === nextMatchNum
         );
 
         if (nextMatch) {
-            nextMatch[teamPos] = winnerId;
+            if (parseInt(match.matchNum) % 2 !== 0) {
+                nextMatch.team1Id = winnerId;
+            } else {
+                nextMatch.team2Id = winnerId;
+            }
         } else {
             this.matches.push({
                 id: 'match-' + Date.now() + Math.random(),
                 competitionId: match.competitionId,
                 round: nextRound,
                 matchNum: nextMatchNum,
-                team1Id: teamPos === 'team1Id' ? winnerId : '?',
-                team2Id: teamPos === 'team2Id' ? winnerId : '?',
+                team1Id: parseInt(match.matchNum) % 2 !== 0 ? winnerId : '?',
+                team2Id: parseInt(match.matchNum) % 2 === 0 ? winnerId : '?',
                 time: '--:--',
                 location: 'TBD',
                 status: 'upcoming',
