@@ -208,6 +208,14 @@ const State = {
         this.update();
     },
 
+    finishCompetition(compId) {
+        const comp = this.competitions.find(c => c.id === compId);
+        if (comp) {
+            comp.status = 'finished';
+            this.update();
+        }
+    },
+
     addMatch(matchData) {
         this.matches.push({ id: 'match-' + Date.now(), ...matchData, status: 'upcoming', team1Score: 0, team2Score: 0 });
         this.update();

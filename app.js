@@ -189,20 +189,45 @@ function renderDashboard(container) {
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px; max-height: 400px; overflow-y: auto;" class="custom-scroll">
-                        ${State.matches.filter(m => m.status !== 'finished')
-                            .filter(m => !State.selectedUpcomingDate || State.selectedUpcomingDate === 'all' || m.date === State.selectedUpcomingDate)
-                            .sort((a, b) => {
-                                const dateA = a.date || '9999-12-31';
-                                const dateB = b.date || '9999-12-31';
-                                if (dateA !== dateB) return dateA.localeCompare(dateB);
-                                const timeA = a.time || '23:59';
-                                const timeB = b.time || '23:59';
-                                return timeA.localeCompare(timeB);
-                            }).map(m => {
-        const comp = State.competitions.find(c => c.id === m.competitionId);
-        const t1 = State.teams.find(t => t.id === m.team1Id);
-        const t2 = State.teams.find(t => t.id === m.team2Id);
-        return `
+                        ${[
+                            ...State.matches.filter(m => m.status !== 'finished').map(m => ({...m, _type: 'match'})),
+                            ...State.competitions.filter(c => c.format !== 'bracket' && c.status !== 'finished').map(c => {
+                                const sched = State.matches.find(m => m.competitionId === c.id);
+                                return {
+                                    id: 'c-' + c.id,
+                                    competitionId: c.id,
+                                    date: sched?.date || '',
+                                    time: sched?.time || 'Evento General',
+                                    _type: 'comp',
+                                    _name: c.name,
+                                    _cat: c.category || c.rama || 'Mixto'
+                                };
+                            })
+                        ].filter(m => !State.selectedUpcomingDate || State.selectedUpcomingDate === 'all' || !m.date || m.date === State.selectedUpcomingDate)
+                        .sort((a, b) => {
+                            const dateA = a.date || '9999-12-31';
+                            const dateB = b.date || '9999-12-31';
+                            if (dateA !== dateB) return dateA.localeCompare(dateB);
+                            const timeA = a.time || '23:59';
+                            const timeB = b.time || '23:59';
+                            return timeA.localeCompare(timeB);
+                        }).map(m => {
+                            if (m._type === 'comp') {
+                                return `
+                                    <div class="item-row" style="flex-direction: column; align-items: flex-start; border-left: 3px solid var(--accent-yellow);">
+                                        <div style="font-size: 0.6rem; color: var(--accent-yellow); font-weight: 700;"><i class="fa-solid fa-list-ol"></i> PUNTOS / RANKING</div>
+                                        <div style="font-weight: 600; font-size: 0.85rem; width: 100%; display: flex; justify-content: space-between; gap: 10px;">
+                                            <span>${m._name} (${m._cat})</span>
+                                            <span style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap;">${m.time}</span>
+                                        </div>
+                                        ${m.date ? `<div style="font-size: 0.6rem; color: var(--text-muted); opacity: 0.7;">${m.date}</div>` : ''}
+                                    </div>
+                                `;
+                            }
+                            const comp = State.competitions.find(c => c.id === m.competitionId);
+                            const t1 = State.teams.find(t => t.id === m.team1Id);
+                            const t2 = State.teams.find(t => t.id === m.team2Id);
+                            return `
                                 <div class="item-row" style="flex-direction: column; align-items: flex-start;">
                                     <div style="font-size: 0.7rem; color: var(--accent-blue);">${comp?.name || '---'}${comp?.category && comp.category.toLowerCase() !== 'mixto' ? ' (' + comp.category + ')' : ''} ${m.round && m.round !== 'N/A' ? `- ${m.round.toUpperCase()}` : ''}</div>
                                     <div style="font-weight: 600; font-size: 0.9rem; width: 100%; display: flex; justify-content: space-between;">
@@ -220,7 +245,7 @@ function renderDashboard(container) {
                                     ${m.date ? `<div style="font-size: 0.6rem; color: var(--text-muted); opacity: 0.7;">${m.date}</div>` : ''}
                                 </div>
                             `;
-    }).join('') || '<p style="color: var(--text-muted); font-size: 0.8rem;">No hay partidos pendientes.</p>'}
+                        }).join('') || '<p style="color: var(--text-muted); font-size: 0.8rem;">No hay partidos pendientes.</p>'}
                     </div>
 
                     <h3 style="margin-top: 40px;"><i class="fa-solid fa-star" style="color: var(--accent-yellow)"></i> MEDALLERO GENERAL</h3>
@@ -612,7 +637,7 @@ function renderCaptura(container) {
         const comp = State.competitions.find(c => c.id === m.competitionId);
         return m.status !== 'finished' && comp && comp.format === 'bracket';
     });
-    const rankingComps = State.competitions.filter(c => c.format !== 'bracket');
+    const captureComps = window.sortCompetitions(State.competitions.filter(c => c.format !== 'bracket' && c.status !== 'finished'));
 
     container.innerHTML = `
         <div class="admin-container fade-in">
@@ -663,6 +688,7 @@ function renderCaptura(container) {
                                 <div style="display: flex; gap: 5px;">
                                     <button class="btn btn-secondary" style="font-size: 0.6rem; padding: 4px 8px;" onclick="window.populateTeams('${c.id}')">Cargar Equipos</button>
                                     <button class="btn btn-secondary" style="font-size: 0.6rem; padding: 4px 8px;" onclick="window.addParticipant('${c.id}')">+ Individuo</button>
+                                    <button class="btn" style="font-size: 0.6rem; padding: 4px 8px; background: var(--accent-blue);" onclick="window.finishComp('${c.id}')"><i class="fa-solid fa-circle-check"></i> Finalizar</button>
                                 </div>
                             </div>
                             <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 10px;">
@@ -825,6 +851,12 @@ window.syncScore = (id, teamNum, val) => {
         m.team2DQ = document.getElementById(`dq2-${id}`)?.checked || false;
         
         State.save();
+    }
+};
+
+window.finishComp = (id) => {
+    if (confirm("¿Finalizar esta competencia? Ya no aparecerá en la lista de captura ni en próximos eventos.")) {
+        State.finishCompetition(id);
     }
 };
 
