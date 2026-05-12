@@ -214,11 +214,11 @@ function renderDashboard(container) {
                         }).map(m => {
                             if (m._type === 'comp') {
                                 return `
-                                    <div class="item-row" style="flex-direction: column; align-items: flex-start; border-left: 3px solid var(--accent-yellow);">
-                                        <div style="font-size: 0.6rem; color: var(--accent-yellow); font-weight: 700;"><i class="fa-solid fa-list-ol"></i> PUNTOS / RANKING</div>
-                                        <div style="font-weight: 600; font-size: 0.85rem; width: 100%; display: flex; justify-content: space-between; gap: 10px;">
-                                            <span>${m._name} (${m._cat})</span>
-                                            <span style="font-size: 0.7rem; color: var(--text-muted); white-space: nowrap;">${m.time}</span>
+                                    <div class="item-row" style="flex-direction: column; align-items: flex-start;">
+                                        <div style="font-size: 0.7rem; color: var(--accent-blue);">${m._name} (${m._cat})</div>
+                                        <div style="font-weight: 600; font-size: 0.9rem; width: 100%; display: flex; justify-content: space-between;">
+                                            <span><i class="fa-solid fa-users" style="color: var(--accent-yellow); font-size: 0.8rem;"></i> Todos los equipos</span>
+                                            <span style="font-size: 0.7rem; color: var(--text-muted);">${m.time}</span>
                                         </div>
                                         ${m.date ? `<div style="font-size: 0.6rem; color: var(--text-muted); opacity: 0.7;">${m.date}</div>` : ''}
                                     </div>
