@@ -189,63 +189,38 @@ function renderDashboard(container) {
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px; max-height: 400px; overflow-y: auto;" class="custom-scroll">
-                        ${[
-                            ...State.matches.filter(m => m.status !== 'finished').map(m => ({...m, _type: 'match'})),
-                            ...State.competitions.filter(c => c.format !== 'bracket' && c.status !== 'finished').map(c => {
-                                const sched = State.matches.find(m => m.competitionId === c.id);
-                                return {
-                                    id: 'c-' + c.id,
-                                    competitionId: c.id,
-                                    date: sched?.date || '',
-                                    time: sched?.time || 'Evento General',
-                                    _type: 'comp',
-                                    _name: c.name,
-                                    _cat: c.category || c.rama || 'Mixto'
-                                };
-                            })
-                        ].filter(m => !State.selectedUpcomingDate || State.selectedUpcomingDate === 'all' || !m.date || m.date === State.selectedUpcomingDate)
-                        .sort((a, b) => {
-                            const dateA = a.date || '9999-12-31';
-                            const dateB = b.date || '9999-12-31';
-                            if (dateA !== dateB) return dateA.localeCompare(dateB);
-                            const timeA = a.time || '23:59';
-                            const timeB = b.time || '23:59';
-                            return timeA.localeCompare(timeB);
-                        }).map(m => {
-                            if (m._type === 'comp') {
+                        ${State.matches.filter(m => m.status !== 'finished')
+                            .filter(m => !State.selectedUpcomingDate || State.selectedUpcomingDate === 'all' || m.date === State.selectedUpcomingDate)
+                            .sort((a, b) => {
+                                const dateA = a.date || '9999-12-31';
+                                const dateB = b.date || '9999-12-31';
+                                if (dateA !== dateB) return dateA.localeCompare(dateB);
+                                const timeA = a.time || '23:59';
+                                const timeB = b.time || '23:59';
+                                return timeA.localeCompare(timeB);
+                            }).map(m => {
+                                const comp = State.competitions.find(c => c.id === m.competitionId);
+                                const t1 = State.teams.find(t => t.id === m.team1Id);
+                                const t2 = State.teams.find(t => t.id === m.team2Id);
                                 return `
                                     <div class="item-row" style="flex-direction: column; align-items: flex-start;">
-                                        <div style="font-size: 0.7rem; color: var(--accent-blue);">${m._name} (${m._cat})</div>
+                                        <div style="font-size: 0.7rem; color: var(--accent-blue);">${comp?.name || '---'}${comp?.category && comp.category.toLowerCase() !== 'mixto' ? ' (' + comp.category + ')' : ''} ${m.round && m.round !== 'N/A' ? `- ${m.round.toUpperCase()}` : ''}</div>
                                         <div style="font-weight: 600; font-size: 0.9rem; width: 100%; display: flex; justify-content: space-between;">
-                                            <span><i class="fa-solid fa-users" style="color: var(--accent-yellow); font-size: 0.8rem;"></i> Todos los equipos</span>
+                                            <span>
+                                                ${(m.player1Name || t1?.name || t2?.name) ? 
+                                                    `${m.player1Name || t1?.name || '?'} vs ${m.player2Name || t2?.name || '?'}` : 
+                                                    (m.round && m.round !== 'N/A' ? 
+                                                        '<span style="color: var(--text-muted); font-style: italic; font-size: 0.8rem;"><i class="fa-solid fa-hourglass-half"></i> Equipos por definir</span>' :
+                                                        '<span style="color: var(--accent-yellow)"><i class="fa-solid fa-users"></i> Todos los equipos</span>'
+                                                    )
+                                                }
+                                            </span>
                                             <span style="font-size: 0.7rem; color: var(--text-muted);">${m.time}</span>
                                         </div>
                                         ${m.date ? `<div style="font-size: 0.6rem; color: var(--text-muted); opacity: 0.7;">${m.date}</div>` : ''}
                                     </div>
                                 `;
-                            }
-                            const comp = State.competitions.find(c => c.id === m.competitionId);
-                            const t1 = State.teams.find(t => t.id === m.team1Id);
-                            const t2 = State.teams.find(t => t.id === m.team2Id);
-                            return `
-                                <div class="item-row" style="flex-direction: column; align-items: flex-start;">
-                                    <div style="font-size: 0.7rem; color: var(--accent-blue);">${comp?.name || '---'}${comp?.category && comp.category.toLowerCase() !== 'mixto' ? ' (' + comp.category + ')' : ''} ${m.round && m.round !== 'N/A' ? `- ${m.round.toUpperCase()}` : ''}</div>
-                                    <div style="font-weight: 600; font-size: 0.9rem; width: 100%; display: flex; justify-content: space-between;">
-                                        <span>
-                                            ${(m.player1Name || t1?.name || t2?.name) ? 
-                                                `${m.player1Name || t1?.name || '?'} vs ${m.player2Name || t2?.name || '?'}` : 
-                                                (m.round && m.round !== 'N/A' ? 
-                                                    '<span style="color: var(--text-muted); font-style: italic; font-size: 0.8rem;"><i class="fa-solid fa-hourglass-half"></i> Equipos por definir</span>' :
-                                                    '<span style="color: var(--accent-yellow)"><i class="fa-solid fa-users"></i> Todos los equipos</span>'
-                                                )
-                                            }
-                                        </span>
-                                        <span style="font-size: 0.7rem; color: var(--text-muted);">${m.time}</span>
-                                    </div>
-                                    ${m.date ? `<div style="font-size: 0.6rem; color: var(--text-muted); opacity: 0.7;">${m.date}</div>` : ''}
-                                </div>
-                            `;
-                        }).join('') || '<p style="color: var(--text-muted); font-size: 0.8rem;">No hay partidos pendientes.</p>'}
+                            }).join('') || '<p style="color: var(--text-muted); font-size: 0.8rem;">No hay partidos pendientes.</p>'}
                     </div>
 
                     <h3 style="margin-top: 40px;"><i class="fa-solid fa-star" style="color: var(--accent-yellow)"></i> MEDALLERO GENERAL</h3>
