@@ -212,9 +212,19 @@ const State = {
         const comp = this.competitions.find(c => c.id === compId);
         if (comp) {
             comp.status = 'finished';
-            // También finalizar los partidos/horarios asociados para que desaparezcan del sidebar
             this.matches.forEach(m => {
                 if (m.competitionId === compId) m.status = 'finished';
+            });
+            this.update();
+        }
+    },
+
+    reopenCompetition(compId) {
+        const comp = this.competitions.find(c => c.id === compId);
+        if (comp) {
+            delete comp.status;
+            this.matches.forEach(m => {
+                if (m.competitionId === compId) m.status = 'upcoming';
             });
             this.update();
         }

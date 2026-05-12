@@ -411,11 +411,16 @@ function renderAdmin(container) {
                     <div class="item-list" style="margin-top: 20px; max-height: 250px; overflow-y: auto;">
                         ${window.sortCompetitions(State.competitions).map(c => `
                             <div class="item-row">
-                                <div>
+                                <div style="flex: 1;">
                                     <div style="font-weight: 600;">${c.name}</div>
-                                    <div style="font-size: 0.6rem; color: var(--accent-yellow)">RAMA: ${c.category.toUpperCase()} | ${c.type.toUpperCase()}</div>
+                                    <div style="font-size: 0.6rem; color: var(--accent-yellow)">RAMA: ${c.category.toUpperCase()} | ${c.type.toUpperCase()} ${c.status === 'finished' ? '<span style="color: var(--success); font-weight: 800;">[FINALIZADA]</span>' : ''}</div>
                                 </div>
-                                <i class="fa-solid fa-trash" onclick="if(confirm('¿Borrar?')) {State.competitions=State.competitions.filter(it=>it.id!=='${c.id}'); State.save(); State.notify();}" style="cursor: pointer; color: var(--text-muted);"></i>
+                                <div style="display: flex; gap: 15px; align-items: center;">
+                                    ${c.status === 'finished' ? `
+                                        <i class="fa-solid fa-lock-open" onclick="window.reopenComp('${c.id}')" title="Reabrir para correcciones" style="cursor: pointer; color: var(--accent-yellow);"></i>
+                                    ` : ''}
+                                    <i class="fa-solid fa-trash" onclick="if(confirm('¿Borrar?')) {State.competitions=State.competitions.filter(it=>it.id!=='${c.id}'); State.save(); State.notify();}" style="cursor: pointer; color: var(--text-muted);"></i>
+                                </div>
                             </div>
                         `).join('')}
                     </div>
@@ -830,6 +835,13 @@ window.syncScore = (id, teamNum, val) => {
         m.team2DQ = document.getElementById(`dq2-${id}`)?.checked || false;
         
         State.save();
+    }
+};
+
+window.reopenComp = (id) => {
+    if (confirm("¿Reabrir esta competencia para hacer correcciones? Volverá a aparecer en la pestaña de Captura.")) {
+        State.reopenCompetition(id);
+        render();
     }
 };
 
