@@ -189,7 +189,11 @@ function renderDashboard(container) {
                     </div>
 
                     <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px; max-height: 400px; overflow-y: auto;" class="custom-scroll">
-                        ${State.matches.filter(m => m.status !== 'finished')
+                        ${State.matches.filter(m => {
+                            const comp = State.competitions.find(c => c.id === m.competitionId);
+                            // Ocultar si el partido ya terminó O si la disciplina completa ya se marcó como finalizada
+                            return m.status !== 'finished' && (!comp || comp.status !== 'finished');
+                        })
                             .filter(m => !State.selectedUpcomingDate || State.selectedUpcomingDate === 'all' || m.date === State.selectedUpcomingDate)
                             .sort((a, b) => {
                                 const dateA = a.date || '9999-12-31';
