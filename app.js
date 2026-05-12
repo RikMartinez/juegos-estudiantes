@@ -645,7 +645,7 @@ function renderCaptura(container) {
 
             <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-list-ol"></i> Ranking / Carreras / Equipos</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px;">
-                ${rankingComps.map(c => {
+                ${captureComps.map(c => {
         const results = State.eventResults.filter(r => r.competitionId === c.id);
         const schedule = State.matches.find(m => m.competitionId === c.id);
 
