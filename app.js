@@ -511,6 +511,9 @@ function renderAdmin(container) {
                                         <div style="font-size: 0.7rem; color: var(--text-muted);">${m.date || 'Sin fecha'} | ${m.time}</div>
                                     </div>
                                     <div style="display: flex; gap: 15px;">
+                                        ${m.status === 'finished' ? `
+                                            <i class="fa-solid fa-lock-open" onclick="window.reopenMatchUI('${m.id}')" title="Reabrir para corregir" style="cursor: pointer; color: var(--accent-yellow);"></i>
+                                        ` : ''}
                                         <i class="fa-solid fa-edit" onclick="editingMatchId='${m.id}'; render(); document.getElementById('form-match').scrollIntoView({behavior: 'smooth'});" style="cursor: pointer; color: var(--accent-blue);"></i>
                                         <i class="fa-solid fa-trash" onclick="if(confirm('¿Borrar partido?')) {State.matches=State.matches.filter(it=>it.id!=='${m.id}'); State.save(); State.notify();}" style="cursor: pointer; color: var(--text-muted);"></i>
                                     </div>
@@ -843,6 +846,13 @@ window.syncScore = (id, teamNum, val) => {
         m.team2DQ = document.getElementById(`dq2-${id}`)?.checked || false;
         
         State.save();
+    }
+};
+
+window.reopenMatchUI = (id) => {
+    if (confirm("¿Reabrir este partido? Se borrará el avance automático en la siguiente llave para que puedas corregir los datos en la pestaña de Captura.")) {
+        State.reopenMatch(id);
+        render();
     }
 };
 

@@ -1,4 +1,4 @@
-// CONFIGURACIÓN DE FIREBASE (Debes reemplazar esto con tus datos)
+// CONFIGURACIÓN DE FIREBASE
 const firebaseConfig = {
     apiKey: "AIzaSyCooXgBIZ9CAGi8mdT05q_KyZAFJVbM30E",
     authDomain: "juegos-estudiantes.firebaseapp.com",
@@ -13,24 +13,19 @@ const State = {
     teams: [],
     competitions: [],
     matches: [],
-    eventResults: [], // Para competencias de ranking o carrera
+    eventResults: [],
     currentView: 'dashboard',
     isAdmin: false,
     db: null,
     isCloudEnabled: false,
-    // Tabla de puntos por posición (puedes ajustarla luego)
-    // Tabla de puntos por posición: 1°: 25, 2°: 21, 3°: 18, 4°: 15, 5°: 13, 6°: 11, 7°: 10, 8°: 9, 9°: 8, 10°: 7, 11°: 6, 12°: 5, 13°: 4, 14°: 3, 15°: 2, 16°: 1
     pointTable: [25, 21, 18, 15, 13, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
 
     init() {
-        // 1. Intentar configurar Firebase
         if (typeof firebase !== 'undefined' && firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('REEMPLAZAR')) {
             try {
                 firebase.initializeApp(firebaseConfig);
                 this.db = firebase.database();
                 this.isCloudEnabled = true;
-
-                // Escuchar cambios en tiempo real desde la nube
                 this.db.ref('tournament_v2').on('value', (snapshot) => {
                     const data = snapshot.val();
                     if (data) {
@@ -44,46 +39,11 @@ const State = {
                 });
                 console.log("☁️ Sincronización en la nube activa");
             } catch (e) {
-                console.error("Firebase Init Error:", e);
                 this.loadLocal();
             }
         } else {
-            console.log("🏠 Usando almacenamiento local (Firebase no configurado)");
             this.loadLocal();
         }
-
-        // 2. Ya NO inicializamos automáticamente con datos por defecto.
-        // Si la App está vacía, el usuario deberá pulsar "Reiniciar" manualmente si desea los equipos base.
-    },
-
-    clearAll() {
-        // 1. Limpiar localStorage
-        localStorage.removeItem('estudiantes-games-v2');
-        
-        // 2. Limpiar Nube
-        if (this.isCloudEnabled && this.db) {
-            this.db.ref('tournament_v2').remove();
-        }
-
-        // 3. Forzar reinicio limpio
-        location.reload();
-    },
-
-    setDefaults() {
-        this.teams = [
-            { id: 't1', name: 'Equipo Alpha', color: 'Azul', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0, totalPoints: 0 },
-            { id: 't2', name: 'Equipo Beta', color: 'Rojo', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0, totalPoints: 0 },
-            { id: 't3', name: 'Equipo Gamma', color: 'Verde', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0, totalPoints: 0 },
-            { id: 't4', name: 'Equipo Delta', color: 'Amarillo', deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0, totalPoints: 0 }
-        ];
-        this.competitions = [
-            { id: 'c1', name: 'Ajedrez', type: 'mental', format: 'bracket', category: 'Mixto' },
-            { id: 'c2', name: 'Rally', type: 'deportiva', format: 'ranking', category: 'Mixto' }
-        ];
-        this.matches = [];
-        this.eventResults = [];
-        this.calculatePoints();
-        this.save();
     },
 
     save() {
@@ -98,9 +58,7 @@ const State = {
             if (this.isCloudEnabled && this.db) {
                 this.db.ref('tournament_v2').set(dataToSave);
             }
-        } catch (e) {
-            console.error("Save Error:", e);
-        }
+        } catch (e) {}
     },
 
     update() {
@@ -119,44 +77,12 @@ const State = {
                 this.matches = parsed.matches || [];
                 this.eventResults = parsed.eventResults || [];
             }
-        } catch (e) {
-            console.error("Load Error:", e);
-        }
-    },
-
-    tryRecovery() {
-        // Buscar en nombres de claves antiguos
-        const keys = ['estudiantes-games-state', 'estudiantes-games-v1', 'estudiantes-games-backup'];
-        for (const key of keys) {
-            const old = localStorage.getItem(key);
-            if (old) {
-                try {
-                    const data = JSON.parse(old);
-                    if (data.teams && data.teams.length > 4) {
-                        this.teams = data.teams;
-                        this.competitions = data.competitions || [];
-                        this.matches = data.matches || [];
-                        this.eventResults = data.eventResults || [];
-                        this.update();
-                        return true;
-                    }
-                } catch (e) {}
-            }
-        }
-        return false;
+        } catch (e) {}
     },
 
     addTeam(name, color) {
         this.teams.push({ id: 'team-' + Date.now(), name, color, deportivaPoints: 0, mentalPoints: 0, atletismoPoints: 0, amonestaciones: 0 });
         this.update();
-    },
-
-    updateAmonestaciones(teamId, delta) {
-        const team = this.teams.find(t => t.id === teamId);
-        if (team) {
-            team.amonestaciones = Math.max(0, (team.amonestaciones || 0) + delta);
-            this.update();
-        }
     },
 
     updateTeam(id, name, color) {
@@ -173,48 +99,11 @@ const State = {
         this.update();
     },
 
-    submitEventResult(compId, teamId, participantName, value, dq = false) {
-        const existing = this.eventResults.find(r =>
-            r.competitionId === compId && r.teamId === teamId && r.participantName === participantName
-        );
-        if (existing) {
-            existing.value = value;
-            existing.dq = dq;
-        } else {
-            this.eventResults.push({ competitionId: compId, teamId, participantName: participantName || '', value, dq });
-        }
-        this.update();
-    },
-
-    removeEventResult(compId, teamId, participantName) {
-        this.eventResults = this.eventResults.filter(r =>
-            !(r.competitionId === compId && r.teamId === teamId && r.participantName === participantName)
-        );
-        this.update();
-    },
-
-    toggleEventAdvance(compId, teamId) {
-        let res = this.eventResults.find(r => r.competitionId === compId && r.teamId === teamId);
-        if (res) {
-            res.advanced = !res.advanced;
-        } else {
-            this.eventResults.push({ competitionId: compId, teamId: teamId, value: '', advanced: true });
-        }
-        this.update();
-    },
-
-    deleteEventResult(compId, teamId) {
-        this.eventResults = this.eventResults.filter(r => !(r.competitionId === compId && r.teamId === teamId));
-        this.update();
-    },
-
     finishCompetition(compId) {
         const comp = this.competitions.find(c => c.id === compId);
         if (comp) {
             comp.status = 'finished';
-            this.matches.forEach(m => {
-                if (m.competitionId === compId) m.status = 'finished';
-            });
+            this.matches.forEach(m => { if (m.competitionId === compId) m.status = 'finished'; });
             this.update();
         }
     },
@@ -223,10 +112,56 @@ const State = {
         const comp = this.competitions.find(c => c.id === compId);
         if (comp) {
             delete comp.status;
-            this.matches.forEach(m => {
-                if (m.competitionId === compId) m.status = 'upcoming';
-            });
+            this.matches.forEach(m => { if (m.competitionId === compId) m.status = 'upcoming'; });
             this.update();
+        }
+    },
+
+    reopenMatch(matchId) {
+        const match = this.matches.find(m => m.id === matchId);
+        if (match) {
+            match.status = 'upcoming';
+            this.advanceWinner(match);
+            this.update();
+        }
+    },
+
+    advanceWinner(match) {
+        const comp = this.competitions.find(c => c.id === match.competitionId);
+        if (!comp || comp.format !== 'bracket' || match.round === 'final') return;
+
+        const nextRoundMap = { 'dieciseisavos': 'octavos', 'octavos': 'cuartos', 'cuartos': 'semifinal', 'semifinal': 'final' };
+        const nextRound = nextRoundMap[match.round];
+        if (!nextRound) return;
+
+        const nextMatchNum = Math.ceil(parseInt(match.matchNum) / 2);
+        const nextMatch = this.matches.find(m => m.competitionId === match.competitionId && m.round === nextRound && parseInt(m.matchNum) === nextMatchNum);
+
+        let winnerId = null;
+        if (match.status === 'finished') {
+            if (match.team1DQ && match.team2DQ) winnerId = 'DESIERTO';
+            else if (match.team1Score > match.team2Score) winnerId = match.team1Id;
+            else if (match.team2Score > match.team1Score) winnerId = match.team2Id;
+            else if (match.team1DQ) winnerId = match.team2Id;
+            else if (match.team2DQ) winnerId = match.team1Id;
+        }
+
+        if (nextMatch) {
+            if (parseInt(match.matchNum) % 2 !== 0) nextMatch.team1Id = winnerId;
+            else nextMatch.team2Id = winnerId;
+            
+            // Si el siguiente estaba finalizado, limpiar en cascada
+            if (nextMatch.status === 'finished') this.advanceWinner(nextMatch);
+        } else if (winnerId) {
+            this.matches.push({
+                id: 'match-' + Date.now() + Math.random(),
+                competitionId: match.competitionId,
+                round: nextRound,
+                matchNum: nextMatchNum,
+                team1Id: parseInt(match.matchNum) % 2 !== 0 ? winnerId : '?',
+                team2Id: parseInt(match.matchNum) % 2 === 0 ? winnerId : '?',
+                status: 'upcoming', team1Score: 0, team2Score: 0
+            });
         }
     },
 
@@ -239,18 +174,9 @@ const State = {
         const match = this.matches.find(m => m.id === matchId);
         if (match) {
             Object.assign(match, matchData);
-            const comp = this.competitions.find(c => c.id === match.competitionId);
-            // Si el partido está finalizado y es de formato llave, re-calcular avance
-            if (match.status === 'finished' && comp && comp.format === 'bracket') {
-                this.advanceWinner(match);
-            }
+            this.advanceWinner(match);
             this.update();
         }
-    },
-
-    setAdmin(val) {
-        this.isAdmin = val;
-        this.notify();
     },
 
     updateMatchResult(matchId, s1, s2, isFinished, dq1 = false, dq2 = false) {
@@ -260,96 +186,24 @@ const State = {
             match.team2Score = parseInt(s2) || 0;
             match.team1DQ = dq1;
             match.team2DQ = dq2;
-            if (isFinished) {
-                match.status = 'finished';
-                this.advanceWinner(match);
-            } else {
-                match.status = 'in-progress';
-            }
+            match.status = isFinished ? 'finished' : 'in-progress';
+            this.advanceWinner(match);
             this.update();
         }
     },
 
-    advanceWinner(match) {
-        if (match.status !== 'finished' || match.round === 'final') return;
-
-        let winnerId = null;
-        if (match.team1DQ && match.team2DQ) {
-            winnerId = 'DESIERTO';
-            console.log("Doble DQ detectado - Marcando como DESIERTO");
-        } else if (match.team1Score > match.team2Score) {
-            winnerId = match.team1Id;
-        } else if (match.team2Score > match.team1Score) {
-            winnerId = match.team2Id;
-        } else if (match.team1DQ) {
-            winnerId = match.team2Id;
-        } else if (match.team2DQ) {
-            winnerId = match.team1Id;
-        }
-
-        if (!winnerId) {
-            console.log("No se pudo determinar ganador para el avance");
-            return;
-        }
-
-        const nextRoundMap = {
-            'dieciseisavos': 'octavos',
-            'octavos': 'cuartos',
-            'cuartos': 'semifinal',
-            'semifinal': 'final'
-        };
-
-        const nextRound = nextRoundMap[match.round];
-        if (!nextRound) return;
-
-        const nextMatchNum = Math.ceil(parseInt(match.matchNum) / 2);
-        const nextMatch = this.matches.find(m => 
-            m.competitionId === match.competitionId && 
-            m.round === nextRound && 
-            parseInt(m.matchNum) === nextMatchNum
-        );
-
-        if (nextMatch) {
-            console.log(`Actualizando siguiente ronda (${nextRound}, partido ${nextMatchNum}) con winner: ${winnerId}`);
-            if (parseInt(match.matchNum) % 2 !== 0) {
-                nextMatch.team1Id = winnerId;
-            } else {
-                nextMatch.team2Id = winnerId;
-            }
-        } else {
-            this.matches.push({
-                id: 'match-' + Date.now() + Math.random(),
-                competitionId: match.competitionId,
-                round: nextRound,
-                matchNum: nextMatchNum,
-                team1Id: parseInt(match.matchNum) % 2 !== 0 ? winnerId : '?',
-                team2Id: parseInt(match.matchNum) % 2 === 0 ? winnerId : '?',
-                time: '--:--',
-                location: 'TBD',
-                status: 'upcoming',
-                team1Score: 0,
-                team2Score: 0
-            });
-        }
+    submitEventResult(compId, teamId, participantName, value, dq = false) {
+        const existing = this.eventResults.find(r => r.competitionId === compId && r.teamId === teamId && r.participantName === participantName);
+        if (existing) { existing.value = value; existing.dq = dq; }
+        else { this.eventResults.push({ competitionId: compId, teamId, participantName: participantName || '', value, dq }); }
+        this.update();
     },
 
     calculatePoints() {
-        // Reset points
-        this.teams.forEach(t => {
-            t.deportivaPoints = 0;
-            t.mentalPoints = 0;
-            t.atletismoPoints = 0;
-        });
-
-        const getField = (type) => {
-            if (type === 'deportiva') return 'deportivaPoints';
-            if (type === 'mental') return 'mentalPoints';
-            if (type === 'atletismo') return 'atletismoPoints';
-            return 'deportivaPoints';
-        };
-
+        this.teams.forEach(t => { t.deportivaPoints = 0; t.mentalPoints = 0; t.atletismoPoints = 0; });
+        const getField = (type) => type === 'mental' ? 'mentalPoints' : (type === 'atletismo' ? 'atletismoPoints' : 'deportivaPoints');
         const parseVal = (val) => {
-            if (val === undefined || val === null || val === '' || val === '0') return 0;
+            if (!val || val === '0' || val === 'DQ') return 0;
             if (typeof val === 'number') return val;
             const sVal = String(val).trim();
             if (sVal.includes(':')) {
@@ -359,97 +213,41 @@ const State = {
             return parseFloat(sVal) || 0;
         };
 
-        // 1. PUNTOS POR COMPETENCIA (Bracket, Ranking o Carrera)
         this.competitions.forEach(comp => {
             let rankedTeams = []; 
-
             if (comp.format === 'bracket') {
                 const roundWeight = { 'final': 5, 'semifinal': 4, 'cuartos': 3, 'octavos': 2, 'dieciseisavos': 1 };
                 const teamStats = {};
                 this.teams.forEach(t => teamStats[t.id] = { maxRound: -1, pf: 0, pa: 0, diff: 0, id: t.id });
-
                 this.matches.filter(m => m.competitionId === comp.id && m.status === 'finished').forEach(m => {
-                    const s1 = parseInt(m.team1Score) || 0;
-                    const s2 = parseInt(m.team2Score) || 0;
-                    const rW = roundWeight[m.round] || 0;
-                    
-                    const t1 = teamStats[m.team1Id];
-                    const t2 = teamStats[m.team2Id];
-
-                    if (t1) {
-                        t1.pf += s1;
-                        t1.pa += s2;
-                        t1.diff = t1.pf - t1.pa;
-                        // El ganador de la final llega al peso 6 (Campeón)
-                        if (m.round === 'final' && s1 > s2) t1.maxRound = 6;
-                        else t1.maxRound = Math.max(t1.maxRound, rW);
-                    }
-                    if (t2) {
-                        t2.pf += s2;
-                        t2.pa += s1;
-                        t2.diff = t2.pf - t2.pa;
-                        if (m.round === 'final' && s2 > s1) t2.maxRound = 6;
-                        else t2.maxRound = Math.max(t2.maxRound, rW);
-                    }
+                    const s1 = parseInt(m.team1Score) || 0; const s2 = parseInt(m.team2Score) || 0;
+                    const t1 = teamStats[m.team1Id]; const t2 = teamStats[m.team2Id];
+                    if (t1) { t1.pf += s1; t1.pa += s2; t1.diff = t1.pf - t1.pa; t1.maxRound = Math.max(t1.maxRound, m.round === 'final' && s1 > s2 ? 6 : roundWeight[m.round]); }
+                    if (t2) { t2.pf += s2; t2.pa += s1; t2.diff = t2.pf - t2.pa; t2.maxRound = Math.max(t2.maxRound, m.round === 'final' && s2 > s1 ? 6 : roundWeight[m.round]); }
                 });
-
-                rankedTeams = Object.values(teamStats)
-                    .filter(s => s.maxRound >= 0)
-                    .sort((a, b) => {
-                        if (b.maxRound !== a.maxRound) return b.maxRound - a.maxRound;
-                        // Solo aplicar desempate por puntos en disciplinas DEPORTIVAS
-                        if (comp.type === 'deportiva') {
-                            if (b.diff !== a.diff) return b.diff - a.diff;
-                            return b.pf - a.pf;
-                        }
-                        return 0; // Sin desempate para otros tipos
-                    })
-                    .map(s => s.id);
+                rankedTeams = Object.values(teamStats).filter(s => s.maxRound >= 0).sort((a, b) => b.maxRound !== a.maxRound ? b.maxRound - a.maxRound : (comp.type === 'deportiva' ? (b.diff !== a.diff ? b.diff - a.diff : b.pf - a.pf) : 0)).map(s => s.id);
             } else {
-                // Ranking o Carrera: Excluimos DQ y vacíos
-                const rawResults = this.eventResults.filter(r => 
-                    r.competitionId === comp.id && 
-                    !r.dq &&
-                    r.value !== '' && 
-                    r.value !== '0' &&
-                    String(r.value).toUpperCase() !== 'DQ'
-                );
-                
-                rankedTeams = rawResults
-                    .sort((a, b) => {
-                        const vA = parseVal(a.value);
-                        const vB = parseVal(b.value);
-                        return comp.format === 'ranking' ? vB - vA : vA - vB;
-                    })
-                    .map(r => r.teamId);
+                rankedTeams = this.eventResults.filter(r => r.competitionId === comp.id && !r.dq && r.value).sort((a, b) => {
+                    const vA = parseVal(a.value); const vB = parseVal(b.value);
+                    return comp.format === 'ranking' ? vB - vA : vA - vB;
+                }).map(r => r.teamId);
             }
-
             const field = getField(comp.type);
-            const processedTeamsForThisComp = new Set();
-            let tableIndex = 0;
-
+            const processed = new Set(); let tableIndex = 0;
             rankedTeams.forEach(tId => {
-                if (!processedTeamsForThisComp.has(tId) && tableIndex < this.pointTable.length) {
+                if (!processed.has(tId) && tableIndex < this.pointTable.length) {
                     const team = this.teams.find(t => t.id === tId);
-                    if (team) {
-                        team[field] = (team[field] || 0) + this.pointTable[tableIndex];
-                        tableIndex++;
-                        processedTeamsForThisComp.add(tId);
-                    }
+                    if (team) { team[field] += this.pointTable[tableIndex]; tableIndex++; processed.add(tId); }
                 }
             });
         });
-
-        // 2. ACTUALIZAR TOTALES GLOBALES (Y PENALIZACIONES)
         this.teams.forEach(t => {
             const penalties = Math.floor((t.amonestaciones || 0) / 3) * 5;
-            t.totalPoints = (t.deportivaPoints || 0) + (t.mentalPoints || 0) + (t.atletismoPoints || 0) - penalties;
+            t.totalPoints = t.deportivaPoints + t.mentalPoints + t.atletismoPoints - penalties;
         });
     },
 
-    notify() {
-        window.dispatchEvent(new CustomEvent('stateChanged'));
-    }
+    notify() { window.dispatchEvent(new CustomEvent('stateChanged')); }
 };
 
 State.init();
