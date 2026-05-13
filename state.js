@@ -111,7 +111,7 @@ const State = {
     reopenCompetition(compId) {
         const comp = this.competitions.find(c => c.id === compId);
         if (comp) {
-            delete comp.status;
+            comp.status = 'upcoming';
             this.matches.forEach(m => { if (m.competitionId === compId) m.status = 'upcoming'; });
             this.update();
         }

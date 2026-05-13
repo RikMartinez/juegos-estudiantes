@@ -642,7 +642,9 @@ function renderCaptura(container) {
         const comp = State.competitions.find(c => c.id === m.competitionId);
         return m.status !== 'finished' && comp && comp.format === 'bracket';
     });
-    const captureComps = window.sortCompetitions(State.competitions.filter(c => c.format !== 'bracket' && c.status !== 'finished'));
+    const captureComps = window.sortCompetitions(State.competitions.filter(c => 
+        c.format !== 'bracket' && (c.status !== 'finished')
+    ));
 
     container.innerHTML = `
         <div class="admin-container fade-in">
