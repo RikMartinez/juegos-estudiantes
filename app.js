@@ -314,23 +314,24 @@ function renderBracketContent(comp) {
                                     <tr style="background: rgba(255,255,255,0.03);">
                                         <td style="padding: 15px; text-align: center; font-weight: 900; color: ${displayPos <= 3 ? 'var(--accent-yellow)' : 'var(--text-muted)'}; font-size: 1.2rem;">${displayPos}°</td>
                                         <td style="padding: 15px;">
-                                        <div style="display: flex; align-items: center; gap: 15px;">
-                                            <span style="width: 4px; height: 25px; background: ${window.translateColor(team?.color)};"></span>
-                                            <div>
-                                                ${res.participantName ? `
-                                                    <div style="font-weight: 700;">${res.participantName}</div>
-                                                    <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">${team?.name || '---'}</div>
-                                                ` : `
-                                                    <div style="font-weight: 700; color: var(--accent-blue); font-size: 1.1rem;">${team?.name || '---'}</div>
-                                                `}
-                                                ${res.advanced ? '<span class="pulse" style="font-size:0.6rem; color: var(--success); font-weight: 800;"><i class="fa-solid fa-check"></i> CALIFICA</span>' : ''}
+                                            <div style="display: flex; align-items: center; gap: 15px;">
+                                                <span style="width: 4px; height: 25px; background: ${window.translateColor(team?.color)};"></span>
+                                                <div>
+                                                    ${res.participantName ? `
+                                                        <div style="font-weight: 700;">${res.participantName}</div>
+                                                        <div style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">${team?.name || '---'}</div>
+                                                    ` : `
+                                                        <div style="font-weight: 700; color: var(--accent-blue); font-size: 1.1rem;">${team?.name || '---'}</div>
+                                                    `}
+                                                    ${res.advanced ? '<span class="pulse" style="font-size:0.6rem; color: var(--success); font-weight: 800;"><i class="fa-solid fa-check"></i> CALIFICA</span>' : ''}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td style="padding: 15px; text-align: right; font-family: 'Outfit'; font-weight: 800; font-size: 1.1rem; color: var(--accent-blue);">${res.value}</td>
-                                </tr>
-                            `;
-        }).join('') || '<tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-muted);">Sin resultados</td></tr>'}
+                                        </td>
+                                        <td style="padding: 15px; text-align: right; font-family: \'Outfit\'; font-weight: 800; font-size: 1.1rem; color: var(--accent-blue);">${res.value}</td>
+                                    </tr>
+                                `;
+                            }).join('') || '<tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-muted);">Sin resultados</td></tr>';
+                        })()}
                     </tbody>
                 </table>
             </div>
