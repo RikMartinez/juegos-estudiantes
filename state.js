@@ -275,8 +275,8 @@ const State = {
 
         let winnerId = null;
         if (match.team1DQ && match.team2DQ) {
-            winnerId = '?';
-            console.log("Doble DQ detectado - Limpiando siguiente ronda");
+            winnerId = 'DESIERTO';
+            console.log("Doble DQ detectado - Marcando como DESIERTO");
         } else if (match.team1Score > match.team2Score) {
             winnerId = match.team1Id;
         } else if (match.team2Score > match.team1Score) {

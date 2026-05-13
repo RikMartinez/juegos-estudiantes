@@ -99,8 +99,8 @@ function updateTicker() {
             const comp = State.competitions.find(c => c.id === m.competitionId);
             const t1 = State.teams.find(t => t.id === m.team1Id);
             const t2 = State.teams.find(t => t.id === m.team2Id);
-            const name1 = m.player1Name || t1?.name || '---';
-            const name2 = m.player2Name || t2?.name || '---';
+            const name1 = m.team1Id === 'DESIERTO' ? '<span style="color: var(--text-muted); font-style: italic; font-size: 0.7rem;">DESIERTO</span>' : (m.player1Name || t1?.name || '---');
+            const name2 = m.team2Id === 'DESIERTO' ? '<span style="color: var(--text-muted); font-style: italic; font-size: 0.7rem;">DESIERTO</span>' : (m.player2Name || t2?.name || '---');
             
             return `<div class="ticker__item">
                 <i class="fa-solid fa-trophy"></i> ${comp?.name || '---'} (${comp?.category || '---'}): 
@@ -344,14 +344,18 @@ function renderBracketBox(compId, round, num) {
             <div class="team-row ${isFinished && s1 > s2 ? 'winner' : ''}">
                 <span style="display: flex; align-items: center; gap: 8px; overflow: hidden; flex: 1; min-width: 0;">
                     <span style="width: 3px; height: 14px; background: ${window.translateColor(t1?.color || '#333')}; flex-shrink: 0;"></span>
-                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.8rem; font-weight: 500;">${match?.player1Name || t1?.name || 'PENDIENTE'}</span>
+                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.8rem; font-weight: 500;">
+                        ${match?.team1Id === 'DESIERTO' ? '<span style="color: #ff4b2b; font-style: italic;">DESIERTO</span>' : (match?.player1Name || t1?.name || 'PENDIENTE')}
+                    </span>
                 </span>
                 <span class="score">${s1}</span>
             </div>
             <div class="team-row ${isFinished && s2 > s1 ? 'winner' : ''}">
                 <span style="display: flex; align-items: center; gap: 8px; overflow: hidden; flex: 1; min-width: 0;">
                     <span style="width: 3px; height: 14px; background: ${window.translateColor(t2?.color || '#333')}; flex-shrink: 0;"></span>
-                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.8rem; font-weight: 500;">${match?.player2Name || t2?.name || 'PENDIENTE'}</span>
+                    <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 0.8rem; font-weight: 500;">
+                        ${match?.team2Id === 'DESIERTO' ? '<span style="color: #ff4b2b; font-style: italic;">DESIERTO</span>' : (match?.player2Name || t2?.name || 'PENDIENTE')}
+                    </span>
                 </span>
                 <span class="score">${s2}</span>
             </div>
