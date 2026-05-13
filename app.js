@@ -654,9 +654,12 @@ function renderCaptura(container) {
                 <small style="color: var(--accent-blue); display: block; margin-bottom: 5px;">DEBUG - Estado de TODAS las disciplinas:</small>
                 <div style="font-size: 0.7rem; display: flex; gap: 8px; flex-wrap: wrap;">
                     ${State.competitions.map(c => `
-                        <span style="padding: 4px 8px; background: ${c.status === 'finished' ? '#333' : '#0088ff'}; border-radius: 4px; color: white;">
-                            ${c.name} [${c.format}] [${c.status || 'abierta'}]
-                        </span>
+                        <div style="padding: 6px 10px; background: ${c.status === 'finished' ? '#333' : '#0088ff'}; border-radius: 4px; color: white; display: flex; align-items: center; gap: 10px;">
+                            <span>${c.name} [${c.format}] [${c.status || 'abierta'}]</span>
+                            ${c.status === 'finished' ? `
+                                <button onclick="State.reopenCompetition('${c.id}'); render();" style="background: var(--accent-yellow); border: none; border-radius: 3px; cursor: pointer; font-size: 0.6rem; padding: 2px 5px; font-weight: bold; color: black;">REABRIR FORZADO</button>
+                            ` : ''}
+                        </div>
                     `).join('')}
                 </div>
             </div>
