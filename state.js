@@ -179,6 +179,11 @@ const State = {
         }
     },
 
+    setAdmin(val) {
+        this.isAdmin = val;
+        this.notify();
+    },
+
     updateMatchResult(matchId, s1, s2, isFinished, dq1 = false, dq2 = false) {
         const match = this.matches.find(m => m.id === matchId);
         if (match) {
