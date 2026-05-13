@@ -650,6 +650,17 @@ function renderCaptura(container) {
         <div class="admin-container fade-in">
             <h1 style="margin-bottom: 30px;"><i class="fa-solid fa-edit" style="color: var(--accent-yellow)"></i> Captura de Resultados</h1>
             
+            <div style="background: rgba(0,0,0,0.3); padding: 15px; margin-bottom: 30px; border-radius: 10px; border: 1px dashed var(--accent-blue);">
+                <small style="color: var(--accent-blue); display: block; margin-bottom: 5px;">DEBUG - Estado de TODAS las disciplinas:</small>
+                <div style="font-size: 0.7rem; display: flex; gap: 8px; flex-wrap: wrap;">
+                    ${State.competitions.map(c => `
+                        <span style="padding: 4px 8px; background: ${c.status === 'finished' ? '#333' : '#0088ff'}; border-radius: 4px; color: white;">
+                            ${c.name} [${c.format}] [${c.status || 'abierta'}]
+                        </span>
+                    `).join('')}
+                </div>
+            </div>
+            
             <h2 style="margin-bottom: 20px;">Partidos en Vivo (Llaves) (${activeMatches.length})</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; margin-bottom: 50px;">
                 ${activeMatches.map(m => {
