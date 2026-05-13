@@ -88,7 +88,11 @@ function updateTicker() {
     if (!tCont || !tEl) return;
 
     tEl.classList.remove('hidden');
-    const recent = State.matches.filter(m => m.status === 'finished').slice(-5);
+    const recent = State.matches.filter(m => {
+        const comp = State.competitions.find(c => c.id === m.competitionId);
+        // Solo mostrar en la cinta resultados de partidos 1 vs 1 (Llaves)
+        return m.status === 'finished' && comp && comp.format === 'bracket';
+    }).slice(-5);
 
     if (recent.length > 0) {
         tCont.innerHTML = recent.map(m => {
