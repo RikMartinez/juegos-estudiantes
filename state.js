@@ -248,13 +248,49 @@ const State = {
                 }).map(r => r.teamId);
             }
             const field = getField(comp.type);
-            const processed = new Set(); let tableIndex = 0;
-            rankedTeams.forEach(tId => {
-                if (!processed.has(tId) && tableIndex < this.pointTable.length) {
-                    const team = this.teams.find(t => t.id === tId);
-                    if (team) { team[field] += this.pointTable[tableIndex]; tableIndex++; processed.add(tId); }
-                }
-            });
+            const processed = new Set(); 
+            let tableIndex = 0;
+            let lastValue = null;
+            let pointsToGive = 0;
+
+            // Para Ranking/Carrera usamos los resultados con sus valores para detectar empates
+            if (comp.format !== 'bracket') {
+                const results = this.eventResults
+                    .filter(r => r.competitionId === comp.id && !r.dq && r.value)
+                    .sort((a, b) => {
+                        const vA = parseVal(a.value); const vB = parseVal(b.value);
+                        return comp.format === 'ranking' ? vB - vA : vA - vB;
+                    });
+
+                results.forEach((res, idx) => {
+                    const currentVal = parseVal(res.value);
+                    
+                    // Si es el mismo valor que el anterior, mantenemos los puntos
+                    if (idx > 0 && currentVal === lastValue) {
+                        // Mantenemos pointsToGive igual
+                    } else {
+                        pointsToGive = this.pointTable[idx] || 0;
+                    }
+
+                    const team = this.teams.find(t => t.id === res.teamId);
+                    if (team && !processed.has(res.teamId + res.participantName)) {
+                        team[field] += pointsToGive;
+                        processed.add(res.teamId + res.participantName);
+                    }
+                    lastValue = currentVal;
+                });
+            } else {
+                // Brackets mantienen lógica actual (el desempate ya se hace en el sort por PF/PA)
+                rankedTeams.forEach((tId, idx) => {
+                    if (!processed.has(tId)) {
+                        const team = this.teams.find(t => t.id === tId);
+                        if (team) {
+                            team[field] += this.pointTable[idx] || 0;
+                            processed.add(tId);
+                        }
+                    }
+                });
+            }
         });
         this.teams.forEach(t => {
             const penalties = Math.floor((t.amonestaciones || 0) / 3) * 5;
