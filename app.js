@@ -299,12 +299,21 @@ function renderBracketContent(comp) {
                         </tr>
                     </thead>
                     <tbody>
-                        ${results.map((res, idx) => {
-            const team = State.teams.find(t => t.id === res.teamId);
-            return `
-                                <tr style="background: rgba(255,255,255,0.03);">
-                                    <td style="padding: 15px; text-align: center; font-weight: 900; color: ${idx < 3 ? 'var(--accent-yellow)' : 'var(--text-muted)'}; font-size: 1.2rem;">${idx + 1}°</td>
-                                    <td style="padding: 15px;">
+                        ${(() => {
+                            let lastVal = null;
+                            let displayPos = 0;
+                            return results.map((res, idx) => {
+                                const currentVal = window.parseFlexibleValue(res.value);
+                                if (currentVal !== lastVal) {
+                                    displayPos++;
+                                }
+                                lastVal = currentVal;
+                                
+                                const team = State.teams.find(t => t.id === res.teamId);
+                                return `
+                                    <tr style="background: rgba(255,255,255,0.03);">
+                                        <td style="padding: 15px; text-align: center; font-weight: 900; color: ${displayPos <= 3 ? 'var(--accent-yellow)' : 'var(--text-muted)'}; font-size: 1.2rem;">${displayPos}°</td>
+                                        <td style="padding: 15px;">
                                         <div style="display: flex; align-items: center; gap: 15px;">
                                             <span style="width: 4px; height: 25px; background: ${window.translateColor(team?.color)};"></span>
                                             <div>

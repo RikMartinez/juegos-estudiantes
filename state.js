@@ -262,15 +262,14 @@ const State = {
                         return comp.format === 'ranking' ? vB - vA : vA - vB;
                     });
 
+                let densePos = 0;
                 results.forEach((res, idx) => {
                     const currentVal = parseVal(res.value);
                     
-                    // Si es el mismo valor que el anterior, mantenemos los puntos
-                    if (idx > 0 && currentVal === lastValue) {
-                        // Mantenemos pointsToGive igual
-                    } else {
-                        pointsToGive = this.pointTable[idx] || 0;
+                    if (currentVal !== lastValue) {
+                        densePos++;
                     }
+                    pointsToGive = this.pointTable[densePos - 1] || 0;
 
                     const team = this.teams.find(t => t.id === res.teamId);
                     if (team && !processed.has(res.teamId + res.participantName)) {
