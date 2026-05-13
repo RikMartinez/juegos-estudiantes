@@ -139,11 +139,21 @@ const State = {
 
         let winnerId = null;
         if (match.status === 'finished') {
-            if (match.team1DQ && match.team2DQ) winnerId = 'DESIERTO';
-            else if (match.team1Score > match.team2Score) winnerId = match.team1Id;
-            else if (match.team2Score > match.team1Score) winnerId = match.team2Id;
-            else if (match.team1DQ) winnerId = match.team2Id;
-            else if (match.team2DQ) winnerId = match.team1Id;
+            if (match.team1DQ && match.team2DQ) {
+                winnerId = 'DESIERTO';
+            } else if (match.team1DQ) {
+                winnerId = match.team2Id;
+            } else if (match.team2DQ) {
+                winnerId = match.team1Id;
+            } else if (match.team2Id === 'DESIERTO') {
+                winnerId = match.team1Id; // Avanza el equipo real aunque sea 0-0
+            } else if (match.team1Id === 'DESIERTO') {
+                winnerId = match.team2Id; // Avanza el equipo real aunque sea 0-0
+            } else if (match.team1Score > match.team2Score) {
+                winnerId = match.team1Id;
+            } else if (match.team2Score > match.team1Score) {
+                winnerId = match.team2Id;
+            }
         }
 
         if (nextMatch) {
