@@ -643,14 +643,14 @@ function renderCaptura(container) {
         return m.status !== 'finished' && comp && comp.format === 'bracket';
     });
     const captureComps = window.sortCompetitions(State.competitions.filter(c => 
-        c.format !== 'bracket' && (c.status !== 'finished')
+        c.format !== 'bracket' && c.status !== 'finished'
     ));
 
     container.innerHTML = `
         <div class="admin-container fade-in">
             <h1 style="margin-bottom: 30px;"><i class="fa-solid fa-edit" style="color: var(--accent-yellow)"></i> Captura de Resultados</h1>
             
-            <h2 style="margin-bottom: 20px;">Partidos en Vivo (Llaves)</h2>
+            <h2 style="margin-bottom: 20px;">Partidos en Vivo (Llaves) (${activeMatches.length})</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; margin-bottom: 50px;">
                 ${activeMatches.map(m => {
         const comp = State.competitions.find(c => c.id === m.competitionId);
@@ -675,7 +675,7 @@ function renderCaptura(container) {
     }).join('') || '<p style="color: var(--text-muted);">Sin partidos pendientes.</p>'}
             </div>
 
-            <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-list-ol"></i> Ranking / Carreras / Equipos</h2>
+            <h2 style="margin-bottom: 20px;"><i class="fa-solid fa-list-ol"></i> Ranking / Carreras / Equipos (${captureComps.length})</h2>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 20px;">
                 ${captureComps.map(c => {
         const results = State.eventResults.filter(r => r.competitionId === c.id);
