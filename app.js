@@ -64,6 +64,9 @@ function render() {
                 updateTicker();
                 renderDashboard(viewport);
                 break;
+            case 'report':
+                renderReport(viewport);
+                break;
             case 'admin':
                 renderAdmin(viewport);
                 break;
@@ -995,3 +998,140 @@ window.printQR = () => {
     `);
     printWindow.document.close();
 };
+
+function renderReport(container) {
+    const teamsSorted = [...State.teams].sort((a, b) => b.totalPoints - a.totalPoints);
+
+    container.innerHTML = `
+        <div class="admin-container fade-in">
+            <h1 style="margin-bottom: 20px;"><i class="fa-solid fa-file-invoice" style="color: var(--accent-yellow)"></i> Auditoría de Resultados</h1>
+            <p style="color: var(--text-muted); margin-bottom: 40px;">Desglose oficial de puntos obtenidos por equipo y disciplina.</p>
+
+            <div style="display: flex; flex-direction: column; gap: 40px;">
+                ${teamsSorted.map(team => {
+                    const penalties = Math.floor((team.amonestaciones || 0) / 3) * 5;
+                    return `
+                        <div class="card" style="border-left: 8px solid ${window.translateColor(team.color)};">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                                <h2 style="margin:0; font-size: 1.8rem; color: white;">${team.name}</h2>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Total Acumulado</div>
+                                    <div style="font-size: 2rem; font-weight: 900; color: var(--accent-blue);">${team.totalPoints} <span style="font-size: 1rem;">pts</span></div>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                                ${['deportiva', 'mental', 'atletismo'].map(type => {
+                                    const icon = type === 'mental' ? 'brain' : (type === 'atletismo' ? 'person-running' : 'volleyball');
+                                    const compsOfType = State.competitions.filter(c => c.type === type);
+                                    
+                                    return `
+                                        <div>
+                                            <h4 style="text-transform: uppercase; color: var(--accent-yellow); margin-bottom: 15px; border-bottom: 2px solid var(--accent-blue); display: inline-block;">
+                                                <i class="fa-solid fa-${icon}"></i> ${type}
+                                            </h4>
+                                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                                ${renderTeamDetails(team.id, compsOfType)}
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                                
+                                <div>
+                                    <h4 style="text-transform: uppercase; color: #ff4b2b; margin-bottom: 15px; border-bottom: 2px solid #ff4b2b; display: inline-block;">
+                                        <i class="fa-solid fa-triangle-exclamation"></i> Penalizaciones
+                                    </h4>
+                                    <div style="background: rgba(255, 75, 43, 0.1); padding: 10px; border-radius: 8px;">
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span>Amonestaciones (${team.amonestaciones || 0})</span>
+                                            <span style="color: #ff4b2b; font-weight: 800;">-${penalties} pts</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `;
+}
+
+function renderTeamDetails(teamId, competitions) {
+    const details = [];
+    const parseVal = (val) => {
+        if (!val || val === '0') return 0;
+        if (typeof val === 'number') return val;
+        const sVal = String(val).trim();
+        if (sVal.includes(':')) {
+            const parts = sVal.split(':');
+            return (parseInt(parts[0]) * 60) + (parseFloat(parts[1] || 0));
+        }
+        return parseFloat(sVal) || 0;
+    };
+
+    competitions.forEach(comp => {
+        let points = 0;
+        let pos = 0;
+
+        if (comp.format === 'bracket') {
+            const roundWeight = { 'final': 5, 'semifinal': 4, 'cuartos': 3, 'octavos': 2, 'dieciseisavos': 1 };
+            const teamMatches = State.matches.filter(m => m.competitionId === comp.id && m.status === 'finished' && (m.team1Id === teamId || m.team2Id === teamId));
+            
+            let maxRound = -1;
+            teamMatches.forEach(m => {
+                const isT1 = m.team1Id === teamId;
+                const scoreSelf = isT1 ? m.team1Score : m.team2Score;
+                const scoreOther = isT1 ? m.team2Score : m.team1Score;
+                maxRound = Math.max(maxRound, m.round === 'final' && scoreSelf > scoreOther ? 6 : roundWeight[m.round]);
+            });
+
+            if (maxRound >= 0) {
+                const teamStats = {};
+                State.teams.forEach(t => teamStats[t.id] = { maxRound: -1, pf: 0, pa: 0, diff: 0, id: t.id });
+                State.matches.filter(m => m.competitionId === comp.id && m.status === 'finished').forEach(m => {
+                    const s1 = parseInt(m.team1Score) || 0; const s2 = parseInt(m.team2Score) || 0;
+                    const t1 = teamStats[m.team1Id]; const t2 = teamStats[m.team2Id];
+                    if (t1) { t1.pf += s1; t1.pa += s2; t1.diff = t1.pf - t1.pa; t1.maxRound = Math.max(t1.maxRound, m.round === 'final' && s1 > s2 ? 6 : roundWeight[m.round]); }
+                    if (t2) { t2.pf += s2; t2.pa += s1; t2.diff = t2.pf - t2.pa; t2.maxRound = Math.max(t2.maxRound, m.round === 'final' && s2 > s1 ? 6 : roundWeight[m.round]); }
+                });
+                const ranked = Object.values(teamStats).filter(s => s.maxRound >= 0).sort((a, b) => b.maxRound !== a.maxRound ? b.maxRound - a.maxRound : (comp.type === 'deportiva' ? (b.diff !== a.diff ? b.diff - a.diff : b.pf - a.pf) : 0));
+                const teamIdx = ranked.findIndex(r => r.id === teamId);
+                if (teamIdx >= 0) {
+                    points = State.pointTable[teamIdx] || 0;
+                    pos = teamIdx + 1;
+                }
+            }
+        } else {
+            const results = State.eventResults
+                .filter(r => r.competitionId === comp.id && !r.dq && r.value)
+                .sort((a, b) => {
+                    const vA = parseVal(a.value); const vB = parseVal(b.value);
+                    return comp.format === 'ranking' ? vB - vA : vA - vB;
+                });
+            
+            let lastValue = null;
+            let densePos = 0;
+            results.forEach((res, idx) => {
+                const currentVal = parseVal(res.value);
+                if (currentVal !== lastValue) densePos++;
+                if (res.teamId === teamId) {
+                    points += State.pointTable[densePos - 1] || 0;
+                    pos = densePos;
+                }
+                lastValue = currentVal;
+            });
+        }
+
+        if (points > 0) {
+            details.push(`
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 5px;">
+                    <span style="color: var(--text-muted);">${comp.name} (${pos}°)</span>
+                    <span style="font-weight: 700; color: var(--accent-blue);">+${points}</span>
+                </div>
+            `);
+        }
+    });
+
+    return details.join('') || '<div style="font-size: 0.75rem; color: var(--text-muted); font-style: italic;">Sin puntos en esta categoría.</div>';
+}
