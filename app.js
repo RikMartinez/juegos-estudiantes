@@ -189,7 +189,7 @@ function renderDashboard(container) {
                     <div style="margin-top: 15px; margin-bottom: 10px;">
                         <select onchange="State.selectedUpcomingDate = this.value; render();" style="width: 100%; background: #1a1c23; border: 1px solid var(--accent-yellow); color: white; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
                             <option value="all">📅 VER TODO EL TORNEO</option>
-                            ${[...new Set(State.matches.filter(m => m.status !== 'finished' && m.date).map(m => m.date))].sort().map(d => 
+                            ${[...new Set(State.matches.filter(m => m.date).map(m => m.date))].sort().map(d => 
                                 `<option value="${d}" ${State.selectedUpcomingDate === d ? 'selected' : ''}>DÍA: ${d}</option>`
                             ).join('')}
                         </select>
@@ -197,11 +197,14 @@ function renderDashboard(container) {
 
                     <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 15px; max-height: 400px; overflow-y: auto;" class="custom-scroll">
                         ${State.matches.filter(m => {
+                            // Si hay una fecha seleccionada, mostramos TODO lo de ese día (historial)
+                            if (State.selectedUpcomingDate && State.selectedUpcomingDate !== 'all') {
+                                return m.date === State.selectedUpcomingDate;
+                            }
+                            // Si no, solo lo pendiente (agenda)
                             const comp = State.competitions.find(c => c.id === m.competitionId);
-                            // Ocultar si el partido ya terminó O si la disciplina completa ya se marcó como finalizada
                             return m.status !== 'finished' && (!comp || comp.status !== 'finished');
                         })
-                            .filter(m => !State.selectedUpcomingDate || State.selectedUpcomingDate === 'all' || m.date === State.selectedUpcomingDate)
                             .sort((a, b) => {
                                 const dateA = a.date || '9999-12-31';
                                 const dateB = b.date || '9999-12-31';
@@ -213,8 +216,10 @@ function renderDashboard(container) {
                                 const comp = State.competitions.find(c => c.id === m.competitionId);
                                 const t1 = State.teams.find(t => t.id === m.team1Id);
                                 const t2 = State.teams.find(t => t.id === m.team2Id);
+                                const isFinished = m.status === 'finished';
+
                                 return `
-                                    <div class="item-row" style="flex-direction: column; align-items: flex-start;">
+                                    <div class="item-row" style="flex-direction: column; align-items: flex-start; ${isFinished ? 'opacity: 0.8;' : ''}">
                                         <div style="font-size: 0.7rem; color: var(--accent-blue);">${comp?.name || '---'}${comp?.category && comp.category.toLowerCase() !== 'mixto' ? ' (' + comp.category + ')' : ''} ${m.round && m.round !== 'N/A' ? `- ${m.round.toUpperCase()}` : ''}</div>
                                         <div style="font-weight: 600; font-size: 0.9rem; width: 100%; display: flex; justify-content: space-between;">
                                             <span>
@@ -228,10 +233,14 @@ function renderDashboard(container) {
                                             </span>
                                             <span style="font-size: 0.7rem; color: var(--text-muted);">${m.time}</span>
                                         </div>
-                                        ${m.date ? `<div style="font-size: 0.6rem; color: var(--text-muted); opacity: 0.7;">${m.date}</div>` : ''}
+                                        ${isFinished ? `
+                                            <div style="font-size: 0.8rem; color: var(--accent-yellow); font-weight: 800; margin-top: 4px;">
+                                                <i class="fa-solid fa-check-circle"></i> FINAL: ${m.team1Score} - ${m.team2Score}
+                                            </div>
+                                        ` : (m.date ? `<div style="font-size: 0.6rem; color: var(--text-muted); opacity: 0.7;">${m.date}</div>` : '')}
                                     </div>
                                 `;
-                            }).join('') || '<p style="color: var(--text-muted); font-size: 0.8rem;">No hay partidos pendientes.</p>'}
+                            }).join('') || '<p style="color: var(--text-muted); font-size: 0.8rem;">No hay partidos programados.</p>'}
                     </div>
 
                     <h3 style="margin-top: 40px;"><i class="fa-solid fa-star" style="color: var(--accent-yellow)"></i> MEDALLERO GENERAL</h3>
@@ -1112,22 +1121,25 @@ function renderTeamDetails(teamId, competitions) {
             
             let lastValue = null;
             let densePos = 0;
+            let teamPositions = [];
             results.forEach((res, idx) => {
                 const currentVal = parseVal(res.value);
                 if (currentVal !== lastValue) densePos++;
                 if (res.teamId === teamId) {
                     points += State.pointTable[densePos - 1] || 0;
-                    pos = densePos;
+                    teamPositions.push(densePos);
                 }
                 lastValue = currentVal;
             });
+            pos = teamPositions;
         }
 
         if (points > 0) {
+            const posDisplay = Array.isArray(pos) ? pos.join('°, ') + '°' : pos + '°';
             details.push(`
                 <div style="display: flex; justify-content: space-between; font-size: 0.85rem; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 5px;">
-                    <span style="color: var(--text-muted);">${comp.name} (${pos}°)</span>
-                    <span style="font-weight: 700; color: var(--accent-blue);">+${points}</span>
+                    <span style="color: var(--text-muted); flex: 1;">${comp.name} <small style="opacity: 0.6;">(${comp.rama || comp.category || 'Mixto'})</small> <br> <span style="color: var(--accent-yellow); font-size: 0.75rem;">Posiciones: ${posDisplay}</span></span>
+                    <span style="font-weight: 700; color: var(--accent-blue); align-self: center;">+${points}</span>
                 </div>
             `);
         }
