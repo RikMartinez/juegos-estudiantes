@@ -189,7 +189,10 @@ function renderDashboard(container) {
                     <div style="margin-top: 15px; margin-bottom: 10px;">
                         <select onchange="State.selectedUpcomingDate = this.value; render();" style="width: 100%; background: #1a1c23; border: 1px solid var(--accent-yellow); color: white; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
                             <option value="all">📅 VER TODO EL TORNEO</option>
-                            ${[...new Set(State.matches.filter(m => m.status !== 'finished' && m.date).map(m => m.date))].sort().map(d => 
+                            ${[...new Set(State.matches.filter(m => {
+                                const comp = State.competitions.find(c => c.id === m.competitionId);
+                                return m.status !== 'finished' && (!comp || comp.status !== 'finished') && m.date;
+                            }).map(m => m.date))].sort().map(d => 
                                 `<option value="${d}" ${State.selectedUpcomingDate === d ? 'selected' : ''}>DÍA: ${d}</option>`
                             ).join('')}
                         </select>
