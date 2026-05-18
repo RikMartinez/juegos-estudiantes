@@ -94,6 +94,14 @@ const State = {
         }
     },
 
+    updateAmonestaciones(id, change) {
+        const team = this.teams.find(t => t.id === id);
+        if (team) {
+            team.amonestaciones = Math.max(0, (team.amonestaciones || 0) + change);
+            this.update();
+        }
+    },
+
     addCompetition(name, type, format = 'bracket', category = 'Mixto') {
         this.competitions.push({ id: 'comp-' + Date.now(), name, type, format, category });
         this.update();
