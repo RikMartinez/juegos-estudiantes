@@ -4,69 +4,713 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Los Juegos del Estudiante - Proyección y Control</title>
-    <link rel="icon" type="image/png" href="logo.png">
-    <!-- Google Fonts -->
+    <title>Prepa Chapala Portal</title>
+    <link rel="icon" type="image/svg+xml" href="img/favicon-udg.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
-        href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;600;800&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap"
         rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+            --udg-red: #2ec4b6; /* Mint/Teal accent */
+            --udg-red-dark: #0f9f90;
+            --academic-blue: #00b4d8;
+            --surface: #030f11; /* Deep slate-teal background */
+            --text-dark: #ffffff; /* Bright white for high readability */
+            --text-variant: #a0c2bd; /* Muted sage-teal for secondary text */
+            --border-color: rgba(46, 196, 182, 0.15); /* Glass borders */
+            --card-bg: rgba(14, 43, 50, 0.45); /* Semi-transparent dark teal */
+            --accent-gold: #ffb703; /* Amber accent */
+            --olive-green: #2ec4b6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lexend', sans-serif;
+            background: radial-gradient(circle at 50% 0%, #0d383f 0%, #030f11 100%);
+            background-color: var(--surface);
+            color: var(--text-variant);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        h1,
+        h2,
+        h3,
+        h4 {
+            font-family: 'Outfit', sans-serif;
+            color: var(--text-dark);
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        .main-card {
+            background: rgba(10, 34, 40, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+            margin: 0 auto;
+            width: 100%;
+            max-width: 1280px;
+            overflow: hidden;
+        }
+
+        /* Navbar */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 25px 40px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: var(--text-dark);
+        }
+
+        .brand img {
+            height: 45px;
+            width: auto;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            list-style: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: var(--text-variant);
+            padding-bottom: 5px;
+            transition: color 0.2s;
+        }
+
+        .nav-links li a:hover {
+            color: var(--academic-blue);
+        }
+
+        .nav-links li a.active {
+            color: var(--udg-red);
+            border-bottom: 2px solid var(--udg-red);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 20px;
+            color: var(--text-variant);
+            font-size: 1.15rem;
+            cursor: pointer;
+        }
+
+        .nav-actions i:hover {
+            color: var(--text-dark);
+        }
+
+        /* Hero Section */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            padding: 60px 40px;
+            min-height: 65vh;
+        }
+
+        .hero-content .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(46, 196, 182, 0.1);
+            color: var(--udg-red);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            border: 1px solid rgba(46, 196, 182, 0.2);
+        }
+
+        .hero-content h1 {
+            font-size: 3.2rem;
+            line-height: 1.15;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+            color: var(--text-dark);
+        }
+
+        .hero-content p {
+            color: var(--text-variant);
+            font-size: 1.05rem;
+            margin-bottom: 40px;
+            max-width: 95%;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            cursor: pointer;
+            display: inline-block;
+            text-align: center;
+            border: none;
+            transition: all 0.25s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--udg-red-dark) 0%, var(--udg-red) 100%);
+            color: var(--surface);
+            box-shadow: 0 4px 15px rgba(46, 196, 182, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--udg-red) 0%, #80e8dd 100%);
+            box-shadow: 0 8px 20px rgba(46, 196, 182, 0.4);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--academic-blue);
+            border: 1px solid var(--academic-blue);
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 180, 216, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 180, 216, 0.15);
+        }
+
+        .hero-image {
+            position: relative;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .hero-image-overlay {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            color: white;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        .hero-image-overlay span {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--udg-red);
+        }
+
+        .hero-image-overlay h3 {
+            color: white;
+            font-size: 1.6rem;
+            margin-top: 5px;
+        }
+
+        /* Highlights Section */
+        .highlights {
+            padding: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .highlights-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 30px;
+        }
+
+        .highlights-header h2 {
+            font-size: 1.8rem;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+
+        .highlights-header p {
+            color: var(--text-variant);
+            font-size: 0.9rem;
+        }
+
+        .view-all {
+            color: var(--academic-blue);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: gap 0.2s;
+        }
+
+        .view-all:hover {
+            gap: 8px;
+            color: var(--udg-red);
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .event-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s;
+            cursor: pointer;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(46, 196, 182, 0.15);
+            border-color: rgba(46, 196, 182, 0.4);
+        }
+
+        .card-img-wrapper {
+            position: relative;
+            height: 240px;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .event-card:hover .card-img-wrapper img {
+            transform: scale(1.03);
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            background: var(--academic-blue);
+            color: var(--surface);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .card-badge.gold {
+            background: var(--accent-gold);
+            color: var(--surface);
+        }
+
+        .card-content {
+            padding: 30px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .icon-sports {
+            background: rgba(0, 180, 216, 0.1);
+            color: var(--accent-blue);
+        }
+
+        .icon-culture {
+            background: rgba(255, 183, 3, 0.1);
+            color: var(--accent-gold);
+        }
+
+        .event-card h3 {
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin-bottom: 15px;
+        }
+
+        .event-card p {
+            color: var(--text-variant);
+            font-size: 0.95rem;
+            margin-bottom: 30px;
+            flex-grow: 1;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .card-actions .btn {
+            flex-grow: 1;
+            border-radius: 12px;
+            padding: 14px 20px;
+        }
+
+        .btn-blue {
+            background-color: var(--academic-blue);
+            color: var(--surface);
+        }
+
+        .btn-blue:hover {
+            background-color: #00e5ff;
+            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+        }
+
+        .btn-olive {
+            background-color: var(--accent-gold);
+            color: var(--surface);
+        }
+
+        .btn-olive:hover {
+            background-color: #ffca3a;
+            box-shadow: 0 4px 15px rgba(255, 202, 58, 0.3);
+        }
+
+        .btn-icon-only {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-variant);
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .btn-icon-only:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-dark);
+            border-color: var(--text-variant);
+        }
+
+        /* Launchpad */
+        .launchpad {
+            padding: 40px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .launchpad h3 {
+            font-size: 1.25rem;
+            color: var(--text-dark);
+            margin-bottom: 20px;
+        }
+
+        .launchpad-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 20px;
+        }
+
+        .launchpad-item {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px 15px;
+            text-align: center;
+            color: var(--text-variant);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .launchpad-item:hover {
+            border-color: var(--udg-red);
+            box-shadow: 0 8px 20px rgba(46, 196, 182, 0.15);
+            transform: translateY(-2px);
+            color: var(--text-dark);
+        }
+
+        .launchpad-item i {
+            font-size: 1.8rem;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        /* Footer */
+        footer {
+            background-color: rgba(4, 14, 16, 0.95);
+            padding: 40px;
+            margin-top: 60px;
+            border-top: 1px solid var(--border-color);
+            border-radius: 0 0 24px 24px;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .footer-left h4 {
+            color: var(--udg-red);
+            font-size: 1.15rem;
+            margin-bottom: 5px;
+        }
+
+        .footer-left p {
+            color: var(--text-variant);
+            font-size: 0.85rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .footer-links a {
+            color: var(--text-variant);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--udg-red);
+        }
+
+        @media (max-width: 992px) {
+            .hero {
+                grid-template-columns: 1fr;
+                gap: 40px;
+                padding: 40px;
+            }
+
+            .launchpad-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .launchpad-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-content {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+        }
+    </style>
 </head>
 
-<body class="dark-theme">
-    <div id="app" class="app-shell">
-        <!-- Main Navigation (Only visible for admin/staff) -->
-        <nav class="main-nav" id="main-nav">
-            <div class="nav-logo">
-                <img src="logo.png" alt="" style="height: 60px; width: auto; object-fit: contain; margin-right: 12px;"
-                    onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                <i class="fa-solid fa-trophy" style="display: none;"></i>
-                <span>Juegos del Estudiante</span>
+<body>
+
+    <div class="main-card">
+        <nav>
+            <div class="brand">
+                <img src="img/favicon-udg.svg"
+                    alt="Escudo UdeG" style="height: 50px;">
+                Portal Prepa Chapala
             </div>
             <ul class="nav-links">
-                <li data-view="dashboard" class="active"><i class="fa-solid fa-chart-line"></i> Pizarra</li>
-                <li data-view="report"><i class="fa-solid fa-file-contract"></i> Informe</li>
-                <li data-view="admin" class="hidden"><i class="fa-solid fa-gears"></i> Config</li>
-                <li data-view="capturar" class="hidden"><i class="fa-solid fa-edit"></i> Captura</li>
+                <li><a href="#" class="active">Inicio</a></li>
+                <li><a href="#">Aplicaciones</a></li>
+                <li><a href="#">Academia</a></li>
+                <li><a href="#">Eventos</a></li>
             </ul>
-            <div class="nav-status">
-                <button id="auth-btn" onclick="window.toggleAuth()"
-                    style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); color: var(--text-muted); padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 0.75rem; display: flex; align-items: center; gap: 8px; transition: 0.3s; margin-right: 15px;">
-                    <i class="fa-solid fa-lock"></i> Acceso
-                </button>
-                <span class="sync-dot"></span>
-                <span class="status-text">LIVE</span>
+            <div class="nav-actions">
+                <i class="fa-regular fa-bell"></i>
+                <i class="fa-regular fa-user-circle"></i>
             </div>
         </nav>
 
-        <div id="live-ticker" class="ticker-wrap hidden">
-            <div class="ticker">
-                <div class="ticker__item">¡Bienvenidos a Los Juegos de los Estudiantes! - La competencia ha
-                    comenzado.</div>
+        <section class="hero">
+            <div class="hero-content">
+                <div class="badge">
+                    <i class="fa-solid fa-check-circle"></i> Entorno Digital Oficial
+                </div>
+                <h1>Bienvenido al Portal Digital Institucional</h1>
+                <p>El punto de acceso central para estudiantes y personal de la Preparatoria Regional de Chapala.
+                    Consulta tu información académica, actividades extracurriculares y recursos institucionales en un
+                    solo lugar.</p>
+                <div class="hero-buttons">
+                    <a href="#" class="btn btn-primary">Explorar Portal</a>
+                    <a href="#" class="btn btn-outline">Calendario Académico</a>
+                </div>
             </div>
-        </div>
-        <main class="view-viewport" id="viewport">
-            <!-- Content will be injected here -->
-            <div class="loader-container">
-                <div class="athletic-spinner"></div>
+            <div class="hero-image">
+                <!-- Coloca tu imagen de la portada aquí -->
+                <img src="img/hero-portal.jpg" alt="Dashboard en laptop" onerror="this.src='https://picsum.photos/id/119/1200/800'">
+                <div class="hero-image-overlay">
+                    <span>INNOVACIÓN EN DIFUSIÓN</span>
+                    <h3>Portal Prepa Chapala</h3>
+                </div>
             </div>
-        </main>
+        </section>
+
+        <section class="highlights">
+            <div class="highlights-header">
+                <div>
+                    <h2>Destacados Institucionales</h2>
+                    <p>Participa en nuestros últimos eventos y actividades de tradición.</p>
+                </div>
+                <a href="#" class="view-all">Ver todas las Apps <i class="fa-solid fa-arrow-right"></i></a>
+            </div>
+
+            <div class="cards-grid">
+                <!-- Card 1 -->
+                <div class="event-card">
+                    <div class="card-img-wrapper">
+                        <!-- Coloca tu imagen de los Juegos Deportivos aquí -->
+                        <img src="img/juegos-deportivos.jpg" alt="Atleta" onerror="this.src='https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=800&q=80'">
+                        <span class="card-badge">Competencia en Vivo</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="icon-box icon-sports">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <h3>Juegos de los Estudiantes</h3>
+                        <p>Únete a nuestra máxima tradición deportiva. Celebra el orgullo institucional, consulta
+                            resultados en tiempo real y el progreso de las disciplinas.</p>
+                        <div class="card-actions">
+                            <a href="deportiva/2026/index.html" class="btn btn-blue">Ingresar al Portal</a>
+                            <button class="btn-icon-only"><i class="fa-solid fa-info"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="event-card">
+                    <div class="card-img-wrapper">
+                        <!-- Coloca tu imagen del altar de muertos aquí -->
+                        <img src="img/altar-muertos.jpg" alt="Tradición cultural" onerror="this.src='https://picsum.photos/id/111/800/600'">
+                        <span class="card-badge gold">Tradición Cultural</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="icon-box icon-culture">
+                            <i class="fa-solid fa-palette"></i>
+                        </div>
+                        <h3>Festival de Vida y Muerte</h3>
+                        <p>Celebra nuestras raíces a través del arte, altares tradicionales y exhibiciones. Un espacio
+                            de creatividad, comunidad y homenaje a nuestra historia.</p>
+                        <div class="card-actions">
+                            <a href="cultural/2026/index.html" class="btn btn-olive">Ver Detalles</a>
+                            <button class="btn-icon-only"><i class="fa-solid fa-share-nodes"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="launchpad">
+            <h3>Accesos Rápidos</h3>
+            <div class="launchpad-grid">
+                <a href="#" class="launchpad-item">
+                    <i class="fa-solid fa-graduation-cap" style="color: var(--udg-red);"></i>
+                    Calificaciones
+                </a>
+                <a href="#" class="launchpad-item">
+                    <i class="fa-solid fa-calendar-days" style="color: #4caf50;"></i>
+                    Horarios
+                </a>
+                <a href="#" class="launchpad-item">
+                    <i class="fa-solid fa-book-open" style="color: var(--olive-green);"></i>
+                    Biblioteca
+                </a>
+                <a href="#" class="launchpad-item">
+                    <i class="fa-solid fa-comments" style="color: var(--academic-blue);"></i>
+                    Mensajes
+                </a>
+                <a href="#" class="launchpad-item">
+                    <i class="fa-solid fa-gear" style="color: var(--text-variant);"></i>
+                    Mi Cuenta
+                </a>
+                <a href="#" class="launchpad-item">
+                    <i class="fa-solid fa-circle-question" style="color: var(--udg-red);"></i>
+                    Soporte
+                </a>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-content">
+                <div class="footer-left">
+                    <h4>Prepa Chapala</h4>
+                    <p>© 2026 Preparatoria Regional de Chapala - Universidad de Guadalajara</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#">Políticas de Privacidad</a>
+                    <a href="#">Soporte Técnico</a>
+                    <a href="#">Directorio</a>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <!-- Modals -->
-    <div id="modal-root" class="modal-overlay hidden"></div>
-
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-
-    <!-- App Scripts -->
-    <script src="state.js"></script>
-    <script src="app.js"></script>
 </body>
 
 </html>

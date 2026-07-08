@@ -1,0 +1,602 @@
+:root {
+    /* Colors - Festival de Vida y Muerte Palette */
+    --accent-primary: #ff6b1a;      /* Cempasúchil naranja vivo */
+    --accent-gold: #f5c842;         /* Dorado vela / ofrenda */
+    --accent-pink: #e91e8c;         /* Rosa mexicano / papel picado */
+    --accent-orange: #ff6b1a;       /* Alias para compatibilidad */
+    --accent-yellow: #f5c842;       /* Alias para compatibilidad */
+    --accent-blue: #f5c842;         /* Reemplaza neon azul → dorado cálido */
+    --bg-dark: #110a1a;             /* Morado muy oscuro / noche de difuntos */
+    --bg-card: rgba(35, 18, 48, 0.75);
+    --bg-sidebar: #1a0e28;
+    --text-main: #f5f0eb;           /* Blanco cálido, no frío */
+    --text-muted: #a899b8;          /* Gris lila suave */
+    --border-glass: rgba(245, 200, 66, 0.15);  /* Borde dorado tenue */
+    --success: #7dff6b;
+
+    --font-primary: 'Lexend', sans-serif;
+    --font-heading: 'Outfit', sans-serif;
+
+    --shadow-neon: 0 0 25px rgba(255, 107, 26, 0.3);  /* Halo naranja cempasúchil */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: var(--font-primary);
+    overflow-x: hidden;
+    height: 100vh;
+}
+
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+/* Navigation */
+.main-nav {
+    height: 70px;
+    background: var(--bg-sidebar);
+    border-bottom: 1px solid var(--border-glass);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    z-index: 1000;
+}
+
+.nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 1.4rem;
+    color: var(--accent-yellow);
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 30px;
+}
+
+.nav-links li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 8px 16px;
+    border-radius: 8px;
+}
+
+.nav-links li:hover,
+.nav-links li.active {
+    color: white;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-links li.active {
+    color: var(--accent-yellow);
+    background: rgba(242, 223, 13, 0.1);
+}
+
+.nav-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sync-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--success);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--success);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(1.2);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Viewport */
+.view-viewport {
+    flex: 1;
+    overflow-y: auto;
+    background: radial-gradient(circle at top right, rgba(255, 107, 26, 0.08), transparent 600px),
+        radial-gradient(circle at bottom left, rgba(233, 30, 140, 0.06), transparent 600px),
+        radial-gradient(circle at center, rgba(245, 200, 66, 0.03), transparent 400px);
+}
+
+/* Ticker */
+.ticker-wrap {
+    width: 100%;
+    overflow: hidden;
+    background: rgba(255, 107, 26, 0.12);
+    border-bottom: 1px solid rgba(255, 107, 26, 0.35);
+    height: 35px;
+    display: flex;
+    align-items: center;
+}
+
+.ticker {
+    display: inline-block;
+    white-space: nowrap;
+    animation: ticker 30s linear infinite;
+}
+
+.ticker__item {
+    display: inline-block;
+    padding: 0 4rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent-yellow);
+    text-transform: uppercase;
+}
+
+@keyframes ticker {
+    0% {
+        transform: translateX(100%);
+    }
+
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* Dashboard Styles (Public Projection) */
+.dashboard-public {
+    padding: 20px 40px 40px;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 40px;
+}
+
+.bracket-container {
+    background: var(--bg-card);
+    border-radius: 24px;
+    padding: 30px;
+    border: 1px solid var(--border-glass);
+    display: flex;
+    flex-direction: column;
+}
+
+.bracket-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.bracket-header h2 {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    font-weight: 900;
+}
+
+.bracket-visual {
+    display: flex;
+    justify-content: flex-start;
+    flex: 1;
+    align-items: stretch; /* Crucial: Todas las columnas deben medir lo mismo */
+    gap: 80px;
+    overflow-x: auto;
+    padding: 20px 40px;
+    min-height: 850px; /* Altura mínima base */
+}
+
+.bracket-column {
+    display: flex;
+    flex-direction: column;
+    min-height: 850px; /* Permitir que crezca si hay muchos partidos */
+    min-width: 220px;
+}
+
+.column-title {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--accent-gold);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    height: 20px;
+    /* Título fijo que no afecta el cuerpo */
+}
+
+.bracket-column-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    /* Aquí ocurre la magia de la alineación centrada */
+    flex: 1;
+    position: relative;
+}
+
+.bracket-match {
+    background: var(--bg-card);
+    border: 1px solid var(--border-glass);
+    border-radius: 12px;
+    padding: 12px 15px;
+    width: 220px;
+    height: 85px; 
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Centrado vertical absoluto */
+}
+
+.bracket-match:hover {
+    border-color: var(--accent-primary);
+}
+
+.bracket-match::after {
+    content: '';
+    position: absolute;
+    right: -80px;
+    /* Coincide con el gap del contenedor */
+    top: 50%;
+    width: 80px;
+    height: 2px;
+    background: var(--border-glass);
+    z-index: 1;
+}
+
+.bracket-column:last-child .bracket-match::after {
+    display: none;
+}
+
+.team-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Asegura centrado vertical de la línea */
+    padding: 6px 0;
+    width: 100%;
+}
+
+.team-row.winner {
+    color: var(--accent-yellow);
+    font-weight: 700;
+}
+
+.score {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    min-width: 25px;
+    text-align: right;
+    color: var(--accent-blue);
+}
+
+
+/* Admin Styles (Registration) */
+.admin-container {
+    padding: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.card {
+    background: var(--bg-card);
+    border-radius: 20px;
+    border: 1px solid var(--border-glass);
+    padding: 30px;
+}
+
+.card-header {
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+input,
+select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-glass);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: white;
+    font-family: var(--font-primary);
+    transition: 0.3s;
+}
+
+/* Fix for background in dropdown options */
+select option {
+    background-color: #1a1c23 !important;
+    color: white !important;
+}
+
+input:focus,
+select:focus {
+    border-color: var(--accent-yellow);
+    outline: none;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.btn {
+    background: var(--accent-yellow);
+    color: black;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 107, 26, 0.35);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid var(--border-glass);
+    color: white;
+}
+
+.item-list {
+    margin-top: 20px;
+}
+
+.item-row {
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Utilities */
+.hidden {
+    display: none !important;
+}
+
+.athletic-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--border-glass);
+    border-top-color: var(--accent-yellow);
+    border-radius: 50%;
+    animation: spin 1s infinite linear;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.6;
+        transform: scale(1.02);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.pulse {
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* Modal de Acceso */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: var(--bg-sidebar);
+    border: 1px solid var(--border-glass);
+    padding: 30px;
+    border-radius: 20px;
+    width: 320px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content h3 {
+    margin-bottom: 20px;
+    font-family: var(--font-heading);
+    color: var(--accent-yellow);
+}
+
+.modal-content input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-glass);
+    padding: 12px;
+    border-radius: 10px;
+    color: white;
+    text-align: center;
+    font-size: 1.2rem;
+    letter-spacing: 5px;
+    margin-bottom: 20px;
+    outline: none;
+}
+
+.modal-content input:focus {
+    border-color: var(--accent-yellow);
+    background: rgba(242, 223, 13, 0.05);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+}
+
+/* --- RESPONSIVIDAD (MÓVIL Y TABLET) --- */
+
+@media (max-width: 1024px) {
+    .dashboard-public {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+    
+    .upcoming-sidebar {
+        order: 2;
+    }
+    
+    .bracket-container {
+        order: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-nav {
+        padding: 10px 15px;
+        flex-direction: column;
+        gap: 15px;
+        height: auto;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .nav-links span {
+        display: none; /* Oculta texto en iconos para ahorrar espacio */
+    }
+
+    .nav-status {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .admin-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .bracket-header {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    h1 { font-size: 1.8rem; }
+    h2 { font-size: 1.4rem; }
+    
+    .bracket-visual {
+        padding: 20px 10px;
+        gap: 40px;
+    }
+
+    .bracket-column {
+        min-width: 180px;
+    }
+
+    .bracket-match {
+        width: 180px;
+        height: 70px;
+        padding: 8px;
+    }
+
+    .bracket-match::after {
+        width: 40px;
+        right: -40px;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-logo span {
+        display: none;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .item-row {
+        padding: 8px 0;
+    }
+}

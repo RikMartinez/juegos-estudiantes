@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#110a1a"/>
+  <!-- Skull -->
+  <ellipse cx="32" cy="26" rx="16" ry="14" fill="#f5c842"/>
+  <ellipse cx="26" cy="24" rx="4" ry="5" fill="#110a1a"/>
+  <ellipse cx="38" cy="24" rx="4" ry="5" fill="#110a1a"/>
+  <path d="M28 34 L30 32 L32 34 L34 32 L36 34" stroke="#110a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <!-- Jaw -->
+  <rect x="24" y="37" width="16" height="6" rx="2" fill="#f5c842"/>
+  <line x1="28" y1="37" x2="28" y2="43" stroke="#110a1a" stroke-width="1.5"/>
+  <line x1="32" y1="37" x2="32" y2="43" stroke="#110a1a" stroke-width="1.5"/>
+  <line x1="36" y1="37" x2="36" y2="43" stroke="#110a1a" stroke-width="1.5"/>
+  <!-- Cempasuchil petals -->
+  <circle cx="12" cy="52" r="4" fill="#ff6b1a" opacity="0.9"/>
+  <circle cx="52" cy="52" r="4" fill="#ff6b1a" opacity="0.9"/>
+  <circle cx="10" cy="12" r="3" fill="#e91e8c" opacity="0.7"/>
+  <circle cx="54" cy="12" r="3" fill="#e91e8c" opacity="0.7"/>
+</svg>
