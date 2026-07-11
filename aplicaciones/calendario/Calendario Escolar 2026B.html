@@ -1,0 +1,1833 @@
+<!-- 
+  CALENDARIO ESCOLAR SEMESTRAL GENERADO PARA MOODLE
+  Este archivo es 100% autocontenido, utiliza CSS en línea para máxima compatibilidad con Moodle.
+  Para realizar ajustes, puede volver a cargar el archivo de configuración en la plataforma de edición.
+-->
+<div id="moodle-calendar-widget" class="moodle-calendar-container" style="max-width: 100%;">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
+    .moodle-calendar-container {
+      
+      --moodle-primary: #4f46e5;
+      --moodle-header-bg: #4f46e5;
+      --moodle-header-text: #ffffff;
+      --moodle-cell-radius: 6px;
+      --moodle-font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --moodle-container-border: 1px solid #e2e8f0;
+      --moodle-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    
+      margin: 20px auto;
+      padding: 24px;
+      background-color: #ffffff;
+      border-radius: 12px;
+      font-family: var(--moodle-font);
+      box-shadow: var(--moodle-shadow);
+      border: var(--moodle-container-border);
+      color: #334155;
+      line-height: 1.5;
+    }
+
+    .moodle-header {
+      text-align: center;
+      margin-bottom: 28px;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 16px;
+    }
+
+    .moodle-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--moodle-primary);
+      margin: 0 0 6px 0;
+      letter-spacing: -0.025em;
+    }
+
+    .moodle-subtitle {
+      font-size: 14px;
+      color: #64748b;
+      margin: 0;
+    }
+
+    /* Grid layout for months */
+    .moodle-months-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .moodle-month-card {
+      border: 1px solid #f1f5f9;
+      border-radius: 8px;
+      overflow: hidden;
+      background-color: #fdfdfd;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .moodle-month-card-modern {
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 12px !important;
+      background-color: #ffffff !important;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05) !important;
+      padding: 16px !important;
+      overflow: visible !important;
+    }
+
+    .moodle-month-header-modern {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #f1f5f9;
+      padding-bottom: 8px;
+    }
+
+    .moodle-month-name-modern {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      letter-spacing: -0.01em;
+    }
+
+    .moodle-month-index-modern {
+      font-size: 14px;
+      font-weight: 700;
+      color: #4f46e5;
+    }
+
+    .moodle-month-header {
+      background-color: var(--moodle-header-bg);
+      color: var(--moodle-header-text);
+      text-align: center;
+      padding: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.05em;
+    }
+
+    .moodle-month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr) 32px;
+      gap: 4px;
+      padding: 10px;
+    }
+
+    .moodle-day-name {
+      text-align: center;
+      font-weight: 600;
+      font-size: 11px;
+      color: #64748b;
+      padding: 4px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .moodle-day-name.sunday, .moodle-day-name.saturday {
+      color: #94a3b8;
+    }
+
+    .moodle-day-cell.weekend {
+      background-color: #f8fafc;
+      color: #94a3b8;
+    }
+
+    .moodle-day-name.week-col {
+      color: var(--moodle-primary);
+      border-left: 1px solid #e2e8f0;
+      padding-left: 2px;
+    }
+
+    .moodle-day-cell {
+      aspect-ratio: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--moodle-cell-radius);
+      font-size: 12px;
+      font-weight: 500;
+      position: relative;
+      border: 1px solid #f1f5f9;
+      transition: all 0.15s ease;
+      background-color: #ffffff;
+    }
+
+    .moodle-day-cell.moodle-day-empty {
+      background-color: transparent;
+      border-color: transparent;
+      pointer-events: none;
+    }
+
+    .moodle-day-cell.moodle-week-cell {
+      background-color: #f8fafc;
+      color: var(--moodle-primary);
+      font-size: 10px;
+      font-weight: 600;
+      border-left: 1px solid #e2e8f0;
+      border-right: none;
+      border-top: none;
+      border-bottom: none;
+      border-radius: 0;
+      aspect-ratio: auto;
+      height: 100%;
+    }
+
+    .moodle-day-number {
+      z-index: 2;
+    }
+
+    /* Badges within cells */
+    .moodle-cell-badge {
+      font-size: 8px;
+      font-weight: 700;
+      line-height: 1;
+      padding: 1.5px 3px;
+      border-radius: 3px;
+      margin-top: 2px;
+      z-index: 2;
+      letter-spacing: -0.02em;
+    }
+
+    .badge-inicio {
+      background-color: #16a34a;
+      color: #ffffff;
+    }
+    
+    .badge-sus {
+      background-color: #ffffff;
+      color: #ef4444;
+      border: 1px solid #ef4444;
+    }
+
+    .badge-ord {
+      background-color: #ffffff;
+      color: #8b5cf6;
+      border: 1px solid #8b5cf6;
+    }
+
+    .badge-ext {
+      background-color: #ffffff;
+      color: #1e3a8a;
+      border: 1px solid #1e3a8a;
+    }
+
+    /* Tooltip styles (Pure CSS - 100% Moodle Compatible) */
+    .moodle-tooltip-target {
+      cursor: help;
+    }
+
+    .moodle-tooltip-target::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 125%;
+      left: 50%;
+      transform: translateX(-50%) scale(0.9);
+      background-color: #0f172a;
+      color: #ffffff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 400;
+      white-space: pre;
+      line-height: 1.4;
+      z-index: 100;
+      text-align: left;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+      width: max-content;
+      max-width: 260px;
+    }
+
+    .moodle-tooltip-target::before {
+      content: '';
+      position: absolute;
+      bottom: 115%;
+      left: 50%;
+      transform: translateX(-50%) scale(0.9);
+      border-width: 5px;
+      border-style: solid;
+      border-color: #0f172a transparent transparent transparent;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease-in-out, transform 0.15s ease-in-out;
+    }
+
+    .moodle-tooltip-target:hover::after,
+    .moodle-tooltip-target:hover::before {
+      opacity: 1;
+      transform: translateX(-50%) scale(1);
+    }
+
+    /* Category Background Color rules */
+    
+      .cat-primera_evaluacion {
+        background-color: #fef08a !important;
+        color: #854d0e !important;
+        border: 1px solid #e2e8f0;
+      }
+    
+
+      .cat-segunda_evaluacion {
+        background-color: #bbf7d0 !important;
+        color: #166534 !important;
+        border: 1px solid #e2e8f0;
+      }
+    
+
+      .cat-examenes_transversales {
+        background-color: #bbf7d0 !important;
+        color: #1e1b4b !important;
+        border: 2.5px solid #a855f7;
+      }
+    
+
+      .cat-examenes_ingles {
+        background-color: #bbf7d0 !important;
+        color: #1e3a8a !important;
+        border: 2.5px solid #3b82f6;
+      }
+    
+
+      .cat-examenes_departamentales {
+        background-color: #86efac !important;
+        color: #b91c1c !important;
+        border: 1px solid #15803d;
+      }
+    
+
+      .cat-suspension_oficial {
+        background-color: #ef4444 !important;
+        color: #ffffff !important;
+        border: 1px solid #e2e8f0;
+      }
+    
+
+      .cat-cierre_ordinaria {
+        background-color: #8b5cf6 !important;
+        color: #ffffff !important;
+        border: 1px solid #e2e8f0;
+      }
+    
+
+      .cat-cierre_extraordinaria {
+        background-color: #1e3a8a !important;
+        color: #ffffff !important;
+        border: 1px solid #e2e8f0;
+      }
+    
+
+      .cat-trabajo_colegiado {
+        background-color: #dbeafe !important;
+        color: #1e40af !important;
+        border: 1px solid #93c5fd;
+      }
+    
+
+      .cat-formacion_docente {
+        background-color: #f3e8ff !important;
+        color: #6b21a8 !important;
+        border: 1px solid #c084fc;
+      }
+    
+
+      .cat-vacaciones {
+        background-color: #ffedd5 !important;
+        color: #9a3412 !important;
+        border: 1px solid #e2e8f0;
+      }
+    
+
+    /* Legend Section */
+    .moodle-legend-section {
+      background-color: #f8fafc;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 28px;
+      border: 1px solid #edf2f7;
+    }
+
+    .moodle-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-top: 0;
+      margin-bottom: 14px;
+      letter-spacing: 0.05em;
+      border-left: 3px solid var(--moodle-primary);
+      padding-left: 8px;
+    }
+
+    .moodle-legend-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+    }
+
+    .moodle-legend-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .moodle-legend-color-box {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .moodle-legend-badge-text {
+      font-size: 8px;
+      font-weight: 700;
+    }
+
+    .moodle-legend-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .moodle-legend-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .moodle-legend-desc {
+      font-size: 10px;
+      color: #64748b;
+      margin: 1px 0 0 0;
+      line-height: 1.3;
+    }
+
+    /* Tables Style */
+    .moodle-table-section {
+      margin-bottom: 28px;
+    }
+
+    .moodle-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+
+    .moodle-table th {
+      background-color: #f8fafc;
+      color: #475569;
+      font-weight: 600;
+      padding: 10px 14px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .moodle-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: top;
+    }
+
+    .moodle-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .moodle-table tr:hover {
+      background-color: #f8fafc;
+    }
+
+    .moodle-table-notes {
+      font-size: 11px;
+      color: #64748b;
+      margin-top: 3px;
+    }
+
+    /* Instructions block */
+    .moodle-instructions {
+      background-color: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 12px;
+      color: #1e40af;
+      margin-top: 20px;
+    }
+
+    .moodle-instructions p {
+      margin: 4px 0 0 0;
+    }
+
+    /* Responsiveness adjustments */
+    @media (max-width: 640px) {
+      .moodle-calendar-container {
+        padding: 14px;
+      }
+      .moodle-months-grid {
+        grid-template-columns: 1fr;
+      }
+      .moodle-title {
+        font-size: 18px;
+      }
+      .moodle-table th, .moodle-table td {
+        padding: 8px 10px;
+        font-size: 11px;
+      }
+    }
+  </style>
+
+  <!-- Header -->
+  <div class="moodle-header">
+    <h2 class="moodle-title">Calendario Escolar Ciclo 2026 "B"</h2>
+    <p class="moodle-subtitle">Escuela Preparatoria Regional de Chapala - Horarios y Eventos Significativos</p>
+  </div>
+
+  <!-- Calendar Grid -->
+  <div class="moodle-months-grid">
+    
+    <div class="moodle-month-card moodle-month-card-modern">
+      <div class="moodle-month-header-modern">
+          <span class="moodle-month-name-modern">AGOSTO</span>
+          <span class="moodle-month-index-modern">08</span>
+         </div>
+      <div class="moodle-month-grid">
+        <!-- Day Names -->
+        <div class="moodle-day-name sunday">D</div>
+        <div class="moodle-day-name">L</div>
+        <div class="moodle-day-name">M</div>
+        <div class="moodle-day-name">M</div>
+        <div class="moodle-day-name">J</div>
+        <div class="moodle-day-name">V</div>
+        <div class="moodle-day-name saturday">S</div>
+        <div class="moodle-day-name week-col">Sem</div>
+
+        <!-- Empty spots before first day -->
+        <div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">1</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell"></div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">2</span>
+          
+        </div>
+      
+        <div data-tooltip="• Fecha para registro de resoluciones por equivalencias, acreditaciones, revalidaciones, acreditación por competencias y examen de recuperación de posgrado (2026-07-16 al 2026-08-14)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">3</span>
+          
+        </div>
+      
+        <div data-tooltip="• Fecha para registro de resoluciones por equivalencias, acreditaciones, revalidaciones, acreditación por competencias y examen de recuperación de posgrado (2026-07-16 al 2026-08-14)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">4</span>
+          
+        </div>
+      
+        <div data-tooltip="• Fecha para registro de resoluciones por equivalencias, acreditaciones, revalidaciones, acreditación por competencias y examen de recuperación de posgrado (2026-07-16 al 2026-08-14)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">5</span>
+          
+        </div>
+      
+        <div data-tooltip="• Fecha para registro de resoluciones por equivalencias, acreditaciones, revalidaciones, acreditación por competencias y examen de recuperación de posgrado (2026-07-16 al 2026-08-14)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">6</span>
+          
+        </div>
+      
+        <div data-tooltip="• Fecha para registro de resoluciones por equivalencias, acreditaciones, revalidaciones, acreditación por competencias y examen de recuperación de posgrado (2026-07-16 al 2026-08-14)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">7</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">8</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell"></div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">9</span>
+          
+        </div>
+      
+        <div data-tooltip="• Inicio de cursos 2026 &quot;B&quot; (2026-08-10)\n• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)\n• Fecha para registro de resoluciones por equivalencias, acreditaciones, revalidaciones, acreditación por competencias y examen de recuperación de posgrado (2026-07-16 al 2026-08-14)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">10</span>
+          <span class="moodle-cell-badge badge-inicio">Inicio</span>
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)\n• Fecha para registro de resoluciones por equivalencias, acreditaciones, revalidaciones, acreditación por competencias y examen de recuperación de posgrado (2026-07-16 al 2026-08-14)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">11</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)\n• Fecha para registro de resoluciones por equivalencias, acreditaciones, revalidaciones, acreditación por competencias y examen de recuperación de posgrado (2026-07-16 al 2026-08-14)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">12</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)\n• Fecha para registro de resoluciones por equivalencias, acreditaciones, revalidaciones, acreditación por competencias y examen de recuperación de posgrado (2026-07-16 al 2026-08-14)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">13</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)\n• Fecha para registro de resoluciones por equivalencias, acreditaciones, revalidaciones, acreditación por competencias y examen de recuperación de posgrado (2026-07-16 al 2026-08-14)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">14</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">15</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">1</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">16</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">17</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">18</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">19</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">20</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">21</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">22</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">2</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">23</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">24</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">25</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">26</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">27</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">28</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">29</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">3</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">30</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">31</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-week-cell">4</div>
+      </div>
+    </div>
+    <div class="moodle-month-card moodle-month-card-modern">
+      <div class="moodle-month-header-modern">
+          <span class="moodle-month-name-modern">SEPTIEMBRE</span>
+          <span class="moodle-month-index-modern">09</span>
+         </div>
+      <div class="moodle-month-grid">
+        <!-- Day Names -->
+        <div class="moodle-day-name sunday">D</div>
+        <div class="moodle-day-name">L</div>
+        <div class="moodle-day-name">M</div>
+        <div class="moodle-day-name">M</div>
+        <div class="moodle-day-name">J</div>
+        <div class="moodle-day-name">V</div>
+        <div class="moodle-day-name saturday">S</div>
+        <div class="moodle-day-name week-col">Sem</div>
+
+        <!-- Empty spots before first day -->
+        <div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div>
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">1</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">2</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">3</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">4</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">5</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">4</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">6</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">7</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">8</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">9</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">10</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">11</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">12</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">5</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">13</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">14</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">15</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)\n• Suspensión oficial - Independencia de México (2026-09-16)" class="moodle-day-cell cat-suspension_oficial has-events moodle-tooltip-target">
+          <span class="moodle-day-number">16</span>
+          <span class="moodle-cell-badge badge-sus">SUS</span>
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">17</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">18</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">19</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">6</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">20</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">21</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">22</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">23</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">24</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">25</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">26</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">7</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">27</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">28</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">29</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">30</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-week-cell">8</div>
+      </div>
+    </div>
+    <div class="moodle-month-card moodle-month-card-modern">
+      <div class="moodle-month-header-modern">
+          <span class="moodle-month-name-modern">OCTUBRE</span>
+          <span class="moodle-month-index-modern">10</span>
+         </div>
+      <div class="moodle-month-grid">
+        <!-- Day Names -->
+        <div class="moodle-day-name sunday">D</div>
+        <div class="moodle-day-name">L</div>
+        <div class="moodle-day-name">M</div>
+        <div class="moodle-day-name">M</div>
+        <div class="moodle-day-name">J</div>
+        <div class="moodle-day-name">V</div>
+        <div class="moodle-day-name saturday">S</div>
+        <div class="moodle-day-name week-col">Sem</div>
+
+        <!-- Empty spots before first day -->
+        <div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div>
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">1</span>
+          
+        </div>
+      
+        <div data-tooltip="• Primer Corte de Evaluación (2026-08-10 al 2026-10-02)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">2</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">3</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">8</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">4</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Exámenes Transversales (2026-10-05 al 2026-10-16)" class="moodle-day-cell cat-examenes_transversales has-events moodle-tooltip-target">
+          <span class="moodle-day-number">5</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Exámenes Transversales (2026-10-05 al 2026-10-16)" class="moodle-day-cell cat-examenes_transversales has-events moodle-tooltip-target">
+          <span class="moodle-day-number">6</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Exámenes Transversales (2026-10-05 al 2026-10-16)" class="moodle-day-cell cat-examenes_transversales has-events moodle-tooltip-target">
+          <span class="moodle-day-number">7</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Exámenes Transversales (2026-10-05 al 2026-10-16)" class="moodle-day-cell cat-examenes_transversales has-events moodle-tooltip-target">
+          <span class="moodle-day-number">8</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Exámenes Transversales (2026-10-05 al 2026-10-16)" class="moodle-day-cell cat-examenes_transversales has-events moodle-tooltip-target">
+          <span class="moodle-day-number">9</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">10</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">9</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">11</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Exámenes Transversales (2026-10-05 al 2026-10-16)\n• Suspensión oficial - Día de la Raza (2026-10-12)" class="moodle-day-cell cat-suspension_oficial has-events moodle-tooltip-target">
+          <span class="moodle-day-number">12</span>
+          <span class="moodle-cell-badge badge-sus">SUS</span>
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Exámenes Transversales (2026-10-05 al 2026-10-16)" class="moodle-day-cell cat-examenes_transversales has-events moodle-tooltip-target">
+          <span class="moodle-day-number">13</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Exámenes Transversales (2026-10-05 al 2026-10-16)" class="moodle-day-cell cat-examenes_transversales has-events moodle-tooltip-target">
+          <span class="moodle-day-number">14</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Exámenes Transversales (2026-10-05 al 2026-10-16)" class="moodle-day-cell cat-examenes_transversales has-events moodle-tooltip-target">
+          <span class="moodle-day-number">15</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Exámenes Transversales (2026-10-05 al 2026-10-16)" class="moodle-day-cell cat-examenes_transversales has-events moodle-tooltip-target">
+          <span class="moodle-day-number">16</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">17</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">10</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">18</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">19</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">20</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">21</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">22</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">23</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">24</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">11</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">25</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">26</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">27</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">28</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">29</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">30</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">31</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">12</div>
+      </div>
+    </div>
+    <div class="moodle-month-card moodle-month-card-modern">
+      <div class="moodle-month-header-modern">
+          <span class="moodle-month-name-modern">NOVIEMBRE</span>
+          <span class="moodle-month-index-modern">11</span>
+         </div>
+      <div class="moodle-month-grid">
+        <!-- Day Names -->
+        <div class="moodle-day-name sunday">D</div>
+        <div class="moodle-day-name">L</div>
+        <div class="moodle-day-name">M</div>
+        <div class="moodle-day-name">M</div>
+        <div class="moodle-day-name">J</div>
+        <div class="moodle-day-name">V</div>
+        <div class="moodle-day-name saturday">S</div>
+        <div class="moodle-day-name week-col">Sem</div>
+
+        <!-- Empty spots before first day -->
+        
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">1</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Suspensión oficial - Día de Muertos (2026-11-02)" class="moodle-day-cell cat-suspension_oficial has-events moodle-tooltip-target">
+          <span class="moodle-day-number">2</span>
+          <span class="moodle-cell-badge badge-sus">SUS</span>
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Suspensión oficial de actividades (2026-11-03)" class="moodle-day-cell cat-suspension_oficial has-events moodle-tooltip-target">
+          <span class="moodle-day-number">3</span>
+          <span class="moodle-cell-badge badge-sus">SUS</span>
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">4</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">5</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">6</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">7</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">13</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">8</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">9</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">10</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">11</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">12</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)" class="moodle-day-cell cat-segunda_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">13</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">14</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">14</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">15</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Suspensión oficial - Conmemoración de la Revolución Mexicana (2026-11-16)" class="moodle-day-cell cat-suspension_oficial has-events moodle-tooltip-target">
+          <span class="moodle-day-number">16</span>
+          <span class="moodle-cell-badge badge-sus">SUS</span>
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Exámenes de Inglés (2026-11-17 al 2026-11-20)" class="moodle-day-cell cat-examenes_ingles has-events moodle-tooltip-target">
+          <span class="moodle-day-number">17</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Exámenes de Inglés (2026-11-17 al 2026-11-20)" class="moodle-day-cell cat-examenes_ingles has-events moodle-tooltip-target">
+          <span class="moodle-day-number">18</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Exámenes de Inglés (2026-11-17 al 2026-11-20)" class="moodle-day-cell cat-examenes_ingles has-events moodle-tooltip-target">
+          <span class="moodle-day-number">19</span>
+          
+        </div>
+      
+        <div data-tooltip="• Segundo Corte de Evaluación (2026-10-05 al 2026-11-20)\n• Exámenes de Inglés (2026-11-17 al 2026-11-20)" class="moodle-day-cell cat-examenes_ingles has-events moodle-tooltip-target">
+          <span class="moodle-day-number">20</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">21</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">15</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">22</span>
+          
+        </div>
+      
+        <div data-tooltip="• Exámenes Departamentales (2026-11-23 al 2026-11-27)" class="moodle-day-cell cat-examenes_departamentales has-events moodle-tooltip-target">
+          <span class="moodle-day-number">23</span>
+          <span class="moodle-cell-badge">DEP</span>
+        </div>
+      
+        <div data-tooltip="• Exámenes Departamentales (2026-11-23 al 2026-11-27)" class="moodle-day-cell cat-examenes_departamentales has-events moodle-tooltip-target">
+          <span class="moodle-day-number">24</span>
+          <span class="moodle-cell-badge">DEP</span>
+        </div>
+      
+        <div data-tooltip="• Exámenes Departamentales (2026-11-23 al 2026-11-27)" class="moodle-day-cell cat-examenes_departamentales has-events moodle-tooltip-target">
+          <span class="moodle-day-number">25</span>
+          <span class="moodle-cell-badge">DEP</span>
+        </div>
+      
+        <div data-tooltip="• Exámenes Departamentales (2026-11-23 al 2026-11-27)" class="moodle-day-cell cat-examenes_departamentales has-events moodle-tooltip-target">
+          <span class="moodle-day-number">26</span>
+          <span class="moodle-cell-badge">DEP</span>
+        </div>
+      
+        <div data-tooltip="• Exámenes Departamentales (2026-11-23 al 2026-11-27)" class="moodle-day-cell cat-examenes_departamentales has-events moodle-tooltip-target">
+          <span class="moodle-day-number">27</span>
+          <span class="moodle-cell-badge">DEP</span>
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">28</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">16</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">29</span>
+          
+        </div>
+      
+        <div data-tooltip="• Fecha límite para registro y publicación de evaluación continua en periodo ordinario (2026-11-30)" class="moodle-day-cell cat-cierre_ordinaria has-events moodle-tooltip-target">
+          <span class="moodle-day-number">30</span>
+          <span class="moodle-cell-badge badge-ord">ORD</span>
+        </div>
+      <div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-week-cell">17</div>
+      </div>
+    </div>
+    <div class="moodle-month-card moodle-month-card-modern">
+      <div class="moodle-month-header-modern">
+          <span class="moodle-month-name-modern">DICIEMBRE</span>
+          <span class="moodle-month-index-modern">12</span>
+         </div>
+      <div class="moodle-month-grid">
+        <!-- Day Names -->
+        <div class="moodle-day-name sunday">D</div>
+        <div class="moodle-day-name">L</div>
+        <div class="moodle-day-name">M</div>
+        <div class="moodle-day-name">M</div>
+        <div class="moodle-day-name">J</div>
+        <div class="moodle-day-name">V</div>
+        <div class="moodle-day-name saturday">S</div>
+        <div class="moodle-day-name week-col">Sem</div>
+
+        <!-- Empty spots before first day -->
+        <div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div>
+        <div data-tooltip="• Cierre de Evaluación Extraordinaria (2026-12-01 al 2026-12-03)" class="moodle-day-cell cat-cierre_extraordinaria has-events moodle-tooltip-target">
+          <span class="moodle-day-number">1</span>
+          <span class="moodle-cell-badge badge-ext">EXT</span>
+        </div>
+      
+        <div data-tooltip="• Cierre de Evaluación Extraordinaria (2026-12-01 al 2026-12-03)" class="moodle-day-cell cat-cierre_extraordinaria has-events moodle-tooltip-target">
+          <span class="moodle-day-number">2</span>
+          <span class="moodle-cell-badge badge-ext">EXT</span>
+        </div>
+      
+        <div data-tooltip="• Cierre de Evaluación Extraordinaria (2026-12-01 al 2026-12-03)\n• Cierre de registro de calificaciones 2026 &quot;B&quot; (Extraordinario) (2026-12-03)" class="moodle-day-cell cat-cierre_extraordinaria has-events moodle-tooltip-target">
+          <span class="moodle-day-number">3</span>
+          <span class="moodle-cell-badge badge-ext">EXT</span>
+        </div>
+      
+        <div data-tooltip="• Entrega de Informe Final (2026-12-04)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">4</span>
+          <span class="moodle-cell-badge">INF</span>
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">5</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">17</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">6</span>
+          
+        </div>
+      
+        <div data-tooltip="• Trabajo Colegiado (2026-12-07 al 2026-12-18)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">7</span>
+          
+        </div>
+      
+        <div data-tooltip="• Trabajo Colegiado (2026-12-07 al 2026-12-18)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">8</span>
+          
+        </div>
+      
+        <div data-tooltip="• Trabajo Colegiado (2026-12-07 al 2026-12-18)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">9</span>
+          
+        </div>
+      
+        <div data-tooltip="• Trabajo Colegiado (2026-12-07 al 2026-12-18)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">10</span>
+          
+        </div>
+      
+        <div data-tooltip="• Trabajo Colegiado (2026-12-07 al 2026-12-18)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">11</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">12</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">18</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">13</span>
+          
+        </div>
+      
+        <div data-tooltip="• Trabajo Colegiado (2026-12-07 al 2026-12-18)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">14</span>
+          
+        </div>
+      
+        <div data-tooltip="• Trabajo Colegiado (2026-12-07 al 2026-12-18)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">15</span>
+          
+        </div>
+      
+        <div data-tooltip="• Trabajo Colegiado (2026-12-07 al 2026-12-18)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">16</span>
+          
+        </div>
+      
+        <div data-tooltip="• Trabajo Colegiado (2026-12-07 al 2026-12-18)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">17</span>
+          
+        </div>
+      
+        <div data-tooltip="• Trabajo Colegiado (2026-12-07 al 2026-12-18)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">18</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">19</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell">19</div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">20</span>
+          
+        </div>
+      
+        <div data-tooltip="• Vacaciones de invierno (2026-12-19 al 2027-01-06)" class="moodle-day-cell cat-vacaciones has-events moodle-tooltip-target">
+          <span class="moodle-day-number">21</span>
+          <span class="moodle-cell-badge">VAC</span>
+        </div>
+      
+        <div data-tooltip="• Vacaciones de invierno (2026-12-19 al 2027-01-06)" class="moodle-day-cell cat-vacaciones has-events moodle-tooltip-target">
+          <span class="moodle-day-number">22</span>
+          <span class="moodle-cell-badge">VAC</span>
+        </div>
+      
+        <div data-tooltip="• Vacaciones de invierno (2026-12-19 al 2027-01-06)" class="moodle-day-cell cat-vacaciones has-events moodle-tooltip-target">
+          <span class="moodle-day-number">23</span>
+          <span class="moodle-cell-badge">VAC</span>
+        </div>
+      
+        <div data-tooltip="• Vacaciones de invierno (2026-12-19 al 2027-01-06)" class="moodle-day-cell cat-vacaciones has-events moodle-tooltip-target">
+          <span class="moodle-day-number">24</span>
+          <span class="moodle-cell-badge">VAC</span>
+        </div>
+      
+        <div data-tooltip="• Vacaciones de invierno (2026-12-19 al 2027-01-06)" class="moodle-day-cell cat-vacaciones has-events moodle-tooltip-target">
+          <span class="moodle-day-number">25</span>
+          <span class="moodle-cell-badge">VAC</span>
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">26</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell"></div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">27</span>
+          
+        </div>
+      
+        <div data-tooltip="• Vacaciones de invierno (2026-12-19 al 2027-01-06)" class="moodle-day-cell cat-vacaciones has-events moodle-tooltip-target">
+          <span class="moodle-day-number">28</span>
+          <span class="moodle-cell-badge">VAC</span>
+        </div>
+      
+        <div data-tooltip="• Vacaciones de invierno (2026-12-19 al 2027-01-06)" class="moodle-day-cell cat-vacaciones has-events moodle-tooltip-target">
+          <span class="moodle-day-number">29</span>
+          <span class="moodle-cell-badge">VAC</span>
+        </div>
+      
+        <div data-tooltip="• Vacaciones de invierno (2026-12-19 al 2027-01-06)" class="moodle-day-cell cat-vacaciones has-events moodle-tooltip-target">
+          <span class="moodle-day-number">30</span>
+          <span class="moodle-cell-badge">VAC</span>
+        </div>
+      
+        <div data-tooltip="• Vacaciones de invierno (2026-12-19 al 2027-01-06)" class="moodle-day-cell cat-vacaciones has-events moodle-tooltip-target">
+          <span class="moodle-day-number">31</span>
+          <span class="moodle-cell-badge">VAC</span>
+        </div>
+      <div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-week-cell"></div>
+      </div>
+    </div>
+    <div class="moodle-month-card moodle-month-card-modern">
+      <div class="moodle-month-header-modern">
+          <span class="moodle-month-name-modern">ENERO</span>
+          <span class="moodle-month-index-modern">01</span>
+         </div>
+      <div class="moodle-month-grid">
+        <!-- Day Names -->
+        <div class="moodle-day-name sunday">D</div>
+        <div class="moodle-day-name">L</div>
+        <div class="moodle-day-name">M</div>
+        <div class="moodle-day-name">M</div>
+        <div class="moodle-day-name">J</div>
+        <div class="moodle-day-name">V</div>
+        <div class="moodle-day-name saturday">S</div>
+        <div class="moodle-day-name week-col">Sem</div>
+
+        <!-- Empty spots before first day -->
+        <div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div>
+        <div data-tooltip="• Vacaciones de invierno (2026-12-19 al 2027-01-06)" class="moodle-day-cell cat-vacaciones has-events moodle-tooltip-target">
+          <span class="moodle-day-number">1</span>
+          <span class="moodle-cell-badge">VAC</span>
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">2</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell"></div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">3</span>
+          
+        </div>
+      
+        <div data-tooltip="• Vacaciones de invierno (2026-12-19 al 2027-01-06)" class="moodle-day-cell cat-vacaciones has-events moodle-tooltip-target">
+          <span class="moodle-day-number">4</span>
+          <span class="moodle-cell-badge">VAC</span>
+        </div>
+      
+        <div data-tooltip="• Vacaciones de invierno (2026-12-19 al 2027-01-06)" class="moodle-day-cell cat-vacaciones has-events moodle-tooltip-target">
+          <span class="moodle-day-number">5</span>
+          <span class="moodle-cell-badge">VAC</span>
+        </div>
+      
+        <div data-tooltip="• Vacaciones de invierno (2026-12-19 al 2027-01-06)" class="moodle-day-cell cat-vacaciones has-events moodle-tooltip-target">
+          <span class="moodle-day-number">6</span>
+          <span class="moodle-cell-badge">VAC</span>
+        </div>
+      
+        <div data-tooltip="• Programas de formación docente (2027-01-07 al 2027-01-15)" class="moodle-day-cell cat-formacion_docente has-events moodle-tooltip-target">
+          <span class="moodle-day-number">7</span>
+          
+        </div>
+      
+        <div data-tooltip="• Programas de formación docente (2027-01-07 al 2027-01-15)" class="moodle-day-cell cat-formacion_docente has-events moodle-tooltip-target">
+          <span class="moodle-day-number">8</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">9</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell"></div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">10</span>
+          
+        </div>
+      
+        <div data-tooltip="• Programas de formación docente (2027-01-07 al 2027-01-15)\n• Registro a cursos de reingreso para ciclo escolar 2027 &quot;A&quot; (2027-01-11 al 2027-01-15)\n• Registro a cursos de primer ingreso para el ciclo 2027 &quot;A&quot; (2027-01-11 al 2027-01-15)" class="moodle-day-cell cat-formacion_docente has-events moodle-tooltip-target">
+          <span class="moodle-day-number">11</span>
+          
+        </div>
+      
+        <div data-tooltip="• Programas de formación docente (2027-01-07 al 2027-01-15)\n• Registro a cursos de reingreso para ciclo escolar 2027 &quot;A&quot; (2027-01-11 al 2027-01-15)\n• Registro a cursos de primer ingreso para el ciclo 2027 &quot;A&quot; (2027-01-11 al 2027-01-15)" class="moodle-day-cell cat-formacion_docente has-events moodle-tooltip-target">
+          <span class="moodle-day-number">12</span>
+          
+        </div>
+      
+        <div data-tooltip="• Programas de formación docente (2027-01-07 al 2027-01-15)\n• Registro a cursos de reingreso para ciclo escolar 2027 &quot;A&quot; (2027-01-11 al 2027-01-15)\n• Registro a cursos de primer ingreso para el ciclo 2027 &quot;A&quot; (2027-01-11 al 2027-01-15)" class="moodle-day-cell cat-formacion_docente has-events moodle-tooltip-target">
+          <span class="moodle-day-number">13</span>
+          
+        </div>
+      
+        <div data-tooltip="• Programas de formación docente (2027-01-07 al 2027-01-15)\n• Registro a cursos de reingreso para ciclo escolar 2027 &quot;A&quot; (2027-01-11 al 2027-01-15)\n• Registro a cursos de primer ingreso para el ciclo 2027 &quot;A&quot; (2027-01-11 al 2027-01-15)" class="moodle-day-cell cat-formacion_docente has-events moodle-tooltip-target">
+          <span class="moodle-day-number">14</span>
+          
+        </div>
+      
+        <div data-tooltip="• Programas de formación docente (2027-01-07 al 2027-01-15)\n• Fin del ciclo escolar 2026 &quot;B&quot; (2027-01-15)\n• Registro a cursos de reingreso para ciclo escolar 2027 &quot;A&quot; (2027-01-11 al 2027-01-15)\n• Registro a cursos de primer ingreso para el ciclo 2027 &quot;A&quot; (2027-01-11 al 2027-01-15)" class="moodle-day-cell cat-formacion_docente has-events moodle-tooltip-target">
+          <span class="moodle-day-number">15</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">16</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell"></div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">17</span>
+          
+        </div>
+      
+        <div data-tooltip="• Inicio del semestre 2027 &quot;A&quot; (2027-01-18)\n• Ajuste de reingreso para el ciclo escolar 2027 &quot;A&quot; (2027-01-18 al 2027-01-22)" class="moodle-day-cell cat-primera_evaluacion has-events moodle-tooltip-target">
+          <span class="moodle-day-number">18</span>
+          <span class="moodle-cell-badge badge-inicio">Inicio</span>
+        </div>
+      
+        <div data-tooltip="• Ajuste de reingreso para el ciclo escolar 2027 &quot;A&quot; (2027-01-18 al 2027-01-22)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">19</span>
+          
+        </div>
+      
+        <div data-tooltip="• Ajuste de reingreso para el ciclo escolar 2027 &quot;A&quot; (2027-01-18 al 2027-01-22)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">20</span>
+          
+        </div>
+      
+        <div data-tooltip="• Ajuste de reingreso para el ciclo escolar 2027 &quot;A&quot; (2027-01-18 al 2027-01-22)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">21</span>
+          
+        </div>
+      
+        <div data-tooltip="• Ajuste de reingreso para el ciclo escolar 2027 &quot;A&quot; (2027-01-18 al 2027-01-22)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">22</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">23</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell"></div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">24</span>
+          
+        </div>
+      
+        <div data-tooltip="• Ajuste de reingreso para el ciclo escolar 2027 &quot;A&quot; (2027-01-25 al 2027-01-29)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">25</span>
+          
+        </div>
+      
+        <div data-tooltip="• Ajuste de reingreso para el ciclo escolar 2027 &quot;A&quot; (2027-01-25 al 2027-01-29)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">26</span>
+          
+        </div>
+      
+        <div data-tooltip="• Ajuste de reingreso para el ciclo escolar 2027 &quot;A&quot; (2027-01-25 al 2027-01-29)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">27</span>
+          
+        </div>
+      
+        <div data-tooltip="• Ajuste de reingreso para el ciclo escolar 2027 &quot;A&quot; (2027-01-25 al 2027-01-29)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">28</span>
+          
+        </div>
+      
+        <div data-tooltip="• Ajuste de reingreso para el ciclo escolar 2027 &quot;A&quot; (2027-01-25 al 2027-01-29)" class="moodle-day-cell cat-trabajo_colegiado has-events moodle-tooltip-target">
+          <span class="moodle-day-number">29</span>
+          
+        </div>
+      
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">30</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-week-cell"></div>
+        <div class="moodle-day-cell weekend">
+          <span class="moodle-day-number">31</span>
+          
+        </div>
+      <div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-day-empty"></div><div class="moodle-day-cell moodle-week-cell"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend Section -->
+  
+    <div class="moodle-legend-section">
+      <h3 class="moodle-section-title">REFERENCIA DE ACTIVIDADES</h3>
+      <div class="moodle-legend-grid">
+    
+        <div class="moodle-legend-item">
+          <div class="moodle-legend-color-box" style="background-color: #fef08a; border: 1px solid #cbd5e1;">
+            
+          </div>
+          <div class="moodle-legend-info">
+            <span class="moodle-legend-name">Primer Corte de Evaluación</span>
+            <p class="moodle-legend-desc">Periodo de clases correspondiente al primer bloque de evaluación continua.</p>
+          </div>
+        </div>
+      
+        <div class="moodle-legend-item">
+          <div class="moodle-legend-color-box" style="background-color: #bbf7d0; border: 1px solid #cbd5e1;">
+            
+          </div>
+          <div class="moodle-legend-info">
+            <span class="moodle-legend-name">Segundo Corte de Evaluación</span>
+            <p class="moodle-legend-desc">Periodo de clases correspondiente al segundo bloque de evaluación continua.</p>
+          </div>
+        </div>
+      
+        <div class="moodle-legend-item">
+          <div class="moodle-legend-color-box" style="background-color: #bbf7d0; border: 2.5px solid #a855f7;">
+            
+          </div>
+          <div class="moodle-legend-info">
+            <span class="moodle-legend-name">Exámenes Transversales</span>
+            <p class="moodle-legend-desc">Periodo programado para la aplicación de exámenes transversales.</p>
+          </div>
+        </div>
+      
+        <div class="moodle-legend-item">
+          <div class="moodle-legend-color-box" style="background-color: #bbf7d0; border: 2.5px solid #3b82f6;">
+            
+          </div>
+          <div class="moodle-legend-info">
+            <span class="moodle-legend-name">Exámenes de Inglés</span>
+            <p class="moodle-legend-desc">Periodo programado para la evaluación de la materia de Inglés.</p>
+          </div>
+        </div>
+      
+        <div class="moodle-legend-item">
+          <div class="moodle-legend-color-box" style="background-color: #86efac; border: 1px solid #15803d;">
+            <span class="moodle-legend-badge-text">DEP</span>
+          </div>
+          <div class="moodle-legend-info">
+            <span class="moodle-legend-name">Exámenes Departamentales y Cierre</span>
+            <p class="moodle-legend-desc">Exámenes generales y actividades finales de cierre de cursos.</p>
+          </div>
+        </div>
+      
+        <div class="moodle-legend-item">
+          <div class="moodle-legend-color-box" style="background-color: #ef4444; border: 1px solid #cbd5e1;">
+            <span class="moodle-legend-badge-text">SUS</span>
+          </div>
+          <div class="moodle-legend-info">
+            <span class="moodle-legend-name">Suspensión Oficial</span>
+            <p class="moodle-legend-desc">Días feriados o de descanso obligatorio según el calendario oficial.</p>
+          </div>
+        </div>
+      
+        <div class="moodle-legend-item">
+          <div class="moodle-legend-color-box" style="background-color: #8b5cf6; border: 1px solid #cbd5e1;">
+            <span class="moodle-legend-badge-text">ORD</span>
+          </div>
+          <div class="moodle-legend-info">
+            <span class="moodle-legend-name">Cierre de Evaluación Ordinaria</span>
+            <p class="moodle-legend-desc">Fecha límite para registro y publicación de evaluación continua en periodo ordinario.</p>
+          </div>
+        </div>
+      
+        <div class="moodle-legend-item">
+          <div class="moodle-legend-color-box" style="background-color: #1e3a8a; border: 1px solid #cbd5e1;">
+            <span class="moodle-legend-badge-text">EXT</span>
+          </div>
+          <div class="moodle-legend-info">
+            <span class="moodle-legend-name">Cierre de Evaluación Extraordinaria</span>
+            <p class="moodle-legend-desc">Fecha límite para registro y publicación de evaluación continua en periodo extraordinario.</p>
+          </div>
+        </div>
+      
+        <div class="moodle-legend-item">
+          <div class="moodle-legend-color-box" style="background-color: #dbeafe; border: 1px solid #93c5fd;">
+            
+          </div>
+          <div class="moodle-legend-info">
+            <span class="moodle-legend-name">Trabajo Colegiado</span>
+            <p class="moodle-legend-desc">Reuniones de academias, planeación conjunta y trabajo colegiado docente.</p>
+          </div>
+        </div>
+      
+        <div class="moodle-legend-item">
+          <div class="moodle-legend-color-box" style="background-color: #f3e8ff; border: 1px solid #c084fc;">
+            
+          </div>
+          <div class="moodle-legend-info">
+            <span class="moodle-legend-name">Formación Docente</span>
+            <p class="moodle-legend-desc">Cursos, talleres o actividades de capacitación para el personal docente.</p>
+          </div>
+        </div>
+      
+        <div class="moodle-legend-item">
+          <div class="moodle-legend-color-box" style="background-color: #ffedd5; border: 1px solid #cbd5e1;">
+            <span class="moodle-legend-badge-text">VAC</span>
+          </div>
+          <div class="moodle-legend-info">
+            <span class="moodle-legend-name">Vacaciones de Invierno / Verano</span>
+            <p class="moodle-legend-desc">Periodos de receso escolar autorizados.</p>
+          </div>
+        </div>
+      
+      </div>
+    </div>
+    
+
+  <!-- Academic Table Section -->
+  
+    <div class="moodle-table-section">
+      <h3 class="moodle-section-title">ACTIVIDADES ACADÉMICAS CICLO 2026 "B"</h3>
+      <table class="moodle-table">
+        <thead>
+          <tr>
+            <th style="width: 50%;">Actividad</th>
+            <th style="width: 50%;">Fecha Programada</th>
+          </tr>
+        </thead>
+        <tbody>
+    
+          <tr>
+            <td><strong>Vacaciones de verano</strong><div class="moodle-table-notes">Miércoles 15 de julio al domingo 02 de agosto de 2026.</div></td>
+            <td>Miércoles 15 de julio de 2026 al Domingo 2 de agosto de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Inicio de ciclo escolar 2026 "B"</strong><div class="moodle-table-notes">Jueves 16 de julio de 2026</div></td>
+            <td>Jueves 16 de julio de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Inicio de cursos 2026 "B"</strong><div class="moodle-table-notes">Lunes 10 de agosto de 2026. ¡Bienvenidos al nuevo ciclo escolar!</div></td>
+            <td>Lunes 10 de agosto de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Primer Corte de Evaluación</strong><div class="moodle-table-notes">Periodo de clases y evaluaciones correspondientes al primer corte.</div></td>
+            <td>Lunes 10 de agosto de 2026 al Viernes 2 de octubre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Suspensión oficial - Independencia de México</strong><div class="moodle-table-notes">Miércoles 16 de septiembre de 2026. Suspensión de labores oficial.</div></td>
+            <td>Miércoles 16 de septiembre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Segundo Corte de Evaluación</strong><div class="moodle-table-notes">Periodo de clases y evaluaciones correspondientes al segundo corte.</div></td>
+            <td>Lunes 5 de octubre de 2026 al Viernes 20 de noviembre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Exámenes Transversales</strong><div class="moodle-table-notes">Aplicación presencial de exámenes transversales de diversas asignaturas.</div></td>
+            <td>Lunes 5 al Viernes 16 de octubre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Suspensión oficial - Día de la Raza</strong><div class="moodle-table-notes">Lunes 12 de octubre de 2026. Suspensión de labores oficial.</div></td>
+            <td>Lunes 12 de octubre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Suspensión oficial - Día de Muertos</strong><div class="moodle-table-notes">Lunes 02 de noviembre de 2026. Tradicional Día de Muertos.</div></td>
+            <td>Lunes 2 de noviembre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Suspensión oficial de actividades</strong><div class="moodle-table-notes">Martes 03 de noviembre de 2026. Suspensión oficial de actividades.</div></td>
+            <td>Martes 3 de noviembre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Suspensión oficial - Conmemoración de la Revolución Mexicana</strong><div class="moodle-table-notes">Lunes 16 de noviembre de 2026. Receso conmemorativo al 20 de Noviembre.</div></td>
+            <td>Lunes 16 de noviembre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Exámenes de Inglés</strong><div class="moodle-table-notes">Evaluación departamental del idioma Inglés para todos los niveles.</div></td>
+            <td>Martes 17 al Viernes 20 de noviembre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Exámenes Departamentales</strong><div class="moodle-table-notes">Del 23 al 27 de noviembre de 2026. Aplicación de exámenes departamentales.</div></td>
+            <td>Lunes 23 al Viernes 27 de noviembre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Fecha límite para registro y publicación de evaluación continua en periodo ordinario</strong><div class="moodle-table-notes">Lunes 30 de noviembre de 2026. Cierre definitivo de actas ordinarias.</div></td>
+            <td>Lunes 30 de noviembre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Cierre de Evaluación Extraordinaria</strong><div class="moodle-table-notes">Del martes 01 al jueves 03 de diciembre de 2026.</div></td>
+            <td>Martes 1 al Jueves 3 de diciembre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Entrega de Informe Final</strong><div class="moodle-table-notes">Viernes 04 de diciembre de 2026. Entrega del informe final de actividades docentes.</div></td>
+            <td>Viernes 4 de diciembre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Trabajo Colegiado</strong><div class="moodle-table-notes">Del lunes 07 al viernes 18 de diciembre de 2026. Reuniones de academias.</div></td>
+            <td>Lunes 7 al Viernes 18 de diciembre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Vacaciones de invierno</strong><div class="moodle-table-notes">Sábado 19 de diciembre de 2026 al miércoles 06 de enero de 2027.</div></td>
+            <td>Sábado 19 de diciembre de 2026 al Miércoles 6 de enero de 2027</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Programas de formación docente</strong><div class="moodle-table-notes">Del jueves 07 al viernes 15 de enero de 2027. Talleres y capacitación docente.</div></td>
+            <td>Jueves 7 al Viernes 15 de enero de 2027</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Fin del ciclo escolar 2026 "B"</strong><div class="moodle-table-notes">Viernes 15 de enero de 2027. Clausura del ciclo.</div></td>
+            <td>Viernes 15 de enero de 2027</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Inicio del semestre 2027 "A"</strong><div class="moodle-table-notes">Lunes 18 de enero de 2027. ¡Inicio del nuevo ciclo escolar 2027 "A"!</div></td>
+            <td>Lunes 18 de enero de 2027</td>
+          </tr>
+      
+        </tbody>
+      </table>
+    </div>
+    
+
+  <!-- Administrative Table Section -->
+  
+    <div class="moodle-table-section">
+      <h3 class="moodle-section-title">ACTIVIDADES ADMINISTRATIVAS 2026 "B"</h3>
+      <table class="moodle-table">
+        <thead>
+          <tr>
+            <th style="width: 50%;">Actividad Administrativa</th>
+            <th style="width: 50%;">Fecha Límite / Periodo</th>
+          </tr>
+        </thead>
+        <tbody>
+    
+          <tr>
+            <td><strong>Fecha para registro de resoluciones por equivalencias, acreditaciones, revalidaciones, acreditación por competencias y examen de recuperación de posgrado</strong><div class="moodle-table-notes">Hasta el viernes 14 de agosto de 2026. Trámites escolares administrativos.</div></td>
+            <td>Jueves 16 de julio de 2026 al Viernes 14 de agosto de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Cierre de registro de calificaciones 2026 "B" (Extraordinario)</strong><div class="moodle-table-notes">Jueves 03 de diciembre de 2026. Cierre definitivo de extraordinarios.</div></td>
+            <td>Jueves 3 de diciembre de 2026</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Registro a cursos de reingreso para ciclo escolar 2027 "A"</strong><div class="moodle-table-notes">Lunes 11 al viernes 15 de enero de 2027. Inscripciones alumnos vigentes.</div></td>
+            <td>Lunes 11 al Viernes 15 de enero de 2027</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Registro a cursos de primer ingreso para el ciclo 2027 "A"</strong><div class="moodle-table-notes">Lunes 11 al viernes 15 de enero de 2027. Inscripciones alumnos de nuevo ingreso.</div></td>
+            <td>Lunes 11 al Viernes 15 de enero de 2027</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Ajuste de reingreso para el ciclo escolar 2027 "A"</strong><div class="moodle-table-notes">Lunes 18 al viernes 22 de enero de 2027. Cambios de materias y horarios.</div></td>
+            <td>Lunes 18 al Viernes 22 de enero de 2027</td>
+          </tr>
+      
+          <tr>
+            <td><strong>Ajuste de reingreso para el ciclo escolar 2027 "A"</strong><div class="moodle-table-notes">Lunes 25 al viernes 29 de enero de 2027. Cambios de materias y horarios.</div></td>
+            <td>Lunes 25 al Viernes 29 de enero de 2027</td>
+          </tr>
+      
+        </tbody>
+      </table>
+    </div>
+    
+
+  <!-- Student Instructions -->
+  
+    <div class="moodle-instructions">
+      <strong>Instrucciones para el Estudiante:</strong>
+      <p>Coloca el cursor sobre los días coloreados del calendario para visualizar el detalle de la actividad correspondiente. Mantente al tanto de las fechas de exámenes y cierres de evaluaciones para un excelente desempeño académico.</p>
+    </div>
+    
+</div>
