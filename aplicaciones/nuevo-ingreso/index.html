@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,11 +14,14 @@
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap"
+    rel="stylesheet">
 
   <!-- Application Styles -->
   <link rel="stylesheet" href="css/styles.css">
 </head>
+
 <body>
 
   <div class="app-container">
@@ -25,37 +29,35 @@
     <!-- Encabezado Institucional -->
     <header class="school-header">
       <div class="school-badge">
-        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z"></path>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z">
+          </path>
         </svg>
         Proceso de Admisión Escolar
       </div>
       <h1 class="school-title">
-        <img src="favicon.svg" alt="Logo" style="width: 38px; height: 38px; vertical-align: sub; margin-right: 10px; filter: drop-shadow(0 2px 8px rgba(37,99,235,0.4));">
+        <img src="favicon.svg" alt="Logo"
+          style="width: 38px; height: 38px; vertical-align: sub; margin-right: 10px; filter: drop-shadow(0 2px 8px rgba(37,99,235,0.4));">
         Consulta de Asignación de Primer Ingreso
       </h1>
-      <p class="school-subtitle">Ingresa tu código único de aspirante para conocer tu Grupo y Turno asignados para el ciclo escolar.</p>
+      <p class="school-subtitle">Ingresa tu código único de estudiante para conocer tu Grupo y Turno asignados para el
+        ciclo escolar.</p>
     </header>
 
     <!-- Tarjeta Principal de Búsqueda -->
     <main class="main-card">
-      
+
       <!-- Sección de Búsqueda -->
       <section class="search-section">
         <form id="searchForm" autocomplete="off">
           <div class="form-group">
             <label for="codeInput" class="form-label">Código de Aspirante / Ficha:</label>
             <div class="search-input-wrapper">
-              <input 
-                type="text" 
-                id="codeInput" 
-                class="search-input" 
-                placeholder="Ejemplo: 22400001" 
-                required 
-                maxlength="20"
-                autofocus
-              >
+              <input type="text" id="codeInput" class="search-input" placeholder="Ejemplo: 22400001" required
+                maxlength="20" autofocus>
               <button type="submit" id="searchBtn" class="btn btn-primary">
                 <span id="btnSpinner" class="spinner" style="display: none;"></span>
                 <span id="btnText">Consultar Resultado</span>
@@ -66,8 +68,10 @@
 
         <!-- Mensajes de Estado (Error / Carga) -->
         <div id="statusMsg" class="status-msg">
-          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
           </svg>
           <span id="statusMsgText">Cargando información de admisión...</span>
         </div>
@@ -75,9 +79,10 @@
 
       <!-- Sección de Resultados (Ficha de Asignación) -->
       <section id="resultContainer" class="result-container">
-        
+
         <div class="result-badge-status">
-          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
           </svg>
           Aspirante Admitido / Asignado
@@ -90,7 +95,8 @@
               <div id="displayCode" class="admission-code-value">22400001</div>
             </div>
             <div style="text-align: right;">
-              <span style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Estado</span>
+              <span
+                style="font-size: 0.8rem; font-weight: 700; color: #64748b; text-transform: uppercase;">Estado</span>
               <div style="font-weight: 700; color: #059669;">CONFIRMADO</div>
             </div>
           </div>
@@ -112,7 +118,8 @@
             <div id="qrContainer" class="qr-box"></div>
             <div class="qr-info">
               <div class="qr-title">Código QR de Autenticidad</div>
-              <div>Presenta esta ficha impresa o digital en el plantel para la verificación de tu asignación de grupo y turno.</div>
+              <div>Presenta esta ficha impresa o digital en el plantel para la verificación de tu asignación de grupo y
+                turno.</div>
             </div>
           </div>
         </div>
@@ -120,8 +127,11 @@
         <!-- Botones de Acción -->
         <div class="action-bar">
           <button id="printBtn" class="btn btn-primary btn-block btn-lg">
-            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 000-4h-6a2 2 0 000 4zm8-12V5a2 2 0 00-2-2H7a2 2 0 00-2 2v4h14z"></path>
+            <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 000-4h-6a2 2 0 000 4zm8-12V5a2 2 0 00-2-2H7a2 2 0 00-2 2v4h14z">
+              </path>
             </svg>
             Imprimir / Guardar Ficha en PDF
           </button>
@@ -149,4 +159,5 @@
   <script src="js/qrcode.js"></script>
   <script src="js/app.js"></script>
 </body>
+
 </html>
