@@ -19,20 +19,70 @@
 
   <div class="app-container">
 
-    <!-- Encabezado Administrador -->
-    <header class="school-header">
-      <div class="school-badge admin-badge">
+    <!-- Pantalla de Bloqueo por PIN (Inicialmente Visible) -->
+    <div id="pinLockScreen" class="main-card" style="max-width: 480px; margin: 3rem auto; text-align: center;">
+      <div class="school-badge admin-badge" style="margin-bottom: 1rem;">
         <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
         </svg>
-        Panel Administrador de Cifrado
+        Seguridad Administrativa
       </div>
-      <h1 class="school-title">
-        <img src="favicon.svg" alt="Logo" style="width: 38px; height: 38px; vertical-align: sub; margin-right: 10px; filter: drop-shadow(0 2px 8px rgba(37,99,235,0.4));">
-        Generador de Padrón Cifrado
+      <h1 style="font-size: 1.6rem; color: var(--text-main); margin-bottom: 0.5rem; font-weight: 800;">
+        Acceso Protegido por PIN
       </h1>
-      <p class="school-subtitle">Pega la lista de alumnos desde Excel o CSV con las 3 columnas: <strong>Código, Grupo y Turno</strong>. La información será cifrada en el navegador sin enviarse a ningún servidor externo.</p>
-    </header>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+        Ingresa el PIN de seguridad de control escolar para acceder a la gestión de datos.
+      </p>
+
+      <form id="pinForm" autocomplete="off">
+        <div class="form-group">
+          <input 
+            type="password" 
+            id="pinInput" 
+            class="search-input" 
+            placeholder="PIN de Acceso" 
+            required 
+            maxlength="20"
+            style="text-align: center; font-size: 1.4rem; letter-spacing: 0.2em;"
+            autofocus
+          >
+        </div>
+        <button type="submit" id="pinSubmitBtn" class="btn btn-primary btn-block btn-lg" style="margin-top: 1rem;">
+          🔑 Desbloquear Panel
+        </button>
+      </form>
+
+      <div id="pinStatus" class="status-msg status-error" style="margin-top: 1rem; display: none;">
+        <span id="pinStatusText">PIN incorrecto. Inténtalo de nuevo.</span>
+      </div>
+
+      <div style="margin-top: 1.5rem; font-size: 0.85rem;">
+        <a href="index.html" style="color: var(--text-muted); text-decoration: none;">&larr; Volver al Portal de Alumnos</a>
+      </div>
+    </div>
+
+    <!-- Contenido Principal del Administrador (Oculto hasta autenticar) -->
+    <div id="adminMainContent" style="display: none;">
+
+      <!-- Encabezado Administrador -->
+      <header class="school-header">
+        <div style="display: flex; justify-content: center; align-items: center; gap: 1rem; flex-wrap: wrap;">
+          <div class="school-badge admin-badge">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
+            Panel Administrador de Cifrado
+          </div>
+          <button id="lockAdminBtn" class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.8rem; border-radius: var(--radius-full);">
+            🔒 Bloquear Panel
+          </button>
+        </div>
+        <h1 class="school-title">
+          <img src="favicon.svg" alt="Logo" style="width: 38px; height: 38px; vertical-align: sub; margin-right: 10px; filter: drop-shadow(0 2px 8px rgba(37,99,235,0.4));">
+          Generador de Padrón Cifrado
+        </h1>
+        <p class="school-subtitle">Pega la lista de alumnos desde Excel o CSV con las 3 columnas: <strong>Código, Grupo y Turno</strong>. La información será cifrada en el navegador sin enviarse a ningún servidor externo.</p>
+      </header>
 
     <!-- Tarjeta Principal Administradora -->
     <main class="main-card">
@@ -133,8 +183,9 @@
       <p><a href="index.html">&larr; Volver al Portal de Consulta del Alumno</a></p>
     </footer>
 
+    </div><!-- Fin adminMainContent -->
 
-  </div>
+  </div><!-- Fin app-container -->
 
   <script src="js/crypto-engine.js"></script>
   <script src="js/qrcode.js"></script>
