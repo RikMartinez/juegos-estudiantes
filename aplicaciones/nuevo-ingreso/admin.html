@@ -99,9 +99,33 @@
 
     </main>
 
+    <!-- Tarjeta Secundaria: Generador de Cartel QR de Difusión -->
+    <section class="main-card" style="margin-top: 2rem;">
+      <h2 style="font-size: 1.4rem; color: var(--text-main); margin-bottom: 0.5rem;">📣 Generar Código QR de Difusión para la Escuela</h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.25rem;">Genera un Código QR de alta resolución con la dirección pública de la web para pegar en mamparas, avisos impresos o redes sociales de la escuela.</p>
+
+      <div class="form-group">
+        <label for="portalUrlInput" class="form-label">URL Oficial donde estará alojada la aplicación:</label>
+        <input type="url" id="portalUrlInput" class="search-input" value="https://escuela.edu.mx/aplicaciones/nuevo-ingreso/" placeholder="https://escuela.edu.mx/aplicaciones/nuevo-ingreso/">
+      </div>
+
+      <div style="display: flex; gap: 1.5rem; align-items: center; margin-top: 1rem;">
+        <div id="portalQrPreview" style="background: white; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: var(--radius-sm); line-height: 0;"></div>
+        <div>
+          <button id="printPosterBtn" class="btn btn-secondary" style="margin-bottom: 0.5rem; width: 100%;">
+            🖨️ Imprimir Cartel / Aviso Oficial (PDF)
+          </button>
+          <div style="font-size: 0.85rem; color: var(--text-muted);">
+            Abre una plantilla lista para imprimir y colocar en las mamparas de la escuela.
+          </div>
+        </div>
+      </div>
+    </section>
+
     <footer class="app-footer">
       <p><a href="index.html">&larr; Volver al Portal de Consulta del Alumno</a></p>
     </footer>
+
 
   </div>
 
