@@ -4,6 +4,74 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
+  // 0. Autenticación por PIN de Administrador
+  // Hash SHA-256 del PIN autorizado "1234q"
+  const ADMIN_PIN_HASH = '96b7d30c733a0667791d2a77dc5645bd15782fc49e223bec4ac427f6c876b8c4';
+
+  const pinLockScreen = document.getElementById('pinLockScreen');
+  const adminMainContent = document.getElementById('adminMainContent');
+  const pinForm = document.getElementById('pinForm');
+  const pinInput = document.getElementById('pinInput');
+  const pinStatus = document.getElementById('pinStatus');
+  const pinStatusText = document.getElementById('pinStatusText');
+  const lockAdminBtn = document.getElementById('lockAdminBtn');
+
+  async function hashPin(pin) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(pin.trim());
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function checkSession() {
+    if (sessionStorage.getItem('admin_authenticated') === 'true') {
+      if (pinLockScreen) pinLockScreen.style.display = 'none';
+      if (adminMainContent) adminMainContent.style.display = 'block';
+      updatePortalQr();
+    } else {
+      if (pinLockScreen) pinLockScreen.style.display = 'block';
+      if (adminMainContent) adminMainContent.style.display = 'none';
+      if (pinInput) setTimeout(() => pinInput.focus(), 100);
+    }
+  }
+
+  if (pinForm) {
+    pinForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const enteredPin = pinInput.value;
+      if (!enteredPin) return;
+
+      const enteredHash = await hashPin(enteredPin);
+      if (enteredHash === ADMIN_PIN_HASH) {
+        sessionStorage.setItem('admin_authenticated', 'true');
+        pinStatus.style.display = 'none';
+        pinInput.value = '';
+        checkSession();
+      } else {
+        pinStatusText.textContent = '❌ PIN incorrecto. Acceso denegado.';
+        pinStatus.style.display = 'flex';
+        pinInput.value = '';
+        pinInput.focus();
+        
+        // Efecto de vibración / shake
+        if (pinLockScreen) {
+          pinLockScreen.classList.add('shake-anim');
+          setTimeout(() => pinLockScreen.classList.remove('shake-anim'), 500);
+        }
+      }
+    });
+  }
+
+  if (lockAdminBtn) {
+    lockAdminBtn.addEventListener('click', () => {
+      sessionStorage.removeItem('admin_authenticated');
+      checkSession();
+    });
+  }
+
+  checkSession();
+
   const rawDataInput = document.getElementById('rawDataInput');
   const processBtn = document.getElementById('processBtn');
   const demoDataBtn = document.getElementById('demoDataBtn');
