@@ -175,67 +175,75 @@ ADM202603\t1º C\tVespertino`;
   const printPosterBtn = document.getElementById('printPosterBtn');
 
   function updatePortalQr() {
-    const url = portalUrlInput.value.trim() || 'https://escuela.edu.mx/aplicaciones/nuevo-ingreso/';
-    if (window.LightQRCode && portalQrPreview) {
+    if (!portalUrlInput || !portalQrPreview) return;
+    const url = portalUrlInput.value.trim() || 'https://www.prepachapala.edu.mx/aplicaciones/nuevo-ingreso/';
+    if (window.LightQRCode) {
       new LightQRCode(portalQrPreview, {
         text: url,
-        width: 140,
-        height: 140,
+        width: 160,
+        height: 160,
         colorDark: '#0f172a',
         colorLight: '#ffffff'
       });
     }
   }
 
-  portalUrlInput.addEventListener('input', updatePortalQr);
-  updatePortalQr();
+  if (portalUrlInput) {
+    portalUrlInput.addEventListener('input', updatePortalQr);
+    // Ejecutar inmediatamente y al cargar todo
+    updatePortalQr();
+    setTimeout(updatePortalQr, 300);
+  }
 
-  printPosterBtn.addEventListener('click', () => {
-    const url = portalUrlInput.value.trim() || 'https://escuela.edu.mx/aplicaciones/nuevo-ingreso/';
-    const printWindow = window.open('', '_blank');
-    
-    // Obtener SVG renderizado
-    const svgHtml = portalQrPreview.innerHTML;
-    
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html lang="es">
-      <head>
-        <meta charset="UTF-8">
-        <title>Cartel Oficial - Consulta de Resultados de Primer Ingreso</title>
-        <style>
-          body { font-family: 'Segoe UI', system-ui, sans-serif; text-align: center; padding: 3rem 1rem; background: #ffffff; color: #0f172a; }
-          .poster-card { max-width: 600px; margin: 0 auto; background: white; padding: 3rem 2rem; border-radius: 24px; border: 3px solid #0f172a; }
-          .badge { display: inline-block; background: #f1f5f9; color: #0f172a; font-weight: 800; text-transform: uppercase; font-size: 0.9rem; padding: 0.5rem 1.2rem; border-radius: 99px; margin-bottom: 1.5rem; letter-spacing: 0.05em; }
-          h1 { font-size: 2.3rem; color: #0f172a; margin-bottom: 0.75rem; font-weight: 800; }
-          p { font-size: 1.25rem; color: #334155; margin-bottom: 2rem; line-height: 1.5; }
-          .qr-container { background: #ffffff; padding: 1.5rem; display: inline-block; border-radius: 20px; border: 2px dashed #94a3b8; margin-bottom: 2rem; }
-          .url-badge { font-family: monospace; font-size: 1.2rem; font-weight: bold; background: #0f172a; color: #ffffff; padding: 0.9rem 1.8rem; border-radius: 99px; display: inline-block; }
-          @media print {
-            body { padding: 0; }
-            .poster-card { border: 3px solid #000; }
-          }
-        </style>
-      </head>
-      <body>
-        <div class="poster-card">
-          <div class="badge">Aviso Oficial a la Comunidad Escolar</div>
-          <h1>Resultados de Primer Ingreso</h1>
-          <p>Escanea este código QR con la cámara de tu celular para consultar tu <strong>Grupo</strong> y <strong>Turno</strong> asignados.</p>
-          <div class="qr-container">
-            ${svgHtml}
+  if (printPosterBtn) {
+    printPosterBtn.addEventListener('click', () => {
+      updatePortalQr();
+      const url = portalUrlInput.value.trim() || 'https://www.prepachapala.edu.mx/aplicaciones/nuevo-ingreso/';
+      const svgHtml = portalQrPreview.innerHTML;
+      
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="es">
+        <head>
+          <meta charset="UTF-8">
+          <title>Cartel Oficial - Consulta de Resultados de Primer Ingreso</title>
+          <style>
+            body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; text-align: center; padding: 3rem 1rem; background: #ffffff; color: #0f172a; }
+            .poster-card { max-width: 620px; margin: 0 auto; background: white; padding: 3.5rem 2.5rem; border-radius: 24px; border: 3px solid #0f172a; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+            .badge { display: inline-block; background: #0f172a; color: #ffffff; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; padding: 0.5rem 1.4rem; border-radius: 99px; margin-bottom: 1.5rem; letter-spacing: 0.08em; }
+            h1 { font-size: 2.4rem; color: #0f172a; margin-bottom: 0.75rem; font-weight: 800; line-height: 1.2; }
+            p { font-size: 1.25rem; color: #334155; margin-bottom: 2rem; line-height: 1.5; }
+            .qr-container { background: #ffffff; padding: 1.5rem; display: inline-block; border-radius: 20px; border: 2px dashed #94a3b8; margin-bottom: 2rem; line-height: 0; }
+            .qr-container svg { width: 220px; height: 220px; }
+            .url-badge { font-family: monospace; font-size: 1.15rem; font-weight: bold; background: #f1f5f9; color: #0f172a; padding: 0.9rem 1.8rem; border-radius: 99px; display: inline-block; border: 1px solid #cbd5e1; word-break: break-all; }
+            @media print {
+              body { padding: 0; background: white; }
+              .poster-card { border: 3px solid #000; box-shadow: none; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="poster-card">
+            <div class="badge">Aviso Oficial a la Comunidad Escolar</div>
+            <h1>Resultados de Primer Ingreso</h1>
+            <p>Escanea este código QR con la cámara de tu celular para consultar tu <strong>Grupo</strong> y <strong>Turno</strong> asignados.</p>
+            <div class="qr-container">
+              ${svgHtml}
+            </div>
+            <div>
+              <div class="url-badge">${url}</div>
+            </div>
           </div>
-          <div>
-            <div class="url-badge">${url}</div>
-          </div>
-        </div>
-        <script>
-          window.onload = function() { window.print(); }
-        </script>
-      </body>
-      </html>
-    `);
-    printWindow.document.close();
-  });
+          <script>
+            window.onload = function() { window.print(); }
+          </script>
+        </body>
+        </html>
+      `);
+      printWindow.document.close();
+    });
+  }
 });
+
 
