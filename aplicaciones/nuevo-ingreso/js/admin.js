@@ -6,7 +6,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   // 0. Autenticación por PIN de Administrador
   // Hash SHA-256 del PIN autorizado "q1234q"
-  const ADMIN_PIN_HASH = '96b7d30c733a0667791d2a77dc5645bd15782fc49e223bec4ac427f6c876b8c4';
+  const ADMIN_PIN_HASH = '44c9bdc106b5d74fa4a3403e68d382d04c042a63789d35fb3ed7bd439f4ddda2';
 
   const pinLockScreen = document.getElementById('pinLockScreen');
   const adminMainContent = document.getElementById('adminMainContent');
@@ -16,6 +16,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const pinStatusText = document.getElementById('pinStatusText');
   const lockAdminBtn = document.getElementById('lockAdminBtn');
 
+  // Estado de autenticación solo en memoria de esta carga de página
+  let isAuthenticated = false;
+
   async function hashPin(pin) {
     const encoder = new TextEncoder();
     const data = encoder.encode(pin.trim());
@@ -24,8 +27,8 @@ document.addEventListener('DOMContentLoaded', () => {
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }
 
-  function checkSession() {
-    if (sessionStorage.getItem('admin_authenticated') === 'true') {
+  function renderAccessState() {
+    if (isAuthenticated) {
       if (pinLockScreen) pinLockScreen.style.display = 'none';
       if (adminMainContent) adminMainContent.style.display = 'block';
       updatePortalQr();
@@ -44,10 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const enteredHash = await hashPin(enteredPin);
       if (enteredHash === ADMIN_PIN_HASH) {
-        sessionStorage.setItem('admin_authenticated', 'true');
+        isAuthenticated = true;
         pinStatus.style.display = 'none';
         pinInput.value = '';
-        checkSession();
+        renderAccessState();
       } else {
         pinStatusText.textContent = '❌ PIN incorrecto. Acceso denegado.';
         pinStatus.style.display = 'flex';
@@ -65,12 +68,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (lockAdminBtn) {
     lockAdminBtn.addEventListener('click', () => {
-      sessionStorage.removeItem('admin_authenticated');
-      checkSession();
+      isAuthenticated = false;
+      renderAccessState();
     });
   }
 
-  checkSession();
+  renderAccessState();
 
   const rawDataInput = document.getElementById('rawDataInput');
   const processBtn = document.getElementById('processBtn');
