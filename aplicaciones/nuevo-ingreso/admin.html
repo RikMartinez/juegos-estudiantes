@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Administrador | Generador de Base de Datos Cifrada</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="app-container">
+
+    <!-- Encabezado Administrador -->
+    <header class="school-header">
+      <div class="school-badge admin-badge">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+        </svg>
+        Panel Administrador de Cifrado
+      </div>
+      <h1 class="school-title">Generador de Padron Cifrado</h1>
+      <p class="school-subtitle">Pega la lista de alumnos desde Excel o CSV con las 3 columnas: <strong>Código, Grupo y Turno</strong>. La información será cifrada en el navegador sin enviarse a ningún servidor externo.</p>
+    </header>
+
+    <!-- Tarjeta Principal Administradora -->
+    <main class="main-card">
+      
+      <section class="form-group">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <label for="rawDataInput" class="form-label">Pegar datos desde Excel / CSV (Código [Tab] Grupo [Tab] Turno):</label>
+          <button id="demoDataBtn" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.85rem;">
+            Cargar Ejemplo de Prueba
+          </button>
+        </div>
+
+        <textarea 
+          id="rawDataInput" 
+          class="admin-textarea" 
+          placeholder="Código	Grupo	Turno
+22400001	1º A	Matutino
+22400002	1º B	Vespertino
+22400003	1º C	Matutino"
+        ></textarea>
+      </section>
+
+      <!-- Seccion de Vista Previa -->
+      <section id="previewSection" style="display: none; margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="font-size: 1.1rem; color: var(--text-main);">Vista Previa de Registros Detectados</h3>
+          <span id="recordCountBadge" class="school-badge" style="background: #e2e8f0; color: #334155;">0 Alumnos</span>
+        </div>
+
+        <div style="overflow-x: auto; max-height: 250px; margin-top: 0.75rem; border: 1px solid #cbd5e1; border-radius: var(--radius-sm);">
+          <table class="data-preview-table">
+            <thead>
+              <tr>
+                <th>Código (Llave)</th>
+                <th>Grupo</th>
+                <th>Turno</th>
+              </tr>
+            </thead>
+            <tbody id="previewTableBody">
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Barra de Progreso -->
+      <div style="height: 6px; background: #e2e8f0; border-radius: var(--radius-full); overflow: hidden; margin-bottom: 1.5rem;">
+        <div id="adminProgress" style="width: 0%; height: 100%; background: var(--accent-color); transition: width 0.2s;"></div>
+      </div>
+
+      <!-- Botones de Procesamiento -->
+      <div class="action-bar">
+        <button id="processBtn" class="btn btn-primary btn-block btn-lg">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+          </svg>
+          Procesar y Cifrar Registros (AES-256)
+        </button>
+
+        <button id="exportBtn" class="btn btn-secondary btn-block btn-lg" disabled>
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+          </svg>
+          Descargar `alumnos_cifrados.json`
+        </button>
+      </div>
+
+      <!-- Mensaje de Estado -->
+      <div id="adminStatus" class="status-msg" style="margin-top: 1.5rem;">
+        <span id="adminStatusText">Listo para procesar registros.</span>
+      </div>
+
+    </main>
+
+    <footer class="app-footer">
+      <p><a href="index.html">&larr; Volver al Portal de Consulta del Alumno</a></p>
+    </footer>
+
+  </div>
+
+  <script src="js/crypto-engine.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
