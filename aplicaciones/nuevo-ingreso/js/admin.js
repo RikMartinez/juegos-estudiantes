@@ -5,7 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   // 0. Autenticación por PIN de Administrador
-  // Hash SHA-256 del PIN autorizado "1234q"
+  // Hash SHA-256 del PIN autorizado "q1234q"
   const ADMIN_PIN_HASH = '96b7d30c733a0667791d2a77dc5645bd15782fc49e223bec4ac427f6c876b8c4';
 
   const pinLockScreen = document.getElementById('pinLockScreen');
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pinStatus.style.display = 'flex';
         pinInput.value = '';
         pinInput.focus();
-        
+
         // Efecto de vibración / shake
         if (pinLockScreen) {
           pinLockScreen.classList.add('shake-anim');
@@ -76,11 +76,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const processBtn = document.getElementById('processBtn');
   const demoDataBtn = document.getElementById('demoDataBtn');
   const exportBtn = document.getElementById('exportBtn');
-  
+
   const previewSection = document.getElementById('previewSection');
   const recordCountBadge = document.getElementById('recordCountBadge');
   const previewTableBody = document.getElementById('previewTableBody');
-  
+
   const adminStatus = document.getElementById('adminStatus');
   const adminStatusText = document.getElementById('adminStatusText');
   const adminProgress = document.getElementById('adminProgress');
@@ -191,7 +191,7 @@ ADM202603\t1º C\tVespertino`;
     showAdminStatus('Cifrando registros con SHA-256 + AES-GCM-256...', 'info');
     processBtn.disabled = true;
     exportBtn.disabled = true;
-    
+
     encryptedDatabase = {};
     const total = parsedRecords.length;
 
@@ -222,7 +222,7 @@ ADM202603\t1º C\tVespertino`;
     const jsonString = JSON.stringify(encryptedDatabase, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
+
     const a = document.createElement('a');
     a.href = url;
     a.download = 'alumnos_cifrados.json';
@@ -268,7 +268,7 @@ ADM202603\t1º C\tVespertino`;
       updatePortalQr();
       const url = portalUrlInput.value.trim() || 'https://www.prepachapala.edu.mx/aplicaciones/nuevo-ingreso/';
       const svgHtml = portalQrPreview.innerHTML;
-      
+
       const printWindow = window.open('', '_blank');
       printWindow.document.write(`
         <!DOCTYPE html>
