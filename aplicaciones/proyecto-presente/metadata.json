@@ -1,6 +1,0 @@
-{
-  "name": "PRESENTE - Gestor de Áreas de Convivencia UdeG",
-  "description": "Sistema de registro, croquis oficial interactivo y control de espacios de convivencia para los turnos matutino y vespertino en la Preparatoria Regional de Chapala (SEMS - Universidad de Guadalajara).",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
