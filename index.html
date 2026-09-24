@@ -397,13 +397,35 @@
 
         .card-actions {
             display: flex;
-            gap: 10px;
+            gap: 12px;
+            align-items: stretch;
         }
 
         .card-actions .btn {
-            flex-grow: 1;
+            flex: 1 1 0;
             border-radius: 12px;
-            padding: 14px 20px;
+            padding: 12px 14px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        .btn-card-outline {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-card-outline:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            border-color: var(--text-variant);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.08);
         }
 
         .btn-blue {
@@ -424,26 +446,6 @@
         .btn-olive:hover {
             background-color: #ffca3a;
             box-shadow: 0 4px 15px rgba(255, 202, 58, 0.3);
-        }
-
-        .btn-icon-only {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--text-variant);
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-
-        .btn-icon-only:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--text-dark);
-            border-color: var(--text-variant);
         }
 
         /* Launchpad */
@@ -564,6 +566,12 @@
                 gap: 20px;
             }
         }
+
+        @media (max-width: 480px) {
+            .card-actions {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
 
@@ -598,7 +606,7 @@
                     solo lugar.</p>
                 <div class="hero-buttons">
                     <a href="#highlights" class="btn btn-primary">Explorar Portal</a>
-                    <a href="#" class="btn btn-outline">Calendario Académico</a>
+                    <a href="https://www.prepachapala.edu.mx/aplicaciones/calendario/Calendario%20Escolar%202026B" target="_blank" rel="noopener noreferrer" class="btn btn-outline">Calendario Académico</a>
                 </div>
             </div>
             <div class="hero-image">
@@ -636,8 +644,12 @@
                         <p>Únete a nuestra máxima tradición deportiva. Celebra el orgullo institucional, consulta
                             resultados en tiempo real y el progreso de las disciplinas.</p>
                         <div class="card-actions">
-                            <a href="deportiva/2026/index.html" class="btn btn-blue">Ingresar al Portal</a>
-                            <button class="btn-icon-only"><i class="fa-solid fa-info"></i></button>
+                            <a href="#" class="btn btn-card-outline" title="Convocatorias Deportivas">
+                                <i class="fa-solid fa-file-lines"></i> Convocatorias
+                            </a>
+                            <a href="deportiva/2026/index.html" class="btn btn-blue">
+                                <i class="fa-solid fa-arrow-right-to-bracket"></i> Ingresar al Portal
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -657,8 +669,12 @@
                         <p>Celebra nuestras raíces a través del arte, altares tradicionales y exhibiciones. Un espacio
                             de creatividad, comunidad y homenaje a nuestra historia.</p>
                         <div class="card-actions">
-                            <a href="cultural/2026/index.html" class="btn btn-olive">Ingresar al Portal</a>
-                            <button class="btn-icon-only"><i class="fa-solid fa-share-nodes"></i></button>
+                            <a href="http://prepachapala.sems.udg.mx/node/4090" target="_blank" rel="noopener noreferrer" class="btn btn-card-outline" title="Convocatorias Festival de Vida y Muerte 2026">
+                                <i class="fa-solid fa-file-lines"></i> Convocatorias
+                            </a>
+                            <a href="cultural/2026/index.html" class="btn btn-olive">
+                                <i class="fa-solid fa-arrow-right-to-bracket"></i> Ingresar al Portal
+                            </a>
                         </div>
                     </div>
                 </div>
