@@ -23,9 +23,19 @@ const State = {
     init() {
         if (typeof firebase !== 'undefined' && firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('REEMPLAZAR')) {
             try {
-                firebase.initializeApp(firebaseConfig);
+                if (!firebase.apps || !firebase.apps.length) {
+                    firebase.initializeApp(firebaseConfig);
+                }
                 this.db = firebase.database();
                 this.isCloudEnabled = true;
+
+                if (firebase.auth) {
+                    firebase.auth().onAuthStateChanged((user) => {
+                        this.isAdmin = !!user;
+                        this.notify();
+                    });
+                }
+
                 this.db.ref('festival_2026').on('value', (snapshot) => {
                     const data = snapshot.val();
                     if (data) {
@@ -140,7 +150,16 @@ const State = {
     },
 
     setAdmin(val) {
-        this.isAdmin = val;
+        if (val) {
+            const hasAuth = typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser;
+            if (!hasAuth) {
+                console.warn("Acceso denegado: se requiere sesión activa de administrador.");
+                this.isAdmin = false;
+                this.notify();
+                return;
+            }
+        }
+        this.isAdmin = !!val;
         this.notify();
     },
 

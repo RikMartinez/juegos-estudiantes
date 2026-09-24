@@ -107,7 +107,7 @@ function updateTicker() {
             if (results.length > 0) {
                 const firstPlace = results[0];
                 const team = State.teams.find(t => t.id === firstPlace.teamId);
-                const emoji = c.type === 'calaverita' ? '💀' : (c.type === 'cuentos' ? '📖' : (c.type === 'catrines' ? '👘' : (c.type === 'altares' ? '🕯️' : '🎨')));
+                const emoji = c.type === 'calaverita' ? '💀' : (c.type === 'cuentos' ? '📖' : (c.type === 'catrines' ? '👒' : (c.type === 'altares' ? '🕯️' : '🎨')));
                 return `<div class="ticker__item" style="display: inline-block; margin-right: 50px;">
                     ${emoji} ¡Felicidades a <strong>${team ? team.name : '---'}</strong> por el 1er Lugar en ${c.name}! ${emoji}
                 </div>`;
@@ -179,7 +179,7 @@ function renderDashboard(container) {
                                 </div>
                                 <div style="background: rgba(245,200,66,0.05); padding: 20px; border-radius: 12px; border-left: 4px solid var(--accent-gold);">
                                     <div style="font-size: 0.8rem; color: var(--accent-gold); text-transform: uppercase; margin-bottom: 5px;">5 Categorías en Concurso</div>
-                                    <div style="font-size: 0.95rem; font-weight: 600; line-height: 1.8;">💀 Calaverita Literaria &nbsp;|&nbsp; 📖 Cuentos y Leyendas<br>👘 Catrines y Catrinas &nbsp;|&nbsp; 🕯️ Altares &nbsp;|&nbsp; 🎨 Lápida y Alebrije</div>
+                                    <div style="font-size: 0.95rem; font-weight: 600; line-height: 1.8;">💀 Calaverita Literaria &nbsp;|&nbsp; 📖 Cuentos y Leyendas<br>👒 Catrinas y Catrines &nbsp;|&nbsp; 🕯️ Altares de Muerto &nbsp;|&nbsp; 🎨 Alebrije</div>
                                 </div>
                             </div>
 
@@ -353,13 +353,13 @@ function renderAdmin(container) {
                 <div class="card">
                     <h3><i class="fa-solid fa-medal"></i> Disciplinas (${State.competitions.length})</h3>
                     <form id="form-comp" style="margin-top: 20px;">
-                        <input type="text" id="c-name" placeholder="Nombre (ej. Altares)" required style="margin-bottom: 10px;">
+                        <input type="text" id="c-name" placeholder="Nombre (ej. Altares de Muerto)" required style="margin-bottom: 10px;">
                         <select id="c-type" style="margin-bottom: 10px;">
                             <option value="calaverita">Calaverita Literaria</option>
                             <option value="cuentos">Cuentos y Leyendas</option>
-                            <option value="catrines">Catrines y Catrinas</option>
-                            <option value="altares">Altares</option>
-                            <option value="lapida">Lápida y Alebrije</option>
+                            <option value="catrines">Catrinas y Catrines</option>
+                            <option value="altares">Altares de Muerto</option>
+                            <option value="lapida">Alebrije</option>
                         </select>
                         <input type="hidden" id="c-format" value="ranking">
                         <input type="hidden" id="c-rama" value="Mixto">
@@ -663,46 +663,73 @@ window.loginAdmin = () => {
     m.id = 'm-login';
     m.className = 'modal-overlay';
     m.innerHTML = `
-        <div class="modal-content" style="width: 300px;">
-            <h3 style="color: var(--accent-yellow); margin-bottom: 20px;">ACCESO ADMIN</h3>
-            <input type="password" id="p-pass" placeholder="••••" style="text-align: center; font-size: 1.5rem; letter-spacing: 5px; width: 100%; margin-bottom: 20px;" autofocus onkeydown="if(event.key==='Enter') window.verifyLogin()">
+        <div class="modal-content" style="width: 320px; text-align: center;">
+            <h3 style="color: var(--accent-yellow); margin-bottom: 8px;">ACCESO ADMINISTRATIVO</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px;">Ingresa el PIN de seguridad</p>
+            <input type="password" id="p-pass" placeholder="••••" maxlength="20" style="text-align: center; font-size: 1.6rem; letter-spacing: 6px; width: 100%; margin-bottom: 20px;" autofocus onkeydown="if(event.key==='Enter') window.verifyLogin()">
             <div style="display: flex; gap: 10px;">
                 <button class="btn btn-secondary" onclick="document.getElementById('m-login').remove()" style="flex: 1;">Cancelar</button>
-                <button class="btn" onclick="window.verifyLogin()" style="flex: 1;">Entrar</button>
+                <button class="btn" id="btn-submit-pin" onclick="window.verifyLogin()" style="flex: 1;">Entrar</button>
             </div>
         </div>
     `;
     document.body.appendChild(m);
-    setTimeout(() => document.getElementById('p-pass').focus(), 100);
+    setTimeout(() => {
+        const inp = document.getElementById('p-pass');
+        if (inp) inp.focus();
+    }, 100);
 };
 
 window.verifyLogin = () => {
     const p = document.getElementById('p-pass');
-    if (p.value === '1234q') {
-        const btn = document.querySelector('#m-login .btn:not(.btn-secondary)');
-        if (btn) btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Entrando...';
-        if (State.isCloudEnabled && typeof firebase !== 'undefined') {
-            firebase.auth().signInWithEmailAndPassword('admin@chapala.udg.mx', p.value + '6')
-                .then(() => {
-                    State.setAdmin(true);
-                    const modal = document.getElementById('m-login');
-                    if (modal) modal.remove();
-                })
-                .catch(err => {
-                    console.error("Firebase auth error:", err);
-                    alert("Error de autenticación en la nube: " + err.message + "\n\nSe iniciará en modo local / sin conexión.");
-                    State.setAdmin(true);
-                    const modal = document.getElementById('m-login');
-                    if (modal) modal.remove();
-                });
-        } else {
-            State.setAdmin(true);
-            const modal = document.getElementById('m-login');
-            if (modal) modal.remove();
-        }
+    if (!p) return;
+    const pin = String(p.value || '').trim();
+    if (!pin) {
+        alert("Por favor ingresa tu PIN de acceso.");
+        p.focus();
+        return;
+    }
+
+    const btn = document.getElementById('btn-submit-pin') || document.querySelector('#m-login .btn:not(.btn-secondary)');
+    const originalText = btn ? btn.innerHTML : 'Entrar';
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...';
+    }
+
+    if (State.isCloudEnabled && typeof firebase !== 'undefined' && firebase.auth) {
+        const authPass = pin.length < 6 ? pin + '6' : pin;
+        firebase.auth().signInWithEmailAndPassword('admin@chapala.udg.mx', authPass)
+            .then(() => {
+                const modal = document.getElementById('m-login');
+                if (modal) modal.remove();
+            })
+            .catch(err => {
+                console.error("Firebase auth error:", err);
+                if (err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found') {
+                    alert("PIN incorrecto. Acceso denegado.");
+                } else if (err.code === 'auth/too-many-requests') {
+                    alert("Demasiados intentos fallidos. Por seguridad, espera unos momentos.");
+                } else if (err.code === 'auth/network-request-failed') {
+                    alert("Error de conexión. Verifica tu acceso a internet.");
+                } else {
+                    alert("Error al verificar PIN: " + (err.message || "Acceso denegado."));
+                }
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                }
+                p.value = '';
+                p.focus();
+            });
     } else {
-        alert("Clave incorrecta.");
-        p.value = ''; p.focus();
+        alert("El servicio de autenticación en la nube no está conectado.");
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        }
+        p.value = '';
+        p.focus();
     }
 };
 
@@ -858,12 +885,19 @@ function renderReport(container) {
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
                                 ${['calaverita', 'cuentos', 'catrines', 'altares', 'lapida'].map(type => {
             const icon = type === 'calaverita' ? 'skull' : (type === 'cuentos' ? 'book' : (type === 'catrines' ? 'mask' : (type === 'altares' ? 'fire' : 'palette')));
+            const typeLabels = {
+                'calaverita': 'Calaverita Literaria',
+                'cuentos': 'Cuentos y Leyendas',
+                'catrines': 'Catrinas y Catrines',
+                'altares': 'Altares de Muerto',
+                'lapida': 'Alebrije'
+            };
             const compsOfType = State.competitions.filter(c => c.type === type);
 
             return `
                                         <div>
                                             <h4 style="text-transform: uppercase; color: var(--accent-yellow); margin-bottom: 15px; border-bottom: 2px solid var(--accent-blue); display: inline-block;">
-                                                <i class="fa-solid fa-${icon}"></i> ${type}
+                                                <i class="fa-solid fa-${icon}"></i> ${typeLabels[type] || type}
                                             </h4>
                                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                                 ${renderTeamDetails(team.id, compsOfType)}
