@@ -221,9 +221,12 @@ function renderDashboard(container) {
                 return (a.time || '23:59').localeCompare(b.time || '23:59');
             }).map(m => {
                 const comp = State.competitions.find(c => c.id === m.competitionId);
+                const isArtistico = comp?.type === 'artistico';
                 return `
-                                    <div class="item-row" style="flex-direction: column; align-items: flex-start; gap: 4px;">
-                                        <div style="font-size: 0.7rem; color: var(--accent-gold); font-weight: 800; text-transform: uppercase;">${comp?.name || '---'}</div>
+                                    <div class="item-row" style="flex-direction: column; align-items: flex-start; gap: 4px; ${isArtistico ? 'border-left: 3px solid var(--accent-gold); background: rgba(245,200,66,0.06);' : ''}">
+                                        <div style="font-size: 0.7rem; color: ${isArtistico ? '#f5c842' : 'var(--accent-gold)'}; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 5px;">
+                                            ${isArtistico ? '<i class="fa-solid fa-masks-theater"></i> [PROGRAMA CULTURAL]' : ''} ${comp?.name || '---'}
+                                        </div>
                                         <div style="font-weight: 600; font-size: 0.9rem; width: 100%; display: flex; justify-content: space-between; align-items: center;">
                                             <span style="color: var(--text-main);"><i class="fa-solid fa-clock" style="font-size: 0.75rem; color: var(--accent-gold);"></i> ${m.time}</span>
                                             <span style="font-size: 0.7rem; color: var(--text-muted); opacity: 0.7;">${m.date}</span>
@@ -261,6 +264,33 @@ function renderDashboard(container) {
 
 function renderBracketContent(comp) {
     if (!comp) return '';
+
+    if (comp.type === 'artistico') {
+        const schedule = State.matches.find(m => m.competitionId === comp.id);
+        return `
+            <div style="width: 100%; max-width: 800px; margin: 0 auto; min-height: 400px; text-align: center; padding: 40px 20px; background: rgba(255,255,255,0.03); border-radius: 20px; border: 1px solid rgba(245,200,66,0.2);">
+                <div style="font-size: 3rem; margin-bottom: 15px;">🎭 🎵 💃</div>
+                <h2 style="font-family: 'Outfit'; font-size: 2.2rem; color: var(--accent-gold); margin-bottom: 10px;">${comp.name}</h2>
+                <div style="display: inline-block; background: rgba(245,200,66,0.1); border: 1px solid var(--accent-gold); color: var(--accent-gold); padding: 6px 18px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; margin-bottom: 30px;">
+                    <i class="fa-solid fa-masks-theater"></i> Actividad del Programa Cultural (No Evaluable)
+                </div>
+                <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 30px;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px 25px; border-radius: 12px; border-left: 4px solid var(--accent-primary); text-align: left;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Fecha</div>
+                        <div style="font-size: 1.15rem; font-weight: 700; color: white;"><i class="fa-solid fa-calendar-day"></i> ${schedule?.date || 'Fecha por confirmar'}</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px 25px; border-radius: 12px; border-left: 4px solid var(--accent-gold); text-align: left;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Horario / Sede</div>
+                        <div style="font-size: 1.15rem; font-weight: 700; color: white;"><i class="fa-solid fa-clock"></i> ${schedule?.time || 'Horario por confirmar'}</div>
+                    </div>
+                </div>
+                <p style="color: var(--text-muted); font-size: 1rem; max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                    Presentaciones artísticas, música en vivo, danza folclórica y expresiones escénicas en honor a la tradición del Día de Muertos. ¡Un espacio de convivencia y celebración para toda la comunidad escolar!
+                </p>
+            </div>
+        `;
+    }
+
     // Vista Ranking
     const results = State.eventResults.filter(r => r.competitionId === comp.id && r.value !== '' && r.value !== '0')
         .sort((a, b) => {
@@ -351,15 +381,16 @@ function renderAdmin(container) {
                 </div>
 
                 <div class="card">
-                    <h3><i class="fa-solid fa-medal"></i> Disciplinas (${State.competitions.length})</h3>
+                    <h3><i class="fa-solid fa-medal"></i> Actividades y Concursos (${State.competitions.length})</h3>
                     <form id="form-comp" style="margin-top: 20px;">
-                        <input type="text" id="c-name" placeholder="Nombre (ej. Altares de Muerto)" required style="margin-bottom: 10px;">
+                        <input type="text" id="c-name" placeholder="Nombre (ej. Festival Artístico / Altares)" required style="margin-bottom: 10px;">
                         <select id="c-type" style="margin-bottom: 10px;">
-                            <option value="calaverita">Calaverita Literaria</option>
-                            <option value="cuentos">Cuentos y Leyendas</option>
-                            <option value="catrines">Catrinas y Catrines</option>
-                            <option value="altares">Altares de Muerto</option>
-                            <option value="lapida">Alebrije</option>
+                            <option value="altares">Altares de Muerto (Concurso - 40%)</option>
+                            <option value="lapida">Alebrije (Concurso - 20%)</option>
+                            <option value="cuentos">Cuentos y Leyendas (Concurso - 20%)</option>
+                            <option value="catrines">Catrinas y Catrines (Concurso - 15%)</option>
+                            <option value="calaverita">Calaverita Literaria (Concurso - 5%)</option>
+                            <option value="artistico">🎭 Programa Cultural / Artístico (No Evaluable)</option>
                         </select>
                         <input type="hidden" id="c-format" value="ranking">
                         <input type="hidden" id="c-rama" value="Mixto">
@@ -370,7 +401,10 @@ function renderAdmin(container) {
                             <div class="item-row">
                                 <div style="flex: 1;">
                                     <div style="font-weight: 600;">${c.name}</div>
-                                    <div style="font-size: 0.6rem; color: var(--accent-yellow)">${c.type.toUpperCase()} ${c.status === 'finished' ? '<span style="color: var(--success); font-weight: 800;">[FINALIZADA]</span>' : ''}</div>
+                                    <div style="font-size: 0.65rem; color: var(--accent-yellow)">
+                                        ${c.type === 'artistico' ? '<span style="color: var(--accent-gold); font-weight: 800;"><i class="fa-solid fa-masks-theater"></i> PROGRAMA CULTURAL</span>' : c.type.toUpperCase()} 
+                                        ${c.status === 'finished' ? '<span style="color: var(--success); font-weight: 800;">[FINALIZADA]</span>' : ''}
+                                    </div>
                                 </div>
                                 <div style="display: flex; gap: 15px; align-items: center;">
                                     ${c.status === 'finished' ? `
@@ -516,7 +550,7 @@ function setupAdminListeners() {
 }
 
 function renderCaptura(container) {
-    const captureComps = window.sortCompetitions(State.competitions.filter(c => c.status !== 'finished'));
+    const captureComps = window.sortCompetitions(State.competitions.filter(c => c.status !== 'finished' && c.type !== 'artistico'));
 
     container.innerHTML = `
         <div class="admin-container fade-in">
@@ -623,7 +657,7 @@ function renderCaptura(container) {
 // --- HELPERS GLOBALES ---
 
 window.sortCompetitions = (list) => {
-    const typeOrder = { 'calaverita': 1, 'cuentos': 2, 'catrines': 3, 'altares': 4, 'lapida': 5 };
+    const typeOrder = { 'altares': 1, 'lapida': 2, 'cuentos': 3, 'catrines': 4, 'calaverita': 5, 'artistico': 6 };
     const ramaOrder = { 'Varonil': 1, 'Femenil': 2, 'Mixto': 3 };
     return [...list].sort((a, b) => {
         const typeA = typeOrder[a.type] || 99;
@@ -883,14 +917,14 @@ function renderReport(container) {
                             </div>
 
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
-                                ${['calaverita', 'cuentos', 'catrines', 'altares', 'lapida'].map(type => {
-            const icon = type === 'calaverita' ? 'skull' : (type === 'cuentos' ? 'book' : (type === 'catrines' ? 'mask' : (type === 'altares' ? 'fire' : 'palette')));
+                                ${['altares', 'lapida', 'cuentos', 'catrines', 'calaverita'].map(type => {
+            const icon = type === 'calaverita' ? 'skull' : (type === 'cuentos' ? 'book' : (type === 'catrines' ? 'hat-cowboy-side' : (type === 'altares' ? 'fire' : 'palette')));
             const typeLabels = {
-                'calaverita': 'Calaverita Literaria',
-                'cuentos': 'Cuentos y Leyendas',
-                'catrines': 'Catrinas y Catrines',
-                'altares': 'Altares de Muerto',
-                'lapida': 'Alebrije'
+                'altares': 'Altares de Muerto (40%)',
+                'lapida': 'Alebrije (20%)',
+                'cuentos': 'Cuentos y Leyendas (20%)',
+                'catrines': 'Catrinas y Catrines (15%)',
+                'calaverita': 'Calaverita Literaria (5%)'
             };
             const compsOfType = State.competitions.filter(c => c.type === type);
 

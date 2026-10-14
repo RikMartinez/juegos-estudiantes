@@ -18,7 +18,7 @@ const State = {
     isAdmin: false,
     db: null,
     isCloudEnabled: false,
-    pointTable: [55, 47, 42, 38, 35, 32, 30, 28, 26, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1],
+    pointTable: [99, 96, 93, 90, 87, 84, 81, 78, 75, 72, 69, 66, 63, 60, 57, 54, 51, 48, 45, 42, 39, 36, 33, 30, 27, 24, 21, 18, 15, 12, 9, 6, 3],
 
     init() {
         if (typeof firebase !== 'undefined' && firebaseConfig.apiKey && !firebaseConfig.apiKey.includes('REEMPLAZAR')) {
@@ -190,7 +190,12 @@ const State = {
         };
 
         this.competitions.forEach(comp => {
+            // Ignorar eventos del programa cultural que no son evaluables
+            if (comp.type === 'artistico') return;
+
             const field = getField(comp.type);
+            if (!field) return;
+
             const processed = new Set(); 
             let lastValue = null;
             let pointsToGive = 0;
@@ -213,7 +218,7 @@ const State = {
 
                 const team = this.teams.find(t => t.id === res.teamId);
                 if (team && !processed.has(res.teamId + res.participantName)) {
-                    team[field] += pointsToGive;
+                    team[field] = (team[field] || 0) + pointsToGive;
                     processed.add(res.teamId + res.participantName);
                 }
                 lastValue = currentVal;
@@ -222,7 +227,21 @@ const State = {
 
         this.teams.forEach(t => {
             const penalties = Math.floor((t.amonestaciones || 0) / 3) * 5;
-            t.totalPoints = t.calaveritaPoints + t.cuentosPoints + t.catrinesPoints + t.altaresPoints + t.lapidaPoints - penalties;
+            // Ponderación oficial sobre el 100%:
+            // Altares: 40% (0.40)
+            // Alebrijes (lapida): 20% (0.20)
+            // Cuentos y Leyendas: 20% (0.20)
+            // Catrinas y Catrines: 15% (0.15)
+            // Calaverita Literaria: 5% (0.05)
+            const weightedScore = 
+                ((t.altaresPoints || 0) * 0.40) +
+                ((t.lapidaPoints || 0) * 0.20) +
+                ((t.cuentosPoints || 0) * 0.20) +
+                ((t.catrinesPoints || 0) * 0.15) +
+                ((t.calaveritaPoints || 0) * 0.05);
+
+            const finalScore = weightedScore - penalties;
+            t.totalPoints = Math.max(0, parseFloat(finalScore.toFixed(2)));
         });
     },
 
