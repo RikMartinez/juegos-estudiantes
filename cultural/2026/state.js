@@ -163,10 +163,22 @@ const State = {
         this.notify();
     },
 
-    submitEventResult(compId, teamId, participantName, value, dq = false) {
+    submitEventResult(compId, teamId, participantName, value, dq = false, rubric = null) {
         const existing = this.eventResults.find(r => r.competitionId === compId && r.teamId === teamId && r.participantName === participantName);
-        if (existing) { existing.value = value; existing.dq = dq; }
-        else { this.eventResults.push({ competitionId: compId, teamId, participantName: participantName || '', value, dq }); }
+        if (existing) { 
+            existing.value = value; 
+            existing.dq = dq; 
+            if (rubric !== null) existing.rubric = rubric;
+        } else { 
+            this.eventResults.push({ 
+                competitionId: compId, 
+                teamId, 
+                participantName: participantName || '', 
+                value, 
+                dq,
+                rubric: rubric || null
+            }); 
+        }
         this.update();
     },
 

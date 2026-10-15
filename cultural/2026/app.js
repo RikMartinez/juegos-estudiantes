@@ -334,11 +334,22 @@ function renderBracketContent(comp) {
                                                 ` : `
                                                     <div style="font-weight: 700; color: var(--accent-gold); font-size: 1.1rem;">${team?.name || '---'}</div>
                                                 `}
+                                                ${(comp.type === 'altares' && res.rubric) ? `
+                                                    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; font-size: 0.65rem;">
+                                                        <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--text-variant);"><i class="fa-solid fa-comments" style="color: var(--accent-gold);"></i> Exp: <strong>${res.rubric.exposicion || 0}</strong>/10</span>
+                                                        <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--text-variant);"><i class="fa-solid fa-layer-group" style="color: var(--accent-gold);"></i> Est: <strong>${res.rubric.estructura || 0}</strong>/10</span>
+                                                        <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--text-variant);"><i class="fa-solid fa-fire-flame-curved" style="color: var(--accent-gold);"></i> Elem: <strong>${res.rubric.elementos || 0}</strong>/10</span>
+                                                        <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--text-variant);"><i class="fa-solid fa-palette" style="color: var(--accent-gold);"></i> Creat: <strong>${res.rubric.creatividad || 0}</strong>/10</span>
+                                                        ${res.rubric.judgeCount > 1 ? `<span style="background: rgba(245,200,66,0.1); color: var(--accent-gold); padding: 2px 6px; border-radius: 4px; font-weight: 700;"><i class="fa-solid fa-users"></i> Promedio ${res.rubric.judgeCount} jueces</span>` : ''}
+                                                    </div>
+                                                ` : ''}
                                                 ${res.advanced ? '<span class="pulse" style="font-size:0.6rem; color: var(--success); font-weight: 800;"><i class="fa-solid fa-medal"></i> DESTACADO</span>' : ''}
                                             </div>
                                         </div>
                                     </td>
-                                    <td style="padding: 15px; text-align: right; font-family: \'Outfit\'; font-weight: 800; font-size: 1.1rem; color: var(--accent-gold);">${res.value} Pts</td>
+                                    <td style="padding: 15px; text-align: right; font-family: \'Outfit\'; font-weight: 800; font-size: 1.1rem; color: var(--accent-gold);">
+                                        ${res.value} ${comp.type === 'altares' ? '<small style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/ 40</small>' : 'Pts'}
+                                    </td>
                                 </tr>
                             `;
                         }).join('') || '<tr><td colspan="3" style="text-align: center; padding: 40px; color: var(--text-muted);">Sin resultados registrados aún</td></tr>';
@@ -580,7 +591,7 @@ function renderCaptura(container) {
                                 </div>
                             </div>
                             <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 10px;">
-                                <i class="fa-solid fa-star"></i> PUNTUACIÓN DE EVALUACIÓN (0 a 100 Pts)
+                                <i class="fa-solid fa-star"></i> ${c.type === 'altares' ? 'EVALUACIÓN POR RÚBRICA (4 Criterios - Máx. 40 Pts)' : 'PUNTUACIÓN DE EVALUACIÓN (0 a 100 Pts)'}
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 ${results.map(r => {
@@ -599,9 +610,16 @@ function renderCaptura(container) {
                                                     <div style="font-size: 0.65rem; color: var(--text-muted);">${team?.name || '---'}</div>
                                                 `}
                                             </div>
+                                            ${c.type === 'altares' ? `
+                                                <button class="btn" type="button" 
+                                                    onclick="window.openRubricModal('${c.id}', '${r.teamId}', '${r.participantName}')"
+                                                    style="padding: 6px 10px; font-size: 0.72rem; font-weight: 700; border-radius: 8px; white-space: nowrap; ${r.value && r.value !== '0' ? 'background: rgba(245,200,66,0.15); color: var(--accent-gold); border: 1px solid var(--accent-gold);' : 'background: rgba(255,255,255,0.08); color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.2);'}">
+                                                    <i class="fa-solid fa-clipboard-list"></i> ${r.value && r.value !== '0' ? `${r.value}/40 pts` : 'Evaluar Rúbrica'}
+                                                </button>
+                                            ` : ''}
                                             <input type="text" value="${r.value}" placeholder="0" 
                                                 onchange="window.saveEventValue('${c.id}', '${r.teamId}', '${r.participantName}', this.value)" 
-                                                style="width: 80px; text-align: right; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: 6px; padding: 6px; font-family: monospace; color: ${r.dq ? '#ff4b2b' : 'var(--accent-yellow)'}; font-weight: 700; ${r.dq ? 'text-decoration: line-through;' : ''}">
+                                                style="width: ${c.type === 'altares' ? '55px' : '80px'}; text-align: right; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: 6px; padding: 6px; font-family: monospace; color: ${r.dq ? '#ff4b2b' : 'var(--accent-yellow)'}; font-weight: 700; ${r.dq ? 'text-decoration: line-through;' : ''}">
                                             <i class="fa-solid fa-ban" 
                                                 style="cursor: pointer; color: ${r.dq ? '#ff4b2b' : 'var(--text-muted)'}; font-size: 0.9rem;" 
                                                 title="Descalificar"
@@ -859,6 +877,272 @@ window.updateName = (compId, teamId, oldName, newName) => {
     }
 };
 
+// --- RÚBRICA OFICIAL ALTARES DE MUERTO ---
+const RUBRIC_ALTARES = [
+    {
+        id: 'exposicion',
+        name: 'Exposición y Justificación',
+        icon: 'fa-comments',
+        desc: 'Explican con fluidez, respeto y precisión los elementos y la dedicatoria del altar, respondiendo preguntas con seguridad.'
+    },
+    {
+        id: 'estructura',
+        name: 'Estructura del Altar',
+        icon: 'fa-layer-group',
+        desc: 'Estructura definida, limpia y clara respetando su orden y significado simbólico tradicional.'
+    },
+    {
+        id: 'elementos',
+        name: 'Elementos Tradicionales',
+        icon: 'fa-fire-flame-curved',
+        desc: 'Incluye elementos esenciales: agua, sal, velas, copal, cempasúchil, pan de muerto, calaveritas, fotos y papel picado.'
+    },
+    {
+        id: 'creatividad',
+        name: 'Creatividad y Estética',
+        icon: 'fa-palette',
+        desc: 'Originalidad, armonía de colores, limpieza visual y uso innovador o reciclado de materiales.'
+    }
+];
+
+const RUBRIC_LEVELS = [
+    { label: 'Excelente', pts: 10 },
+    { label: 'Muy Bien', pts: 7 },
+    { label: 'Bien', pts: 5 },
+    { label: 'Regular', pts: 3 },
+    { label: 'Insuficiente', pts: 1 }
+];
+
+window.openRubricModal = (compId, teamId, pName) => {
+    const comp = State.competitions.find(c => c.id === compId);
+    const team = State.teams.find(t => t.id === teamId);
+    const res = State.eventResults.find(r => r.competitionId === compId && r.teamId === teamId && r.participantName === pName);
+
+    // Inicializar estructura de jueces (1, 2 y 3)
+    let activeJudge = 1;
+    let judgesData = {
+        1: { exposicion: 0, estructura: 0, elementos: 0, creatividad: 0 },
+        2: { exposicion: 0, estructura: 0, elementos: 0, creatividad: 0 },
+        3: { exposicion: 0, estructura: 0, elementos: 0, creatividad: 0 }
+    };
+
+    if (res && res.rubric) {
+        if (res.rubric.judges) {
+            judgesData = {
+                1: { ...judgesData[1], ...(res.rubric.judges[1] || {}) },
+                2: { ...judgesData[2], ...(res.rubric.judges[2] || {}) },
+                3: { ...judgesData[3], ...(res.rubric.judges[3] || {}) }
+            };
+        } else if (res.rubric.exposicion !== undefined) {
+            judgesData[1] = {
+                exposicion: res.rubric.exposicion || 0,
+                estructura: res.rubric.estructura || 0,
+                elementos: res.rubric.elementos || 0,
+                creatividad: res.rubric.creatividad || 0
+            };
+        }
+    }
+
+    const existingModal = document.getElementById('modal-rubric-altares');
+    if (existingModal) existingModal.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'modal-rubric-altares';
+    modal.className = 'modal-overlay';
+
+    const isJudgeEvaluated = (j) => {
+        const d = judgesData[j];
+        return d && (d.exposicion > 0 || d.estructura > 0 || d.elementos > 0 || d.creatividad > 0);
+    };
+
+    const getJudgeTotal = (j) => {
+        const d = judgesData[j];
+        if (!d) return 0;
+        return (d.exposicion || 0) + (d.estructura || 0) + (d.elementos || 0) + (d.creatividad || 0);
+    };
+
+    const renderModalBody = () => {
+        const evaluatedJudges = [1, 2, 3].filter(j => isJudgeEvaluated(j));
+        const count = evaluatedJudges.length || 1;
+
+        const sumExp = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].exposicion || 0), 0);
+        const sumEst = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].estructura || 0), 0);
+        const sumElem = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].elementos || 0), 0);
+        const sumCreat = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].creatividad || 0), 0);
+        const sumTotals = evaluatedJudges.reduce((acc, j) => acc + getJudgeTotal(j), 0);
+
+        const avgExp = +(sumExp / count).toFixed(1);
+        const avgEst = +(sumEst / count).toFixed(1);
+        const avgElem = +(sumElem / count).toFixed(1);
+        const avgCreat = +(sumCreat / count).toFixed(1);
+        const finalAvg = evaluatedJudges.length > 0 ? +(sumTotals / count).toFixed(2) : 0;
+
+        const currentJudgeCriteria = judgesData[activeJudge] || { exposicion: 0, estructura: 0, elementos: 0, creatividad: 0 };
+        const currentJudgeTotal = getJudgeTotal(activeJudge);
+
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 680px; width: 94%; max-height: 90vh; overflow-y: auto; text-align: left; padding: 25px; border: 1px solid var(--accent-gold);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--accent-gold); font-weight: 800; text-transform: uppercase;">
+                            <i class="fa-solid fa-scroll"></i> Rúbrica Oficial de Evaluación - Panel de Jueces
+                        </div>
+                        <h2 style="margin: 4px 0 0; color: white; font-size: 1.4rem;">${comp?.name || 'Altares de Muerto'}</h2>
+                        <div style="font-size: 0.9rem; color: var(--accent-blue); font-weight: 700; margin-top: 2px;">
+                            Grupo: ${team?.name || '---'} ${pName ? `(${pName})` : ''}
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="document.getElementById('modal-rubric-altares').remove()" style="padding: 5px 12px; font-size: 0.8rem;">✕ Cerrar</button>
+                </div>
+
+                <!-- SELECTOR DE JUECES -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+                    ${[1, 2, 3].map(j => {
+                        const isAct = activeJudge === j;
+                        const isEval = isJudgeEvaluated(j);
+                        const jTot = getJudgeTotal(j);
+                        return `
+                            <button type="button" class="btn" onclick="window.switchRubricJudge(${j})"
+                                style="flex: 1; padding: 10px 8px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: all 0.2s;
+                                ${isAct 
+                                    ? 'background: var(--accent-gold); color: #000; box-shadow: 0 4px 15px rgba(245,200,66,0.35); transform: translateY(-1px);' 
+                                    : (isEval ? 'background: rgba(46,196,182,0.15); color: #2ec4b6; border: 1px solid rgba(46,196,182,0.4);' : 'background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.06);')}">
+                                <span><i class="fa-solid ${isEval ? 'fa-user-check' : 'fa-user'}"></i> Juez ${j}</span>
+                                <span style="font-size: 0.72rem; font-weight: 700; opacity: 0.9;">
+                                    ${isEval ? `${jTot} / 40 pts` : '(Sin evaluar)'}
+                                </span>
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 6px 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                    <span style="font-size: 0.8rem; color: var(--accent-gold); font-weight: 700;">
+                        <i class="fa-solid fa-pen-to-square"></i> Calificando como: <strong>Juez ${activeJudge}</strong> (Subtotal: ${currentJudgeTotal} pts)
+                    </span>
+                    ${isJudgeEvaluated(activeJudge) ? `
+                        <button type="button" class="btn btn-secondary" onclick="window.clearJudgeRubric(${activeJudge})" style="padding: 2px 8px; font-size: 0.65rem; color: #ff7e33;">
+                            Limpiar Juez ${activeJudge}
+                        </button>
+                    ` : ''}
+                </div>
+
+                <!-- CRITERIOS DEL JUEZ ACTIVO -->
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    ${RUBRIC_ALTARES.map(crit => {
+                        const selectedVal = currentJudgeCriteria[crit.id] || 0;
+                        return `
+                            <div style="background: rgba(255,255,255,0.025); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <span style="font-weight: 700; font-size: 0.95rem; color: white;">
+                                        <i class="fa-solid ${crit.icon}" style="color: var(--accent-gold); margin-right: 8px;"></i>
+                                        ${crit.name}
+                                    </span>
+                                    <span style="font-size: 0.85rem; font-weight: 800; color: ${selectedVal > 0 ? 'var(--accent-yellow)' : 'var(--text-muted)'}; font-family: monospace;">
+                                        ${selectedVal > 0 ? selectedVal + ' pts' : 'Sin calificar'}
+                                    </span>
+                                </div>
+                                <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.4;">
+                                    ${crit.desc}
+                                </div>
+                                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                    ${RUBRIC_LEVELS.map(lvl => {
+                                        const isSel = selectedVal === lvl.pts;
+                                        return `
+                                            <button type="button" class="btn" onclick="window.selectRubricValue('${crit.id}', ${lvl.pts})" 
+                                                style="flex: 1 1 auto; min-width: 85px; padding: 7px 6px; font-size: 0.75rem; border-radius: 8px; font-weight: 700; transition: all 0.2s;
+                                                ${isSel 
+                                                    ? 'background: var(--accent-gold); color: #000; box-shadow: 0 0 10px rgba(245,200,66,0.4); transform: scale(1.02);' 
+                                                    : 'background: rgba(255,255,255,0.05); color: var(--text-variant); border: 1px solid rgba(255,255,255,0.08);'}">
+                                                ${lvl.label} <span style="opacity: 0.8; font-size: 0.7rem;">(${lvl.pts})</span>
+                                            </button>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+
+                <!-- RESUMEN GENERAL Y PROMEDIO -->
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">
+                            Promedio Final Automático (${evaluatedJudges.length} ${evaluatedJudges.length === 1 ? 'juez' : 'jueces'})
+                        </div>
+                        <div style="font-size: 2rem; font-family: 'Outfit'; font-weight: 900; color: var(--accent-yellow); line-height: 1.1;">
+                            ${finalAvg} <span style="font-size: 1rem; color: var(--text-muted); font-weight: 400;">/ 40 pts</span>
+                        </div>
+                        ${evaluatedJudges.length > 0 ? `
+                            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 5px;">
+                                Desglose: ${[1, 2, 3].filter(j => isJudgeEvaluated(j)).map(j => `Juez ${j}: <strong>${getJudgeTotal(j)}</strong> pts`).join(' | ')}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="document.getElementById('modal-rubric-altares').remove()">Cancelar</button>
+                        <button class="btn" onclick="window.saveRubricResult('${compId}', '${teamId}', '${pName}')" style="background: var(--accent-gold); color: #000; font-weight: 800; padding: 10px 22px;">
+                            <i class="fa-solid fa-check"></i> Guardar Evaluación
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+
+    window.switchRubricJudge = (j) => {
+        activeJudge = j;
+        renderModalBody();
+    };
+
+    window.clearJudgeRubric = (j) => {
+        judgesData[j] = { exposicion: 0, estructura: 0, elementos: 0, creatividad: 0 };
+        renderModalBody();
+    };
+
+    window.selectRubricValue = (critId, pts) => {
+        if (!judgesData[activeJudge]) judgesData[activeJudge] = { exposicion: 0, estructura: 0, elementos: 0, creatividad: 0 };
+        judgesData[activeJudge][critId] = pts;
+        renderModalBody();
+    };
+
+    window.saveRubricResult = (cId, tId, pN) => {
+        const evaluatedJudges = [1, 2, 3].filter(j => isJudgeEvaluated(j));
+        const count = evaluatedJudges.length || 1;
+
+        const sumExp = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].exposicion || 0), 0);
+        const sumEst = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].estructura || 0), 0);
+        const sumElem = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].elementos || 0), 0);
+        const sumCreat = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].creatividad || 0), 0);
+        const sumTotals = evaluatedJudges.reduce((acc, j) => acc + getJudgeTotal(j), 0);
+
+        const avgExp = +(sumExp / count).toFixed(1);
+        const avgEst = +(sumEst / count).toFixed(1);
+        const avgElem = +(sumElem / count).toFixed(1);
+        const avgCreat = +(sumCreat / count).toFixed(1);
+        const finalAvg = evaluatedJudges.length > 0 ? +(sumTotals / count).toFixed(2) : 0;
+
+        const rubricData = {
+            judges: judgesData,
+            judgeCount: evaluatedJudges.length,
+            exposicion: avgExp,
+            estructura: avgEst,
+            elementos: avgElem,
+            creatividad: avgCreat,
+            total: finalAvg
+        };
+
+        const res = State.eventResults.find(r => r.competitionId === cId && r.teamId === tId && r.participantName === pN);
+        State.submitEventResult(cId, tId, pN, String(finalAvg), res ? res.dq : false, rubricData);
+        const m = document.getElementById('modal-rubric-altares');
+        if (m) m.remove();
+        render();
+    };
+
+    renderModalBody();
+    document.body.appendChild(modal);
+};
+
 window.printQR = () => {
     const printWindow = window.open('', '_blank');
     printWindow.document.write(`
@@ -1000,10 +1284,26 @@ function renderTeamDetails(teamId, competitions) {
 
         if (points > 0) {
             const posDisplay = Array.isArray(pos) ? pos.join('°, ') + '°' : pos + '°';
+            const resItem = results.find(r => r.teamId === teamId);
+            const rubricInfo = (comp.type === 'altares' && resItem && resItem.rubric) ? `
+                <div style="font-size: 0.7rem; color: var(--text-variant); margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap;">
+                    <span>🗣️ Exp: <strong>${resItem.rubric.exposicion || 0}</strong>/10</span>
+                    <span>🏛️ Est: <strong>${resItem.rubric.estructura || 0}</strong>/10</span>
+                    <span>🕯️ Elem: <strong>${resItem.rubric.elementos || 0}</strong>/10</span>
+                    <span>🎨 Creat: <strong>${resItem.rubric.creatividad || 0}</strong>/10</span>
+                </div>
+            ` : '';
+
             details.push(`
-                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 5px;">
-                    <span style="color: var(--text-muted); flex: 1;">${comp.name} <br> <span style="color: var(--accent-yellow); font-size: 0.75rem;">Posiciones: ${posDisplay}</span></span>
-                    <span style="font-weight: 700; color: var(--accent-blue); align-self: center;">+${points}</span>
+                <div style="display: flex; justify-content: space-between; font-size: 0.85rem; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px;">
+                    <div style="flex: 1;">
+                        <span style="font-weight: 600; color: white;">${comp.name}</span>
+                        ${comp.type === 'altares' && resItem ? `<span style="font-size: 0.75rem; color: var(--accent-gold); margin-left: 6px;">(${resItem.value}/40 pts)</span>` : ''}
+                        <br> 
+                        <span style="color: var(--accent-yellow); font-size: 0.75rem;">Lugar obtenido: ${posDisplay}</span>
+                        ${rubricInfo}
+                    </div>
+                    <span style="font-weight: 800; color: var(--accent-blue); align-self: center; font-size: 1rem;">+${points} pts</span>
                 </div>
             `);
         }
