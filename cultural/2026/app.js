@@ -97,7 +97,7 @@ function updateTicker() {
     if (finishedComps.length > 0) {
         const tickerItems = finishedComps.map(c => {
             const results = State.eventResults
-                .filter(r => r.competitionId === c.id && !r.dq && r.value)
+                .filter(r => r.competitionId === c.id && !r.dq && r.value && window.parseFlexibleValue(r.value) > 0)
                 .sort((a, b) => {
                     const vA = window.parseFlexibleValue(a.value);
                     const vB = window.parseFlexibleValue(b.value);
@@ -821,7 +821,7 @@ window.populateTeams = (compId) => {
             // Solo añadir si no existe ya un registro para ese grupo sin nombre de participante
             const exists = State.eventResults.find(r => r.competitionId === compId && r.teamId === team.id && !r.participantName);
             if (!exists) {
-                State.submitEventResult(compId, team.id, "", "0");
+                State.submitEventResult(compId, team.id, "", "");
             }
         });
         alert("Grupos cargados.");
@@ -834,7 +834,7 @@ window.addParticipant = (compId) => {
         const team = State.teams[parseInt(tNum) - 1];
         if (team) {
             const name = prompt("Nombre del participante (o deja vacío):") || "";
-            State.submitEventResult(compId, team.id, name, "0");
+            State.submitEventResult(compId, team.id, name, "");
         } else {
             alert("Grupo inválido.");
         }
@@ -1258,11 +1258,14 @@ function renderTeamDetails(teamId, competitions) {
     };
 
     competitions.forEach(comp => {
+        // Ignorar eventos del programa cultural que no son evaluables
+        if (comp.type === 'artistico') return;
+
         let points = 0;
         let pos = 0;
 
         const results = State.eventResults
-            .filter(r => r.competitionId === comp.id && !r.dq && r.value)
+            .filter(r => r.competitionId === comp.id && !r.dq && r.value && parseVal(r.value) > 0)
             .sort((a, b) => {
                 const vA = parseVal(a.value); const vB = parseVal(b.value);
                 return vB - vA; // Todos son formato ranking en el Festival cultural
