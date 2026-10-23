@@ -221,11 +221,14 @@
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
             border: 1px solid var(--border-color);
+            width: 100%;
+            aspect-ratio: 16 / 10;
         }
 
         .hero-image img {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: cover;
             display: block;
         }
 
@@ -318,7 +321,8 @@
 
         .card-img-wrapper {
             position: relative;
-            height: 240px;
+            width: 100%;
+            aspect-ratio: 16 / 9;
             overflow: hidden;
             border-bottom: 1px solid var(--border-color);
         }
@@ -572,6 +576,225 @@
                 flex-direction: column;
             }
         }
+
+        /* Modal Convocatorias */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(2, 10, 12, 0.82);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-container {
+            background: rgba(10, 34, 40, 0.96);
+            border: 1px solid var(--border-color);
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            width: 100%;
+            max-width: 640px;
+            max-height: 88vh;
+            overflow-y: auto;
+            transform: scale(0.95) translateY(10px);
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-header {
+            padding: 24px 28px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: sticky;
+            top: 0;
+            background: rgba(10, 34, 40, 0.98);
+            z-index: 2;
+        }
+
+        .modal-header-info .modal-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .modal-header-info h3 {
+            font-size: 1.4rem;
+            color: var(--text-dark);
+            margin: 0;
+        }
+
+        .modal-header-info p {
+            font-size: 0.85rem;
+            color: var(--text-variant);
+            margin-top: 4px;
+        }
+
+        .modal-close-btn {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-color);
+            color: var(--text-variant);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .modal-close-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 24px 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .doc-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(46, 196, 182, 0.12);
+            border-radius: 16px;
+            padding: 16px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .doc-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(46, 196, 182, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .doc-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .doc-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .doc-text {
+            min-width: 0;
+        }
+
+        .doc-title {
+            font-weight: 700;
+            font-size: 0.98rem;
+            color: var(--text-dark);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .doc-desc {
+            font-size: 0.78rem;
+            color: var(--text-variant);
+            margin-top: 2px;
+            line-height: 1.3;
+        }
+
+        .doc-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .btn-doc-view, .btn-doc-download {
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-doc-view {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-doc-view:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: var(--text-variant);
+        }
+
+        .btn-doc-download {
+            background: var(--udg-red);
+            color: var(--surface);
+        }
+
+        .btn-doc-download:hover {
+            background: #80e8dd;
+            box-shadow: 0 4px 12px rgba(46, 196, 182, 0.35);
+        }
+
+        @media (max-width: 580px) {
+            .doc-card {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+            }
+            .doc-actions {
+                justify-content: flex-end;
+            }
+            .modal-header, .modal-body {
+                padding: 18px 20px;
+            }
+        }
     </style>
 </head>
 
@@ -644,9 +867,9 @@
                         <p>Únete a nuestra máxima tradición deportiva. Celebra el orgullo institucional, consulta
                             resultados en tiempo real y el progreso de las disciplinas.</p>
                         <div class="card-actions">
-                            <a href="#" class="btn btn-card-outline" title="Convocatorias Deportivas">
-                                <i class="fa-solid fa-file-lines"></i> Convocatorias
-                            </a>
+                            <button type="button" class="btn btn-card-outline" onclick="openConvocatoriasModal('deportiva')" title="Ver Convocatorias de los Juegos Deportivos">
+                                <i class="fa-solid fa-file-pdf"></i> Convocatorias
+                            </button>
                             <a href="deportiva/2026/index.html" class="btn btn-blue">
                                 <i class="fa-solid fa-arrow-right-to-bracket"></i> Ingresar al Portal
                             </a>
@@ -669,9 +892,9 @@
                         <p>Celebra nuestras raíces a través del arte, altares tradicionales y exhibiciones. Un espacio
                             de creatividad, comunidad y homenaje a nuestra historia.</p>
                         <div class="card-actions">
-                            <a href="http://prepachapala.sems.udg.mx/node/4090" target="_blank" rel="noopener noreferrer" class="btn btn-card-outline" title="Convocatorias Festival de Vida y Muerte 2026">
-                                <i class="fa-solid fa-file-lines"></i> Convocatorias
-                            </a>
+                            <button type="button" class="btn btn-card-outline" onclick="openConvocatoriasModal('cultural')" title="Ver Convocatorias del Festival de Vida y Muerte">
+                                <i class="fa-solid fa-file-pdf"></i> Convocatorias
+                            </button>
                             <a href="cultural/2026/index.html" class="btn btn-olive">
                                 <i class="fa-solid fa-arrow-right-to-bracket"></i> Ingresar al Portal
                             </a>
@@ -726,6 +949,148 @@
         </footer>
     </div>
 
+    <!-- Modal Convocatorias -->
+    <div id="modalConvocatorias" class="modal-overlay" onclick="handleModalOverlayClick(event)">
+        <div class="modal-container">
+            <div class="modal-header">
+                <div class="modal-header-info">
+                    <div id="modalEventTag" class="modal-tag">
+                        <i id="modalEventIcon" class="fa-solid fa-scroll"></i>
+                        <span id="modalEventCategory">Evento Oficial</span>
+                    </div>
+                    <h3 id="modalEventTitle">Convocatorias Oficiales</h3>
+                    <p id="modalEventSubtitle">Selecciona el documento para visualizar o descargar</p>
+                </div>
+                <button type="button" class="modal-close-btn" onclick="closeConvocatoriasModal()" title="Cerrar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="modalDocsList" class="modal-body">
+                <!-- Generado dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CONVOCATORIAS_DATA = {
+            cultural: {
+                title: "Festival de Vida y Muerte 2026",
+                subtitle: "Bases y lineamientos oficiales por categoría",
+                category: "Tradición Cultural",
+                icon: "fa-palette",
+                tagColor: "var(--accent-gold)",
+                docs: [
+                    {
+                        title: "Convocatoria Altares de Muertos",
+                        desc: "Dimensiones, elementos tradicionales, exposición y rúbrica",
+                        file: "docs/convocatoria-altares-de-muertos-2026.pdf",
+                        icon: "fa-fire-flame-curved",
+                        color: "rgba(255, 183, 3, 0.15)",
+                        iconColor: "var(--accent-gold)"
+                    },
+                    {
+                        title: "Convocatoria Alebrijes",
+                        desc: "Técnica, materiales tradicionales, creatividad y montaje",
+                        file: "docs/convocatoria-alebrijes-2026.pdf",
+                        icon: "fa-dragon",
+                        color: "rgba(46, 196, 182, 0.15)",
+                        iconColor: "var(--udg-red)"
+                    },
+                    {
+                        title: "Convocatoria Cuentos y Leyendas",
+                        desc: "Narrativa, temática de tradición oral mexicana y extensión",
+                        file: "docs/convocatoria-cuentos-y-leyendas-2026.pdf",
+                        icon: "fa-book-open",
+                        color: "rgba(0, 180, 216, 0.15)",
+                        iconColor: "var(--academic-blue)"
+                    },
+                    {
+                        title: "Convocatoria Calaveritas Literarias",
+                        desc: "Métrica, rima, humor tradicional y requisitos de entrega",
+                        file: "docs/convocatoria-calaveritas-literarias-2026.pdf",
+                        icon: "fa-skull",
+                        color: "rgba(255, 107, 107, 0.15)",
+                        iconColor: "#ff6b6b"
+                    }
+                ]
+            },
+            deportiva: {
+                title: "Juegos de los Estudiantes 2026",
+                subtitle: "Bases generales y reglamentos por disciplina",
+                category: "Deporte y Competencia",
+                icon: "fa-trophy",
+                tagColor: "var(--academic-blue)",
+                docs: [
+                    {
+                        title: "Convocatoria General Deportiva",
+                        desc: "Reglamento general, ramas, inscripciones y calendario deportivo",
+                        file: "docs/convocatoria-juegos-deportivos-2026.pdf",
+                        icon: "fa-medal",
+                        color: "rgba(0, 180, 216, 0.15)",
+                        iconColor: "var(--academic-blue)"
+                    }
+                ]
+            }
+        };
+
+        function openConvocatoriasModal(type) {
+            const data = CONVOCATORIAS_DATA[type];
+            if (!data) return;
+
+            document.getElementById('modalEventTitle').textContent = data.title;
+            document.getElementById('modalEventSubtitle').textContent = data.subtitle;
+            document.getElementById('modalEventCategory').textContent = data.category;
+            
+            const tagEl = document.getElementById('modalEventTag');
+            tagEl.style.color = data.tagColor;
+            
+            const iconEl = document.getElementById('modalEventIcon');
+            iconEl.className = 'fa-solid ' + data.icon;
+
+            const listEl = document.getElementById('modalDocsList');
+            listEl.innerHTML = data.docs.map(doc => `
+                <div class="doc-card">
+                    <div class="doc-info">
+                        <div class="doc-icon" style="background: ${doc.color}; color: ${doc.iconColor};">
+                            <i class="fa-solid ${doc.icon}"></i>
+                        </div>
+                        <div class="doc-text">
+                            <div class="doc-title">${doc.title}</div>
+                            <div class="doc-desc">${doc.desc}</div>
+                        </div>
+                    </div>
+                    <div class="doc-actions">
+                        <a href="${doc.file}" target="_blank" rel="noopener noreferrer" class="btn-doc-view" title="Visualizar en pestaña nueva">
+                            <i class="fa-regular fa-eye"></i> Ver
+                        </a>
+                        <a href="${doc.file}" download class="btn-doc-download" title="Descargar archivo PDF">
+                            <i class="fa-solid fa-download"></i> Descargar
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+
+            const modal = document.getElementById('modalConvocatorias');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeConvocatoriasModal() {
+            const modal = document.getElementById('modalConvocatorias');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        function handleModalOverlayClick(event) {
+            if (event.target.id === 'modalConvocatorias') {
+                closeConvocatoriasModal();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeConvocatoriasModal();
+        });
+    </script>
 </body>
 
 </html>
