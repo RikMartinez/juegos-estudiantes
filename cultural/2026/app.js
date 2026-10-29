@@ -301,6 +301,20 @@ function renderBracketContent(comp) {
 
     return `
         <div style="width: 100%; max-width: 800px; margin: 0 auto; min-height: 400px;">
+            ${comp.type === 'cuentos' ? `
+                <div style="background: linear-gradient(135deg, rgba(255, 0, 0, 0.12) 0%, rgba(20, 20, 20, 0.4) 100%); border: 1px solid rgba(255, 0, 0, 0.35); border-radius: 16px; padding: 18px 22px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <div style="font-size: 0.75rem; color: #ff6b6b; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <i class="fa-brands fa-youtube"></i> Muestra Oficial Audiovisual
+                        </div>
+                        <h3 style="margin: 3px 0 0; color: white; font-size: 1.25rem;">Cuentos y Leyendas 2026</h3>
+                        <p style="margin: 4px 0 0; font-size: 0.85rem; color: var(--text-variant);">Explora las 27 producciones en video realizadas por los estudiantes.</p>
+                    </div>
+                    <button type="button" class="btn" onclick="window.openCuentosGallery()" style="background: #ff0000; color: white; font-weight: 700; padding: 10px 18px; border-radius: 10px; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(255,0,0,0.35); border: none; cursor: pointer;">
+                        <i class="fa-solid fa-play"></i> Ver Galería de Videos
+                    </button>
+                </div>
+            ` : ''}
             <table style="width: 100%; border-collapse: separate; border-spacing: 0 10px;">
                 <thead>
                     <tr style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">
@@ -321,6 +335,8 @@ function renderBracketContent(comp) {
                             lastVal = currentVal;
 
                             const team = State.teams.find(t => t.id === res.teamId);
+                            const cuentosVideo = comp.type === 'cuentos' ? window.findCuentosVideo(team?.name) : null;
+
                             return `
                                 <tr style="background: rgba(255,255,255,0.03);">
                                     <td style="padding: 15px; text-align: center; font-weight: 900; color: ${displayPos <= 3 ? 'var(--accent-yellow)' : 'var(--text-muted)'}; font-size: 1.2rem;">${displayPos}°</td>
@@ -334,6 +350,15 @@ function renderBracketContent(comp) {
                                                 ` : `
                                                     <div style="font-weight: 700; color: var(--accent-gold); font-size: 1.1rem;">${team?.name || '---'}</div>
                                                 `}
+                                                ${cuentosVideo ? `
+                                                    <div style="display: flex; align-items: center; gap: 8px; margin-top: 6px; flex-wrap: wrap;">
+                                                        <span style="font-size: 0.8rem; color: var(--accent-gold); font-weight: 600;"><i class="fa-solid fa-book-open" style="font-size: 0.7rem;"></i> "${cuentosVideo.title}"</span>
+                                                        <button type="button" class="btn" onclick="window.openVideoModal('${cuentosVideo.title.replace(/'/g, "\\'")}', '${cuentosVideo.url}', '${team?.name}')" 
+                                                            style="padding: 2px 8px; font-size: 0.7rem; font-weight: 700; background: rgba(255,0,0,0.18); color: #ff6b6b; border: 1px solid rgba(255,0,0,0.35); border-radius: 4px; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;">
+                                                            <i class="fa-brands fa-youtube"></i> Ver Video
+                                                        </button>
+                                                    </div>
+                                                ` : ''}
                                                 ${(comp.type === 'altares' && res.rubric) ? `
                                                     <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; font-size: 0.65rem;">
                                                         <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--text-variant);"><i class="fa-solid fa-comments" style="color: var(--accent-gold);"></i> Exp: <strong>${res.rubric.exposicion || 0}</strong>/10</span>
@@ -585,6 +610,11 @@ function renderCaptura(container) {
                                     ` : ''}
                                 </div>
                                 <div style="display: flex; gap: 5px;">
+                                    ${c.type === 'cuentos' ? `
+                                        <button class="btn" style="font-size: 0.6rem; padding: 4px 8px; background: rgba(255,0,0,0.2); color: #ff6b6b; border: 1px solid rgba(255,0,0,0.4);" onclick="window.openCuentosGallery()">
+                                            <i class="fa-brands fa-youtube"></i> Galería
+                                        </button>
+                                    ` : ''}
                                     <button class="btn btn-secondary" style="font-size: 0.6rem; padding: 4px 8px;" onclick="window.populateTeams('${c.id}')">Cargar Grupos</button>
                                     <button class="btn btn-secondary" style="font-size: 0.6rem; padding: 4px 8px;" onclick="window.addParticipant('${c.id}')">+ Participante</button>
                                     <button class="btn" style="font-size: 0.6rem; padding: 4px 8px; background: var(--success); color: black;" onclick="window.finishComp('${c.id}')"><i class="fa-solid fa-circle-check"></i> Finalizar</button>
@@ -617,6 +647,20 @@ function renderCaptura(container) {
                                                     <i class="fa-solid fa-clipboard-list"></i> ${r.value && r.value !== '0' ? `${r.value}/40 pts` : 'Evaluar Rúbrica'}
                                                 </button>
                                             ` : ''}
+                                            ${c.type === 'cuentos' ? (() => {
+                                                const v = window.findCuentosVideo(team?.name);
+                                                if (v) {
+                                                    return `
+                                                        <button class="btn" type="button" 
+                                                            onclick="window.openVideoModal('${v.title.replace(/'/g, "\\'")}', '${v.url}', '${team?.name}')"
+                                                            style="padding: 6px 10px; font-size: 0.72rem; font-weight: 700; border-radius: 8px; white-space: nowrap; background: rgba(255, 0, 0, 0.15); color: #ff6b6b; border: 1px solid rgba(255, 0, 0, 0.35); display: inline-flex; align-items: center; gap: 5px;"
+                                                            title="Reproducir video: ${v.title}">
+                                                            <i class="fa-brands fa-youtube"></i> ${v.title.length > 16 ? v.title.substring(0, 14) + '...' : v.title}
+                                                        </button>
+                                                    `;
+                                                }
+                                                return '';
+                                            })() : ''}
                                             <input type="text" value="${r.value}" placeholder="0" 
                                                 onchange="window.saveEventValue('${c.id}', '${r.teamId}', '${r.participantName}', this.value)" 
                                                 style="width: ${c.type === 'altares' ? '55px' : '80px'}; text-align: right; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: 6px; padding: 6px; font-family: monospace; color: ${r.dq ? '#ff4b2b' : 'var(--accent-yellow)'}; font-weight: 700; ${r.dq ? 'text-decoration: line-through;' : ''}">
@@ -875,6 +919,214 @@ window.updateName = (compId, teamId, oldName, newName) => {
         State.save();
         render(); // Re-renderizamos para actualizar las referencias en los botones de borrar
     }
+};
+
+// --- CATÁLOGO OFICIAL DE VIDEOS: CUENTOS Y LEYENDAS 2026 ---
+const CUENTOS_VIDEOS = [
+    { code: "1AM", groupName: "1° A Matutino", title: "La hermosa Rosario", url: "https://youtu.be/Bfh-moMvjFM?si=83r0iF__qvTJILOA" },
+    { code: "1AV", groupName: "1° A Vespertino", title: "Cuando florece el cempasúchil", url: "https://youtu.be/bnWNNjHrMBc?si=18qj_m0FF1yOTRzC" },
+    { code: "1BM", groupName: "1° B Matutino", title: "Tan hermosa como aquel día", url: "https://youtu.be/aQVGZS_QLaU?si=i4_nPFVwp9HGwwLR" },
+    { code: "1BV", groupName: "1° B Vespertino", title: "La Michicihuali", url: "https://youtu.be/vbVS-ahD9f8?si=dMmldSmF3fkJbB45" },
+    { code: "1CM", groupName: "1° C Matutino", title: "U Chuuch k'iin", url: "https://youtu.be/H5goFBcfnqI?si=GPKygiVcVYHXT6HY" },
+    { code: "1 BTT", groupName: "1° BTT", title: "Kael y la niña que vendía pan", url: "https://youtu.be/6vkh8aC_IIE" },
+    { code: "2AV", groupName: "2° A Vespertino", title: "El nahual de la laguna", url: "https://youtu.be/W72Fdmp8Ljc?si=OSR1LldWmULuFGMf" },
+    { code: "2BV", groupName: "2° B Vespertino", title: "El charro negro", url: "https://youtu.be/psFy3P2viyo" },
+    { code: "2CV", groupName: "2° C Vespertino", title: "Los guardianes/Tlamatine y Yancuicacihuatl", url: "https://youtu.be/sWkqgF-g7Y0?si=DOb0hlI3_wksDIfX" },
+    { code: "2 BTT", groupName: "2° BTT", title: "Las campanadas del lago sumergido", url: "https://youtu.be/h6lgGiVSheE" },
+    { code: "3AM", groupName: "3° A Matutino", title: "Día de muertos; del otro lado", url: "https://youtu.be/dLej_aPgnrM?si=8Kn-ig6yNwRHrFLb" },
+    { code: "3AV", groupName: "3° A Vespertino", title: "La leyenda de Michicihualli", url: "https://youtu.be/cH-LdFOtA_M?si=x91SCdFunjW5yT4o" },
+    { code: "3BM", groupName: "3° B Matutino", title: "Mariposa de mi Corazón", url: "https://youtu.be/0k6iJQFbLeQ?si=g-Udk4GLLEtlTi6p" },
+    { code: "3BV", groupName: "3° B Vespertino", title: "Raíces Blancas", url: "https://youtu.be/yt07ghntvo8?si=EEu-FwSIkpbcFN8l" },
+    { code: "3CM", groupName: "3° C Matutino", title: "Crónicas moribundas", url: "https://youtu.be/zpZ8n3t6ADI" },
+    { code: "3 BTT", groupName: "3° BTT", title: "Un día más", url: "https://youtu.be/xPWHKFJDA24?si=LhjjP1M_z-sHF4Lp" },
+    { code: "4AM", groupName: "4° A Matutino", title: "El Vigésimo Tercer", url: "https://youtu.be/Vk0G0nUERjA?si=h0Pf-JA-D-GQUXLQ" },
+    { code: "4AV", groupName: "4° A Vespertino", title: "La mujer del toque de queda", url: "https://youtu.be/M4ON3zLsHm0?si=wLgB7Kzlgyyvuk0L" },
+    { code: "4BM", groupName: "4° B Matutino", title: "El regreso del charro", url: "https://youtu.be/S2dvR6Fs2hA?si=xMHri8jcAwNYX7lw" },
+    { code: "4BV", groupName: "4° B Vespertino", title: "La leyenda de la princesa Xamay", url: "https://youtu.be/sKKhgHm3lCQ" },
+    { code: "4 BTT", groupName: "4° BTT", title: "La última ofrenda", url: "https://youtu.be/6GXRQDSCGag?si=fcrHldFjzQxg1zt2" },
+    { code: "5AM", groupName: "5° A Matutino", title: "El Charro Negro", url: "https://youtu.be/CqOpkbP6OCI?feature=shared" },
+    { code: "5AV", groupName: "5° A Vespertino", title: "La Niña Matatena", url: "https://youtu.be/GH-lI2g8cbA?feature=shared" },
+    { code: "5 BTT", groupName: "5° BTT", title: "La catrina y La soledad", url: "https://youtu.be/2xI44l0ty7I" },
+    { code: "6BM", groupName: "6° B Matutino", title: "Macario Y La Muerte", url: "https://youtu.be/TJwc5_MpxfU?si=p_raGbIrB5-dEuic" },
+    { code: "6BV", groupName: "6° B Vespertino", title: "Las cartas le los Condenados", url: "https://youtube.com/watch?v=HWU8pUmBpVU&feature=shared" },
+    { code: "6 BTT", groupName: "6° BTT", title: "El Don también se apaga.", url: "https://youtu.be/BUNRhzT-8_U?feature=shared" }
+];
+
+window.getYouTubeId = (url) => {
+    if (!url) return '';
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2] && match[2].length === 11) ? match[2] : '';
+};
+
+window.normalizeGroupName = (str) => {
+    if (!str) return '';
+    return str.toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/°/g, '')
+        .replace(/\s+/g, '')
+        .replace(/matutino/g, 'm')
+        .replace(/vespertino/g, 'v');
+};
+
+window.findCuentosVideo = (teamName) => {
+    if (!teamName) return null;
+    const norm = window.normalizeGroupName(teamName);
+    return CUENTOS_VIDEOS.find(v => {
+        const normCode = window.normalizeGroupName(v.code);
+        const normGroup = window.normalizeGroupName(v.groupName);
+        return norm === normCode || norm === normGroup || norm.includes(normCode) || normCode.includes(norm);
+    }) || null;
+};
+
+window.openVideoModal = (title, url, groupName) => {
+    const existing = document.getElementById('modal-cuentos-video');
+    if (existing) existing.remove();
+
+    const ytId = window.getYouTubeId(url);
+    const modal = document.createElement('div');
+    modal.id = 'modal-cuentos-video';
+    modal.className = 'modal-overlay';
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 760px; width: 94%; padding: 25px; border: 1px solid rgba(255, 0, 0, 0.4); text-align: left; background: rgba(14, 20, 24, 0.96); backdrop-filter: blur(20px); border-radius: 20px; box-shadow: 0 25px 60px rgba(0,0,0,0.7);">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px;">
+                <div>
+                    <div style="font-size: 0.75rem; color: #ff6b6b; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <i class="fa-brands fa-youtube"></i> Cuentos y Leyendas 2026 &bull; ${groupName || 'Grupo participante'}
+                    </div>
+                    <h2 style="margin: 4px 0 0; color: white; font-size: 1.35rem;">${title}</h2>
+                </div>
+                <button class="btn btn-secondary" onclick="document.getElementById('modal-cuentos-video').remove()" style="padding: 5px 12px; font-size: 0.8rem; border-radius: 8px;">✕ Cerrar</button>
+            </div>
+
+            <div style="position: relative; width: 100%; aspect-ratio: 16 / 9; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 10px 30px rgba(0,0,0,0.6); margin-bottom: 15px;">
+                ${ytId ? `
+                    <iframe src="https://www.youtube.com/embed/${ytId}?autoplay=1" 
+                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen></iframe>
+                ` : `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted); gap: 10px;">
+                        <i class="fa-brands fa-youtube" style="font-size: 3rem; color: #ff0000;"></i>
+                        <p>No se pudo embeber el reproductor.</p>
+                        <a href="${url}" target="_blank" rel="noopener noreferrer" class="btn" style="background: #ff0000; color: #fff;">Abrir en YouTube</a>
+                    </div>
+                `}
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <span style="font-size: 0.8rem; color: var(--text-muted);">
+                    <i class="fa-solid fa-circle-info" style="color: var(--accent-gold);"></i> Reproduciendo video oficial del certamen
+                </span>
+                <a href="${url}" target="_blank" rel="noopener noreferrer" class="btn" style="background: rgba(255,255,255,0.08); color: white; font-size: 0.8rem; padding: 8px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.12); display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir en YouTube
+                </a>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+};
+
+window.openCuentosGallery = () => {
+    const existing = document.getElementById('modal-cuentos-gallery');
+    if (existing) existing.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'modal-cuentos-gallery';
+    modal.className = 'modal-overlay';
+
+    const renderGalleryContent = (filterText = '') => {
+        const normFilter = filterText.toLowerCase().trim();
+        const filtered = CUENTOS_VIDEOS.filter(v => 
+            v.title.toLowerCase().includes(normFilter) || 
+            v.groupName.toLowerCase().includes(normFilter) || 
+            v.code.toLowerCase().includes(normFilter)
+        );
+
+        return `
+            <div class="modal-content" style="max-width: 900px; width: 95%; max-height: 90vh; display: flex; flex-direction: column; padding: 25px; border: 1px solid rgba(255, 0, 0, 0.4); text-align: left; background: rgba(14, 20, 24, 0.98); backdrop-filter: blur(25px); border-radius: 24px; box-shadow: 0 30px 70px rgba(0,0,0,0.8);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 0.75rem; color: #ff6b6b; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;">
+                            <i class="fa-brands fa-youtube"></i> Festival Cultural 2026 &bull; Prepa Chapala
+                        </div>
+                        <h2 style="margin: 4px 0 0; color: white; font-size: 1.4rem;">Muestra Audiovisual: Cuentos y Leyendas</h2>
+                        <div style="font-size: 0.85rem; color: var(--text-variant); margin-top: 3px;">
+                            Catálogo oficial de las 27 producciones en video
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="document.getElementById('modal-cuentos-gallery').remove()" style="padding: 5px 12px; font-size: 0.8rem; border-radius: 8px;">✕ Cerrar</button>
+                </div>
+
+                <!-- Buscador -->
+                <div style="margin-bottom: 20px;">
+                    <div style="position: relative;">
+                        <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.9rem;"></i>
+                        <input type="text" id="cuentos-search-input" placeholder="Buscar por título de cuento o grupo (ej. El charro, 1AM, 3° B)..." 
+                            value="${filterText}"
+                            oninput="window.updateCuentosGalleryFilter(this.value)"
+                            style="width: 100%; padding: 12px 14px 12px 40px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; color: white; font-size: 0.9rem; font-family: inherit;">
+                    </div>
+                </div>
+
+                <!-- Grid de videos -->
+                <div style="overflow-y: auto; flex: 1; padding-right: 5px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px;">
+                    ${filtered.length > 0 ? filtered.map(item => {
+                        const ytId = window.getYouTubeId(item.url);
+                        const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '';
+                        return `
+                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, border-color 0.2s;"
+                                onmouseover="this.style.borderColor='rgba(255,0,0,0.5)'; this.style.transform='translateY(-3px)'"
+                                onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'; this.style.transform='none'">
+                                <div style="position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; cursor: pointer; overflow: hidden;"
+                                    onclick="window.openVideoModal('${item.title.replace(/'/g, "\\'")}', '${item.url}', '${item.groupName}')">
+                                    ${thumb ? `<img src="${thumb}" alt="${item.title}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='none'">` : ''}
+                                    <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3);">
+                                        <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255, 0, 0, 0.9); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
+                                            <i class="fa-solid fa-play" style="margin-left: 2px;"></i>
+                                        </div>
+                                    </div>
+                                    <span style="position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.75); color: var(--accent-gold); font-size: 0.7rem; font-weight: 700; padding: 2px 6px; border-radius: 4px;">
+                                        ${item.groupName}
+                                    </span>
+                                </div>
+                                <div style="padding: 12px; display: flex; flex-direction: column; flex: 1;">
+                                    <h4 style="margin: 0; color: white; font-size: 0.92rem; font-weight: 700; line-height: 1.3;">${item.title}</h4>
+                                    <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; margin-bottom: 10px;">
+                                        Grupo: <strong style="color: var(--accent-blue);">${item.groupName}</strong>
+                                    </div>
+                                    <button class="btn" onclick="window.openVideoModal('${item.title.replace(/'/g, "\\'")}', '${item.url}', '${item.groupName}')" 
+                                        style="margin-top: auto; padding: 7px 12px; font-size: 0.78rem; font-weight: 700; background: rgba(255,0,0,0.18); color: #ff6b6b; border: 1px solid rgba(255,0,0,0.3); border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                        <i class="fa-brands fa-youtube"></i> Reproducir Video
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    }).join('') : `
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+                            No se encontraron cuentos que coincidan con la búsqueda.
+                        </div>
+                    `}
+                </div>
+            </div>
+        `;
+    };
+
+    modal.innerHTML = renderGalleryContent();
+    document.body.appendChild(modal);
+
+    window.updateCuentosGalleryFilter = (val) => {
+        const container = document.querySelector('#modal-cuentos-gallery .modal-content');
+        if (container) {
+            container.outerHTML = renderGalleryContent(val);
+            const input = document.getElementById('cuentos-search-input');
+            if (input) {
+                input.focus();
+                input.setSelectionRange(input.value.length, input.value.length);
+            }
+        }
+    };
 };
 
 // --- RÚBRICA OFICIAL ALTARES DE MUERTO ---
