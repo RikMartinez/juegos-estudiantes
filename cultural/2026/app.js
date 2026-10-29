@@ -1071,17 +1071,17 @@ window.openCuentosGallery = () => {
                 </div>
 
                 <!-- Grid de videos -->
-                <div style="overflow-y: auto; flex: 1; padding-right: 5px; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px;">
+                <div style="overflow-y: auto; flex: 1; min-height: 0; padding-right: 5px; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); grid-auto-rows: max-content; align-content: start; gap: 16px;">
                     ${filtered.length > 0 ? filtered.map(item => {
                         const ytId = window.getYouTubeId(item.url);
                         const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : '';
                         return `
-                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, border-color 0.2s;"
+                            <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; height: 100%; min-height: 270px; transition: transform 0.2s, border-color 0.2s;"
                                 onmouseover="this.style.borderColor='rgba(255,0,0,0.5)'; this.style.transform='translateY(-3px)'"
                                 onmouseout="this.style.borderColor='rgba(255,255,255,0.08)'; this.style.transform='none'">
-                                <div style="position: relative; width: 100%; aspect-ratio: 16 / 9; background: #000; cursor: pointer; overflow: hidden;"
+                                <div style="position: relative; width: 100%; aspect-ratio: 16 / 9; flex-shrink: 0; background: #000; cursor: pointer; overflow: hidden;"
                                     onclick="window.openVideoModal('${item.title.replace(/'/g, "\\'")}', '${item.url}', '${item.groupName}')">
-                                    ${thumb ? `<img src="${thumb}" alt="${item.title}" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='none'">` : ''}
+                                    ${thumb ? `<img src="${thumb}" alt="${item.title}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='none'">` : ''}
                                     <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3);">
                                         <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255, 0, 0, 0.9); display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.5);">
                                             <i class="fa-solid fa-play" style="margin-left: 2px;"></i>
@@ -1091,7 +1091,7 @@ window.openCuentosGallery = () => {
                                         ${item.groupName}
                                     </span>
                                 </div>
-                                <div style="padding: 12px; display: flex; flex-direction: column; flex: 1;">
+                                <div style="padding: 12px; display: flex; flex-direction: column; flex-grow: 1;">
                                     <h4 style="margin: 0; color: white; font-size: 0.92rem; font-weight: 700; line-height: 1.3;">${item.title}</h4>
                                     <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; margin-bottom: 10px;">
                                         Grupo: <strong style="color: var(--accent-blue);">${item.groupName}</strong>
