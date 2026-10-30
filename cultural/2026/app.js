@@ -1715,12 +1715,12 @@ const RUBRIC_CALAVERITAS = [
 ];
 
 const RUBRIC_CALAVERITAS_LEVELS = [
-    { label: 'Excelente', pts: 10, color: '#2ec4b6' },
-    { label: 'Óptimo', pts: 8, color: '#00b4d8' },
-    { label: 'Avanzado', pts: 6, color: '#ffb703' },
-    { label: 'Suficiente', pts: 4, color: '#fb8500' },
-    { label: 'Básico', pts: 2, color: '#ff7e33' },
-    { label: 'Insuficiente', pts: 0, color: '#ff4b2b' }
+    { label: 'Excelente', range: '9 - 10', pts: [10, 9], color: '#2ec4b6' },
+    { label: 'Óptimo', range: '7 - 8', pts: [8, 7], color: '#00b4d8' },
+    { label: 'Avanzado', range: '5 - 6', pts: [6, 5], color: '#ffb703' },
+    { label: 'Suficiente', range: '3 - 4', pts: [4, 3], color: '#fb8500' },
+    { label: 'Básico', range: '1 - 2', pts: [2, 1], color: '#ff7e33' },
+    { label: 'Insuficiente', range: '0', pts: [0], color: '#ff4b2b' }
 ];
 
 window.openRubricCalaveritasModal = (compId, teamId, pName) => {
@@ -1854,19 +1854,29 @@ window.openRubricCalaveritasModal = (compId, teamId, pName) => {
                                     ${crit.desc}
                                 </div>
                                 
-                                <!-- Botones de Escala por Nivel (10, 8, 6, 4, 2, 0) -->
+                                <!-- Botones de Escala por Nivel -->
                                 <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                                     ${RUBRIC_CALAVERITAS_LEVELS.map(lvl => {
-                                        const isSel = selectedVal === lvl.pts;
                                         return `
-                                            <button type="button" class="btn" onclick="window.selectRubricCalaveritasValue('${crit.id}', ${lvl.pts})" 
-                                                style="flex: 1 1 95px; min-width: 90px; padding: 8px 6px; font-size: 0.78rem; border-radius: 8px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 2px; transition: all 0.2s;
-                                                ${isSel 
-                                                    ? 'background: var(--accent-gold); color: #000; box-shadow: 0 0 12px rgba(245,200,66,0.45); transform: scale(1.03);' 
-                                                    : 'background: rgba(255,255,255,0.05); color: var(--text-variant); border: 1px solid rgba(255,255,255,0.08);'}">
-                                                <span>${lvl.label}</span>
-                                                <span style="font-size: 0.75rem; font-family: monospace; font-weight: 800; opacity: 0.9;">(${lvl.pts} pts)</span>
-                                            </button>
+                                            <div style="flex: 1 1 100px; min-width: 95px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 6px; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                                                <div style="font-size: 0.68rem; font-weight: 700; color: ${lvl.color}; text-transform: uppercase;">
+                                                    ${lvl.label}
+                                                </div>
+                                                <div style="display: flex; gap: 4px; width: 100%; justify-content: center;">
+                                                    ${lvl.pts.map(p => {
+                                                        const isP = selectedVal === p;
+                                                        return `
+                                                            <button type="button" class="btn" onclick="window.selectRubricCalaveritasValue('${crit.id}', ${p})"
+                                                                style="flex: 1; padding: 6px 4px; font-size: 0.8rem; font-weight: 800; border-radius: 6px; font-family: monospace; transition: all 0.2s;
+                                                                ${isP 
+                                                                    ? 'background: var(--accent-gold); color: #000; box-shadow: 0 0 10px rgba(245,200,66,0.4); transform: scale(1.05);' 
+                                                                    : 'background: rgba(255,255,255,0.06); color: white; border: 1px solid rgba(255,255,255,0.1);'}">
+                                                                ${p}
+                                                            </button>
+                                                        `;
+                                                    }).join('')}
+                                                </div>
+                                            </div>
                                         `;
                                     }).join('')}
                                 </div>
