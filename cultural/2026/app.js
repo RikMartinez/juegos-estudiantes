@@ -368,12 +368,27 @@ function renderBracketContent(comp) {
                                                         ${res.rubric.judgeCount > 1 ? `<span style="background: rgba(245,200,66,0.1); color: var(--accent-gold); padding: 2px 6px; border-radius: 4px; font-weight: 700;"><i class="fa-solid fa-users"></i> Promedio ${res.rubric.judgeCount} jueces</span>` : ''}
                                                     </div>
                                                 ` : ''}
+                                                ${(comp.type === 'cuentos' && res.rubric) ? `
+                                                    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; font-size: 0.65rem;">
+                                                        <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--text-variant);"><i class="fa-solid fa-film" style="color: var(--accent-gold);"></i> Est: <strong>${res.rubric.estructura || 0}</strong>/10</span>
+                                                        <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--text-variant);"><i class="fa-solid fa-book-open" style="color: var(--accent-gold);"></i> Cont: <strong>${res.rubric.contenido || 0}</strong>/10</span>
+                                                        ${res.rubric.judgeCount > 1 ? `<span style="background: rgba(245,200,66,0.1); color: var(--accent-gold); padding: 2px 6px; border-radius: 4px; font-weight: 700;"><i class="fa-solid fa-users"></i> Promedio ${res.rubric.judgeCount} jueces</span>` : ''}
+                                                    </div>
+                                                ` : ''}
+                                                ${(comp.type === 'calaverita' && res.rubric) ? `
+                                                    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; font-size: 0.65rem;">
+                                                        <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--text-variant);"><i class="fa-solid fa-align-left" style="color: var(--accent-gold);"></i> Forma: <strong>${res.rubric.forma || 0}</strong>/10</span>
+                                                        <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--text-variant);"><i class="fa-solid fa-feather-pointed" style="color: var(--accent-gold);"></i> Fondo: <strong>${res.rubric.fondo || 0}</strong>/10</span>
+                                                        <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--text-variant);"><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent-gold);"></i> Creat: <strong>${res.rubric.creatividad || 0}</strong>/10</span>
+                                                        ${res.rubric.judgeCount > 1 ? `<span style="background: rgba(245,200,66,0.1); color: var(--accent-gold); padding: 2px 6px; border-radius: 4px; font-weight: 700;"><i class="fa-solid fa-users"></i> Promedio ${res.rubric.judgeCount} jueces</span>` : ''}
+                                                    </div>
+                                                ` : ''}
                                                 ${res.advanced ? '<span class="pulse" style="font-size:0.6rem; color: var(--success); font-weight: 800;"><i class="fa-solid fa-medal"></i> DESTACADO</span>' : ''}
                                             </div>
                                         </div>
                                     </td>
                                     <td style="padding: 15px; text-align: right; font-family: \'Outfit\'; font-weight: 800; font-size: 1.1rem; color: var(--accent-gold);">
-                                        ${res.value} ${comp.type === 'altares' ? '<small style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/ 40</small>' : 'Pts'}
+                                        ${res.value} ${comp.type === 'altares' ? '<small style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/ 40</small>' : (comp.type === 'cuentos' ? '<small style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/ 20</small>' : (comp.type === 'calaverita' ? '<small style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/ 30</small>' : 'Pts'))}
                                     </td>
                                 </tr>
                             `;
@@ -621,7 +636,7 @@ function renderCaptura(container) {
                                 </div>
                             </div>
                             <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 10px;">
-                                <i class="fa-solid fa-star"></i> ${c.type === 'altares' ? 'EVALUACIÓN POR RÚBRICA (4 Criterios - Máx. 40 Pts)' : 'PUNTUACIÓN DE EVALUACIÓN (0 a 100 Pts)'}
+                                <i class="fa-solid fa-star"></i> ${c.type === 'altares' ? 'EVALUACIÓN POR RÚBRICA (4 Criterios - Máx. 40 Pts)' : (c.type === 'cuentos' ? 'EVALUACIÓN POR RÚBRICA (2 Criterios - Máx. 20 Pts)' : (c.type === 'calaverita' ? 'EVALUACIÓN POR RÚBRICA (3 Criterios - Máx. 30 Pts)' : 'PUNTUACIÓN DE EVALUACIÓN (0 a 100 Pts)'))}
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 ${results.map(r => {
@@ -647,6 +662,20 @@ function renderCaptura(container) {
                                                     <i class="fa-solid fa-clipboard-list"></i> ${r.value && r.value !== '0' ? `${r.value}/40 pts` : 'Evaluar Rúbrica'}
                                                 </button>
                                             ` : ''}
+                                            ${c.type === 'cuentos' ? `
+                                                <button class="btn" type="button" 
+                                                    onclick="window.openRubricCuentosModal('${c.id}', '${r.teamId}', '${r.participantName}')"
+                                                    style="padding: 6px 10px; font-size: 0.72rem; font-weight: 700; border-radius: 8px; white-space: nowrap; ${r.value && r.value !== '0' ? 'background: rgba(245,200,66,0.15); color: var(--accent-gold); border: 1px solid var(--accent-gold);' : 'background: rgba(255,255,255,0.08); color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.2);'}">
+                                                    <i class="fa-solid fa-clipboard-list"></i> ${r.value && r.value !== '0' ? `${r.value}/20 pts` : 'Evaluar Rúbrica'}
+                                                </button>
+                                            ` : ''}
+                                            ${c.type === 'calaverita' ? `
+                                                <button class="btn" type="button" 
+                                                    onclick="window.openRubricCalaveritasModal('${c.id}', '${r.teamId}', '${r.participantName}')"
+                                                    style="padding: 6px 10px; font-size: 0.72rem; font-weight: 700; border-radius: 8px; white-space: nowrap; ${r.value && r.value !== '0' ? 'background: rgba(245,200,66,0.15); color: var(--accent-gold); border: 1px solid var(--accent-gold);' : 'background: rgba(255,255,255,0.08); color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.2);'}">
+                                                    <i class="fa-solid fa-clipboard-list"></i> ${r.value && r.value !== '0' ? `${r.value}/30 pts` : 'Evaluar Rúbrica'}
+                                                </button>
+                                            ` : ''}
                                             ${c.type === 'cuentos' ? (() => {
                                                 const v = window.findCuentosVideo(team?.name);
                                                 if (v) {
@@ -663,7 +692,7 @@ function renderCaptura(container) {
                                             })() : ''}
                                             <input type="text" value="${r.value}" placeholder="0" 
                                                 onchange="window.saveEventValue('${c.id}', '${r.teamId}', '${r.participantName}', this.value)" 
-                                                style="width: ${c.type === 'altares' ? '55px' : '80px'}; text-align: right; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: 6px; padding: 6px; font-family: monospace; color: ${r.dq ? '#ff4b2b' : 'var(--accent-yellow)'}; font-weight: 700; ${r.dq ? 'text-decoration: line-through;' : ''}">
+                                                style="width: ${(['altares', 'cuentos', 'calaverita'].includes(c.type)) ? '55px' : '80px'}; text-align: right; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: 6px; padding: 6px; font-family: monospace; color: ${r.dq ? '#ff4b2b' : 'var(--accent-yellow)'}; font-weight: 700; ${r.dq ? 'text-decoration: line-through;' : ''}">
                                             <i class="fa-solid fa-ban" 
                                                 style="cursor: pointer; color: ${r.dq ? '#ff4b2b' : 'var(--text-muted)'}; font-size: 0.9rem;" 
                                                 title="Descalificar"
@@ -1387,6 +1416,532 @@ window.openRubricModal = (compId, teamId, pName) => {
         const res = State.eventResults.find(r => r.competitionId === cId && r.teamId === tId && r.participantName === pN);
         State.submitEventResult(cId, tId, pN, String(finalAvg), res ? res.dq : false, rubricData);
         const m = document.getElementById('modal-rubric-altares');
+        if (m) m.remove();
+        render();
+    };
+
+    renderModalBody();
+    document.body.appendChild(modal);
+};
+
+// --- RÚBRICA OFICIAL CUENTOS Y LEYENDAS 2026 ---
+const RUBRIC_CUENTOS = [
+    {
+        id: 'estructura',
+        name: 'Estructura Técnica y Formal',
+        icon: 'fa-film',
+        maxPts: 10,
+        desc: 'Título y tema basado en texto literario, tradición oral o creación propia; duración oficial del video (3 a 5 min); uso de utilería, escenografía y vestuario; calidad de audio, iluminación adecuada, movimientos de cámara, edición, títulos, créditos y postproducción.'
+    },
+    {
+        id: 'contenido',
+        name: 'Contenido y Representación',
+        icon: 'fa-book-open',
+        maxPts: 10,
+        desc: 'Historia atractiva, temática y representación clara de momentos esenciales (inicio, desarrollo, nudo y desenlace); personajes expresivos al ritmo de la voz narradora y ambientación; creación creativa, dinámica y colaborativa para el disfrute de la audiencia.'
+    }
+];
+
+const RUBRIC_CUENTOS_LEVELS = [
+    { label: 'Excelente', range: '9 - 10', pts: [10, 9], color: '#2ec4b6' },
+    { label: 'Óptimo', range: '7 - 8', pts: [8, 7], color: '#00b4d8' },
+    { label: 'Avanzado', range: '5 - 6', pts: [6, 5], color: '#ffb703' },
+    { label: 'Suficiente', range: '3 - 4', pts: [4, 3], color: '#fb8500' },
+    { label: 'Básico', range: '1 - 2', pts: [2, 1], color: '#ff7e33' },
+    { label: 'Insuficiente', range: '0', pts: [0], color: '#ff4b2b' }
+];
+
+window.openRubricCuentosModal = (compId, teamId, pName) => {
+    const comp = State.competitions.find(c => c.id === compId);
+    const team = State.teams.find(t => t.id === teamId);
+    const res = State.eventResults.find(r => r.competitionId === compId && r.teamId === teamId && r.participantName === pName);
+    const cuentosVideo = window.findCuentosVideo(team?.name);
+
+    // Inicializar estructura de jueces (1, 2 y 3)
+    let activeJudge = 1;
+    let judgesData = {
+        1: { estructura: 0, contenido: 0 },
+        2: { estructura: 0, contenido: 0 },
+        3: { estructura: 0, contenido: 0 }
+    };
+
+    if (res && res.rubric) {
+        if (res.rubric.judges) {
+            judgesData = {
+                1: { ...judgesData[1], ...(res.rubric.judges[1] || {}) },
+                2: { ...judgesData[2], ...(res.rubric.judges[2] || {}) },
+                3: { ...judgesData[3], ...(res.rubric.judges[3] || {}) }
+            };
+        } else if (res.rubric.estructura !== undefined || res.rubric.contenido !== undefined) {
+            judgesData[1] = {
+                estructura: res.rubric.estructura || 0,
+                contenido: res.rubric.contenido || 0
+            };
+        }
+    }
+
+    const existingModal = document.getElementById('modal-rubric-cuentos');
+    if (existingModal) existingModal.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'modal-rubric-cuentos';
+    modal.className = 'modal-overlay';
+
+    const isJudgeEvaluated = (j) => {
+        const d = judgesData[j];
+        return d && ((d.estructura !== undefined && d.estructura > 0) || (d.contenido !== undefined && d.contenido > 0));
+    };
+
+    const getJudgeTotal = (j) => {
+        const d = judgesData[j];
+        if (!d) return 0;
+        return (d.estructura || 0) + (d.contenido || 0);
+    };
+
+    const renderModalBody = () => {
+        const evaluatedJudges = [1, 2, 3].filter(j => isJudgeEvaluated(j));
+        const count = evaluatedJudges.length || 1;
+
+        const sumEst = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].estructura || 0), 0);
+        const sumCont = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].contenido || 0), 0);
+        const sumTotals = evaluatedJudges.reduce((acc, j) => acc + getJudgeTotal(j), 0);
+
+        const avgEst = +(sumEst / count).toFixed(1);
+        const avgCont = +(sumCont / count).toFixed(1);
+        const finalAvg = evaluatedJudges.length > 0 ? +(sumTotals / count).toFixed(2) : 0;
+
+        const currentJudgeCriteria = judgesData[activeJudge] || { estructura: 0, contenido: 0 };
+        const currentJudgeTotal = getJudgeTotal(activeJudge);
+
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 720px; width: 94%; max-height: 92vh; overflow-y: auto; text-align: left; padding: 25px; border: 1px solid var(--accent-gold);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--accent-gold); font-weight: 800; text-transform: uppercase;">
+                            <i class="fa-solid fa-scroll"></i> Rúbrica Oficial de Evaluación - Cuentos y Leyendas 2026
+                        </div>
+                        <h2 style="margin: 4px 0 0; color: white; font-size: 1.4rem;">${team?.name || '---'} ${pName ? `(${pName})` : ''}</h2>
+                        ${cuentosVideo ? `
+                            <div style="font-size: 0.9rem; color: var(--accent-blue); font-weight: 700; margin-top: 3px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                <span><i class="fa-solid fa-book-open"></i> "${cuentosVideo.title}"</span>
+                                <button type="button" class="btn" onclick="window.openVideoModal('${cuentosVideo.title.replace(/'/g, "\\'")}', '${cuentosVideo.url}', '${team?.name}')" 
+                                    style="padding: 3px 10px; font-size: 0.75rem; font-weight: 700; background: #ff0000; color: white; border: none; border-radius: 6px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px;">
+                                    <i class="fa-brands fa-youtube"></i> Ver Video
+                                </button>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <button class="btn btn-secondary" onclick="document.getElementById('modal-rubric-cuentos').remove()" style="padding: 5px 12px; font-size: 0.8rem;">✕ Cerrar</button>
+                </div>
+
+                <!-- SELECTOR DE JUECES -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+                    ${[1, 2, 3].map(j => {
+                        const isAct = activeJudge === j;
+                        const isEval = isJudgeEvaluated(j);
+                        const jTot = getJudgeTotal(j);
+                        return `
+                            <button type="button" class="btn" onclick="window.switchRubricCuentosJudge(${j})"
+                                style="flex: 1; padding: 10px 8px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: all 0.2s;
+                                ${isAct 
+                                    ? 'background: var(--accent-gold); color: #000; box-shadow: 0 4px 15px rgba(245,200,66,0.35); transform: translateY(-1px);' 
+                                    : (isEval ? 'background: rgba(46,196,182,0.15); color: #2ec4b6; border: 1px solid rgba(46,196,182,0.4);' : 'background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.06);')}">
+                                <span><i class="fa-solid ${isEval ? 'fa-user-check' : 'fa-user'}"></i> Juez ${j}</span>
+                                <span style="font-size: 0.72rem; font-weight: 700; opacity: 0.9;">
+                                    ${isEval ? `${jTot} / 20 pts` : '(Sin evaluar)'}
+                                </span>
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 6px 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                    <span style="font-size: 0.8rem; color: var(--accent-gold); font-weight: 700;">
+                        <i class="fa-solid fa-pen-to-square"></i> Calificando como: <strong>Juez ${activeJudge}</strong> (Subtotal: ${currentJudgeTotal} / 20 pts)
+                    </span>
+                    ${isJudgeEvaluated(activeJudge) ? `
+                        <button type="button" class="btn btn-secondary" onclick="window.clearJudgeCuentosRubric(${activeJudge})" style="padding: 2px 8px; font-size: 0.65rem; color: #ff7e33;">
+                            Limpiar Juez ${activeJudge}
+                        </button>
+                    ` : ''}
+                </div>
+
+                <!-- CRITERIOS DEL JUEZ ACTIVO -->
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    ${RUBRIC_CUENTOS.map(crit => {
+                        const selectedVal = currentJudgeCriteria[crit.id] !== undefined ? currentJudgeCriteria[crit.id] : -1;
+                        const isSelected = selectedVal >= 0;
+                        return `
+                            <div style="background: rgba(255,255,255,0.025); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <span style="font-weight: 700; font-size: 0.95rem; color: white;">
+                                        <i class="fa-solid ${crit.icon}" style="color: var(--accent-gold); margin-right: 8px;"></i>
+                                        ${crit.name}
+                                    </span>
+                                    <span style="font-size: 0.9rem; font-weight: 800; color: ${isSelected ? 'var(--accent-yellow)' : 'var(--text-muted)'}; font-family: monospace;">
+                                        ${isSelected ? selectedVal + ' / 10 pts' : 'Sin calificar'}
+                                    </span>
+                                </div>
+                                <div style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.45;">
+                                    ${crit.desc}
+                                </div>
+                                
+                                <!-- Botones de Escala por Nivel -->
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                    ${RUBRIC_CUENTOS_LEVELS.map(lvl => {
+                                        return `
+                                            <div style="flex: 1 1 100px; min-width: 95px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 6px; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                                                <div style="font-size: 0.68rem; font-weight: 700; color: ${lvl.color}; text-transform: uppercase;">
+                                                    ${lvl.label}
+                                                </div>
+                                                <div style="display: flex; gap: 4px; width: 100%; justify-content: center;">
+                                                    ${lvl.pts.map(p => {
+                                                        const isP = selectedVal === p;
+                                                        return `
+                                                            <button type="button" class="btn" onclick="window.selectRubricCuentosValue('${crit.id}', ${p})"
+                                                                style="flex: 1; padding: 6px 4px; font-size: 0.8rem; font-weight: 800; border-radius: 6px; font-family: monospace; transition: all 0.2s;
+                                                                ${isP 
+                                                                    ? 'background: var(--accent-gold); color: #000; box-shadow: 0 0 10px rgba(245,200,66,0.4); transform: scale(1.05);' 
+                                                                    : 'background: rgba(255,255,255,0.06); color: white; border: 1px solid rgba(255,255,255,0.1);'}">
+                                                                ${p}
+                                                            </button>
+                                                        `;
+                                                    }).join('')}
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+
+                <!-- RESUMEN GENERAL Y PROMEDIO -->
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">
+                            Promedio Final Automático (${evaluatedJudges.length} ${evaluatedJudges.length === 1 ? 'juez' : 'jueces'})
+                        </div>
+                        <div style="font-size: 2rem; font-family: 'Outfit'; font-weight: 900; color: var(--accent-yellow); line-height: 1.1;">
+                            ${finalAvg} <span style="font-size: 1rem; color: var(--text-muted); font-weight: 400;">/ 20 pts</span>
+                        </div>
+                        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 5px;">
+                            Estructura: <strong style="color: white;">${avgEst}</strong>/10 &nbsp;|&nbsp; Contenido: <strong style="color: white;">${avgCont}</strong>/10
+                            ${evaluatedJudges.length > 0 ? ` &nbsp;|&nbsp; Desglose: ${[1, 2, 3].filter(j => isJudgeEvaluated(j)).map(j => `Juez ${j}: <strong>${getJudgeTotal(j)}</strong> pts`).join(' · ')}` : ''}
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="document.getElementById('modal-rubric-cuentos').remove()">Cancelar</button>
+                        <button class="btn" onclick="window.saveRubricCuentosResult('${compId}', '${teamId}', '${pName}')" style="background: var(--accent-gold); color: #000; font-weight: 800; padding: 10px 22px;">
+                            <i class="fa-solid fa-check"></i> Guardar Evaluación
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+
+    window.switchRubricCuentosJudge = (j) => {
+        activeJudge = j;
+        renderModalBody();
+    };
+
+    window.clearJudgeCuentosRubric = (j) => {
+        judgesData[j] = { estructura: 0, contenido: 0 };
+        renderModalBody();
+    };
+
+    window.selectRubricCuentosValue = (critId, pts) => {
+        if (!judgesData[activeJudge]) judgesData[activeJudge] = { estructura: 0, contenido: 0 };
+        judgesData[activeJudge][critId] = pts;
+        renderModalBody();
+    };
+
+    window.saveRubricCuentosResult = (cId, tId, pN) => {
+        const evaluatedJudges = [1, 2, 3].filter(j => isJudgeEvaluated(j));
+        const count = evaluatedJudges.length || 1;
+
+        const sumEst = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].estructura || 0), 0);
+        const sumCont = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].contenido || 0), 0);
+        const sumTotals = evaluatedJudges.reduce((acc, j) => acc + getJudgeTotal(j), 0);
+
+        const avgEst = +(sumEst / count).toFixed(1);
+        const avgCont = +(sumCont / count).toFixed(1);
+        const finalAvg = evaluatedJudges.length > 0 ? +(sumTotals / count).toFixed(2) : 0;
+
+        const rubricData = {
+            judges: judgesData,
+            judgeCount: evaluatedJudges.length,
+            estructura: avgEst,
+            contenido: avgCont,
+            total: finalAvg
+        };
+
+        const res = State.eventResults.find(r => r.competitionId === cId && r.teamId === tId && r.participantName === pN);
+        State.submitEventResult(cId, tId, pN, String(finalAvg), res ? res.dq : false, rubricData);
+        const m = document.getElementById('modal-rubric-cuentos');
+        if (m) m.remove();
+        render();
+    };
+
+    renderModalBody();
+    document.body.appendChild(modal);
+};
+
+// --- RÚBRICA OFICIAL CALAVERITAS LITERARIAS 2026 ---
+const RUBRIC_CALAVERITAS = [
+    {
+        id: 'forma',
+        name: 'Forma (Métrica, Rima y Normativa)',
+        icon: 'fa-align-left',
+        maxPts: 10,
+        desc: 'Extensión oficial (24 a 40 versos), estructura en estrofas, rima consonante/asonante y métrica cuidada; respeto a las normas lingüísticas (sintaxis, semántica y ortografía).'
+    },
+    {
+        id: 'fondo',
+        name: 'Fondo y Tradición (Temática y Muerte)',
+        icon: 'fa-feather-pointed',
+        maxPts: 10,
+        desc: 'Cuidado en el uso normativo de la lengua (sintaxis, semántica, ortografía); sentido del humor festivo tradicional, picardía y la intervención de la muerte como protagonista.'
+    },
+    {
+        id: 'creatividad',
+        name: 'Creatividad y Recursos Literarios',
+        icon: 'fa-wand-magic-sparkles',
+        maxPts: 10,
+        desc: 'Uso de figuras retóricas y recursos poéticos; originalidad e imaginación creativa en los versos; creatividad gráfica, esmero y presentación de la cartulina.'
+    }
+];
+
+const RUBRIC_CALAVERITAS_LEVELS = [
+    { label: 'Excelente', pts: 10, color: '#2ec4b6' },
+    { label: 'Óptimo', pts: 8, color: '#00b4d8' },
+    { label: 'Avanzado', pts: 6, color: '#ffb703' },
+    { label: 'Suficiente', pts: 4, color: '#fb8500' },
+    { label: 'Básico', pts: 2, color: '#ff7e33' },
+    { label: 'Insuficiente', pts: 0, color: '#ff4b2b' }
+];
+
+window.openRubricCalaveritasModal = (compId, teamId, pName) => {
+    const comp = State.competitions.find(c => c.id === compId);
+    const team = State.teams.find(t => t.id === teamId);
+    const res = State.eventResults.find(r => r.competitionId === compId && r.teamId === teamId && r.participantName === pName);
+
+    // Inicializar estructura de jueces (1, 2 y 3)
+    let activeJudge = 1;
+    let judgesData = {
+        1: { forma: 0, fondo: 0, creatividad: 0 },
+        2: { forma: 0, fondo: 0, creatividad: 0 },
+        3: { forma: 0, fondo: 0, creatividad: 0 }
+    };
+
+    if (res && res.rubric) {
+        if (res.rubric.judges) {
+            judgesData = {
+                1: { ...judgesData[1], ...(res.rubric.judges[1] || {}) },
+                2: { ...judgesData[2], ...(res.rubric.judges[2] || {}) },
+                3: { ...judgesData[3], ...(res.rubric.judges[3] || {}) }
+            };
+        } else if (res.rubric.forma !== undefined || res.rubric.fondo !== undefined || res.rubric.creatividad !== undefined) {
+            judgesData[1] = {
+                forma: res.rubric.forma || 0,
+                fondo: res.rubric.fondo || 0,
+                creatividad: res.rubric.creatividad || 0
+            };
+        }
+    }
+
+    const existingModal = document.getElementById('modal-rubric-calaveritas');
+    if (existingModal) existingModal.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'modal-rubric-calaveritas';
+    modal.className = 'modal-overlay';
+
+    const isJudgeEvaluated = (j) => {
+        const d = judgesData[j];
+        return d && ((d.forma !== undefined && d.forma > 0) || (d.fondo !== undefined && d.fondo > 0) || (d.creatividad !== undefined && d.creatividad > 0));
+    };
+
+    const getJudgeTotal = (j) => {
+        const d = judgesData[j];
+        if (!d) return 0;
+        return (d.forma || 0) + (d.fondo || 0) + (d.creatividad || 0);
+    };
+
+    const renderModalBody = () => {
+        const evaluatedJudges = [1, 2, 3].filter(j => isJudgeEvaluated(j));
+        const count = evaluatedJudges.length || 1;
+
+        const sumForma = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].forma || 0), 0);
+        const sumFondo = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].fondo || 0), 0);
+        const sumCreat = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].creatividad || 0), 0);
+        const sumTotals = evaluatedJudges.reduce((acc, j) => acc + getJudgeTotal(j), 0);
+
+        const avgForma = +(sumForma / count).toFixed(1);
+        const avgFondo = +(sumFondo / count).toFixed(1);
+        const avgCreat = +(sumCreat / count).toFixed(1);
+        const finalAvg = evaluatedJudges.length > 0 ? +(sumTotals / count).toFixed(2) : 0;
+
+        const currentJudgeCriteria = judgesData[activeJudge] || { forma: 0, fondo: 0, creatividad: 0 };
+        const currentJudgeTotal = getJudgeTotal(activeJudge);
+
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 720px; width: 94%; max-height: 92vh; overflow-y: auto; text-align: left; padding: 25px; border: 1px solid var(--accent-gold);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--accent-gold); font-weight: 800; text-transform: uppercase;">
+                            <i class="fa-solid fa-scroll"></i> Rúbrica Oficial de Evaluación - Calaveritas Literarias 2026
+                        </div>
+                        <h2 style="margin: 4px 0 0; color: white; font-size: 1.4rem;">${team?.name || '---'} ${pName ? `(${pName})` : ''}</h2>
+                        <div style="font-size: 0.85rem; color: var(--accent-blue); font-weight: 600; margin-top: 2px;">
+                            <i class="fa-solid fa-skull"></i> 3 Criterios de Evaluación Oficial (Máximo 30 Pts)
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="document.getElementById('modal-rubric-calaveritas').remove()" style="padding: 5px 12px; font-size: 0.8rem;">✕ Cerrar</button>
+                </div>
+
+                <!-- SELECTOR DE JUECES -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+                    ${[1, 2, 3].map(j => {
+                        const isAct = activeJudge === j;
+                        const isEval = isJudgeEvaluated(j);
+                        const jTot = getJudgeTotal(j);
+                        return `
+                            <button type="button" class="btn" onclick="window.switchRubricCalaveritasJudge(${j})"
+                                style="flex: 1; padding: 10px 8px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: all 0.2s;
+                                ${isAct 
+                                    ? 'background: var(--accent-gold); color: #000; box-shadow: 0 4px 15px rgba(245,200,66,0.35); transform: translateY(-1px);' 
+                                    : (isEval ? 'background: rgba(46,196,182,0.15); color: #2ec4b6; border: 1px solid rgba(46,196,182,0.4);' : 'background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.06);')}">
+                                <span><i class="fa-solid ${isEval ? 'fa-user-check' : 'fa-user'}"></i> Juez ${j}</span>
+                                <span style="font-size: 0.72rem; font-weight: 700; opacity: 0.9;">
+                                    ${isEval ? `${jTot} / 30 pts` : '(Sin evaluar)'}
+                                </span>
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 6px 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                    <span style="font-size: 0.8rem; color: var(--accent-gold); font-weight: 700;">
+                        <i class="fa-solid fa-pen-to-square"></i> Calificando como: <strong>Juez ${activeJudge}</strong> (Subtotal: ${currentJudgeTotal} / 30 pts)
+                    </span>
+                    ${isJudgeEvaluated(activeJudge) ? `
+                        <button type="button" class="btn btn-secondary" onclick="window.clearJudgeCalaveritasRubric(${activeJudge})" style="padding: 2px 8px; font-size: 0.65rem; color: #ff7e33;">
+                            Limpiar Juez ${activeJudge}
+                        </button>
+                    ` : ''}
+                </div>
+
+                <!-- CRITERIOS DEL JUEZ ACTIVO -->
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    ${RUBRIC_CALAVERITAS.map(crit => {
+                        const selectedVal = currentJudgeCriteria[crit.id] !== undefined ? currentJudgeCriteria[crit.id] : -1;
+                        const isSelected = selectedVal >= 0;
+                        return `
+                            <div style="background: rgba(255,255,255,0.025); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <span style="font-weight: 700; font-size: 0.95rem; color: white;">
+                                        <i class="fa-solid ${crit.icon}" style="color: var(--accent-gold); margin-right: 8px;"></i>
+                                        ${crit.name}
+                                    </span>
+                                    <span style="font-size: 0.9rem; font-weight: 800; color: ${isSelected ? 'var(--accent-yellow)' : 'var(--text-muted)'}; font-family: monospace;">
+                                        ${isSelected ? selectedVal + ' / 10 pts' : 'Sin calificar'}
+                                    </span>
+                                </div>
+                                <div style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.45;">
+                                    ${crit.desc}
+                                </div>
+                                
+                                <!-- Botones de Escala por Nivel (10, 8, 6, 4, 2, 0) -->
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                    ${RUBRIC_CALAVERITAS_LEVELS.map(lvl => {
+                                        const isSel = selectedVal === lvl.pts;
+                                        return `
+                                            <button type="button" class="btn" onclick="window.selectRubricCalaveritasValue('${crit.id}', ${lvl.pts})" 
+                                                style="flex: 1 1 95px; min-width: 90px; padding: 8px 6px; font-size: 0.78rem; border-radius: 8px; font-weight: 700; display: flex; flex-direction: column; align-items: center; gap: 2px; transition: all 0.2s;
+                                                ${isSel 
+                                                    ? 'background: var(--accent-gold); color: #000; box-shadow: 0 0 12px rgba(245,200,66,0.45); transform: scale(1.03);' 
+                                                    : 'background: rgba(255,255,255,0.05); color: var(--text-variant); border: 1px solid rgba(255,255,255,0.08);'}">
+                                                <span>${lvl.label}</span>
+                                                <span style="font-size: 0.75rem; font-family: monospace; font-weight: 800; opacity: 0.9;">(${lvl.pts} pts)</span>
+                                            </button>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+
+                <!-- RESUMEN GENERAL Y PROMEDIO -->
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">
+                            Promedio Final Automático (${evaluatedJudges.length} ${evaluatedJudges.length === 1 ? 'juez' : 'jueces'})
+                        </div>
+                        <div style="font-size: 2rem; font-family: 'Outfit'; font-weight: 900; color: var(--accent-yellow); line-height: 1.1;">
+                            ${finalAvg} <span style="font-size: 1rem; color: var(--text-muted); font-weight: 400;">/ 30 pts</span>
+                        </div>
+                        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 5px;">
+                            Forma: <strong style="color: white;">${avgForma}</strong>/10 &nbsp;|&nbsp; Fondo: <strong style="color: white;">${avgFondo}</strong>/10 &nbsp;|&nbsp; Creatividad: <strong style="color: white;">${avgCreat}</strong>/10
+                            ${evaluatedJudges.length > 0 ? ` &nbsp;|&nbsp; Desglose: ${[1, 2, 3].filter(j => isJudgeEvaluated(j)).map(j => `Juez ${j}: <strong>${getJudgeTotal(j)}</strong> pts`).join(' · ')}` : ''}
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="document.getElementById('modal-rubric-calaveritas').remove()">Cancelar</button>
+                        <button class="btn" onclick="window.saveRubricCalaveritasResult('${compId}', '${teamId}', '${pName}')" style="background: var(--accent-gold); color: #000; font-weight: 800; padding: 10px 22px;">
+                            <i class="fa-solid fa-check"></i> Guardar Evaluación
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+
+    window.switchRubricCalaveritasJudge = (j) => {
+        activeJudge = j;
+        renderModalBody();
+    };
+
+    window.clearJudgeCalaveritasRubric = (j) => {
+        judgesData[j] = { forma: 0, fondo: 0, creatividad: 0 };
+        renderModalBody();
+    };
+
+    window.selectRubricCalaveritasValue = (critId, pts) => {
+        if (!judgesData[activeJudge]) judgesData[activeJudge] = { forma: 0, fondo: 0, creatividad: 0 };
+        judgesData[activeJudge][critId] = pts;
+        renderModalBody();
+    };
+
+    window.saveRubricCalaveritasResult = (cId, tId, pN) => {
+        const evaluatedJudges = [1, 2, 3].filter(j => isJudgeEvaluated(j));
+        const count = evaluatedJudges.length || 1;
+
+        const sumForma = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].forma || 0), 0);
+        const sumFondo = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].fondo || 0), 0);
+        const sumCreat = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].creatividad || 0), 0);
+        const sumTotals = evaluatedJudges.reduce((acc, j) => acc + getJudgeTotal(j), 0);
+
+        const avgForma = +(sumForma / count).toFixed(1);
+        const avgFondo = +(sumFondo / count).toFixed(1);
+        const avgCreat = +(sumCreat / count).toFixed(1);
+        const finalAvg = evaluatedJudges.length > 0 ? +(sumTotals / count).toFixed(2) : 0;
+
+        const rubricData = {
+            judges: judgesData,
+            judgeCount: evaluatedJudges.length,
+            forma: avgForma,
+            fondo: avgFondo,
+            creatividad: avgCreat,
+            total: finalAvg
+        };
+
+        const res = State.eventResults.find(r => r.competitionId === cId && r.teamId === tId && r.participantName === pN);
+        State.submitEventResult(cId, tId, pN, String(finalAvg), res ? res.dq : false, rubricData);
+        const m = document.getElementById('modal-rubric-calaveritas');
         if (m) m.remove();
         render();
     };
