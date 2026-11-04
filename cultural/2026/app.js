@@ -394,12 +394,20 @@ function renderBracketContent(comp) {
                                                         ${res.rubric.judgeCount > 1 ? `<span style="background: rgba(245,200,66,0.1); color: var(--accent-gold); padding: 2px 6px; border-radius: 4px; font-weight: 700;"><i class="fa-solid fa-users"></i> Promedio ${res.rubric.judgeCount} jueces</span>` : ''}
                                                     </div>
                                                 ` : ''}
+                                                ${(comp.type === 'lapida' && res.rubric) ? `
+                                                    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; font-size: 0.65rem;">
+                                                        <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--text-variant);"><i class="fa-solid fa-shapes" style="color: var(--accent-gold);"></i> Est: <strong>${res.rubric.estructura || 0}</strong>/10</span>
+                                                        <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--text-variant);"><i class="fa-solid fa-dragon" style="color: var(--accent-gold);"></i> Conc: <strong>${res.rubric.concepto || 0}</strong>/10</span>
+                                                        <span style="background: rgba(255,255,255,0.06); padding: 2px 6px; border-radius: 4px; color: var(--text-variant);"><i class="fa-solid fa-palette" style="color: var(--accent-gold);"></i> Creat: <strong>${res.rubric.creatividad || 0}</strong>/10</span>
+                                                        ${res.rubric.judgeCount > 1 ? `<span style="background: rgba(245,200,66,0.1); color: var(--accent-gold); padding: 2px 6px; border-radius: 4px; font-weight: 700;"><i class="fa-solid fa-users"></i> Promedio ${res.rubric.judgeCount} jueces</span>` : ''}
+                                                    </div>
+                                                ` : ''}
                                                 ${res.advanced ? '<span class="pulse" style="font-size:0.6rem; color: var(--success); font-weight: 800;"><i class="fa-solid fa-medal"></i> DESTACADO</span>' : ''}
                                             </div>
                                         </div>
                                     </td>
                                     <td style="padding: 15px; text-align: right; font-family: \'Outfit\'; font-weight: 800; font-size: 1.1rem; color: var(--accent-gold);">
-                                        ${res.value} ${comp.type === 'altares' ? '<small style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/ 40</small>' : (comp.type === 'cuentos' ? '<small style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/ 20</small>' : (comp.type === 'calaverita' ? '<small style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/ 30</small>' : (comp.type === 'catrines' ? '<small style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/ 99</small>' : 'Pts')))}
+                                        ${res.value} ${comp.type === 'altares' ? '<small style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/ 40</small>' : (comp.type === 'cuentos' ? '<small style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/ 20</small>' : (['calaverita', 'lapida'].includes(comp.type) ? '<small style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/ 30</small>' : (comp.type === 'catrines' ? '<small style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">/ 99</small>' : 'Pts')))}
                                     </td>
                                 </tr>
                             `;
@@ -647,7 +655,7 @@ function renderCaptura(container) {
                                 </div>
                             </div>
                             <div style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 10px;">
-                                <i class="fa-solid fa-star"></i> ${c.type === 'altares' ? 'EVALUACIÓN POR RÚBRICA (4 Criterios - Máx. 40 Pts)' : (c.type === 'cuentos' ? 'EVALUACIÓN POR RÚBRICA (2 Criterios - Máx. 20 Pts)' : (c.type === 'calaverita' ? 'EVALUACIÓN POR RÚBRICA (3 Criterios - Máx. 30 Pts)' : (c.type === 'catrines' ? 'EVALUACIÓN POR RÚBRICA (6 Criterios - Máx. 99 Pts)' : 'PUNTUACIÓN DE EVALUACIÓN (0 a 100 Pts)')))}
+                                <i class="fa-solid fa-star"></i> ${c.type === 'altares' ? 'EVALUACIÓN POR RÚBRICA (4 Criterios - Máx. 40 Pts)' : (c.type === 'cuentos' ? 'EVALUACIÓN POR RÚBRICA (2 Criterios - Máx. 20 Pts)' : (['calaverita', 'lapida'].includes(c.type) ? 'EVALUACIÓN POR RÚBRICA (3 Criterios - Máx. 30 Pts)' : (c.type === 'catrines' ? 'EVALUACIÓN POR RÚBRICA (6 Criterios - Máx. 99 Pts)' : 'PUNTUACIÓN DE EVALUACIÓN (0 a 100 Pts)')))}
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
                                 ${results.map(r => {
@@ -694,6 +702,13 @@ function renderCaptura(container) {
                                                     <i class="fa-solid fa-clipboard-list"></i> ${r.value && r.value !== '0' ? `${r.value}/99 pts` : 'Evaluar Rúbrica'}
                                                 </button>
                                             ` : ''}
+                                            ${c.type === 'lapida' ? `
+                                                <button class="btn" type="button" 
+                                                    onclick="window.openRubricAlebrijesModal('${c.id}', '${r.teamId}', '${r.participantName}')"
+                                                    style="padding: 6px 10px; font-size: 0.72rem; font-weight: 700; border-radius: 8px; white-space: nowrap; ${r.value && r.value !== '0' ? 'background: rgba(245,200,66,0.15); color: var(--accent-gold); border: 1px solid var(--accent-gold);' : 'background: rgba(255,255,255,0.08); color: var(--text-muted); border: 1px dashed rgba(255,255,255,0.2);'}">
+                                                    <i class="fa-solid fa-clipboard-list"></i> ${r.value && r.value !== '0' ? `${r.value}/30 pts` : 'Evaluar Rúbrica'}
+                                                </button>
+                                            ` : ''}
                                             ${c.type === 'cuentos' ? (() => {
                     const v = window.findCuentosVideo(team?.name);
                     if (v) {
@@ -710,7 +725,7 @@ function renderCaptura(container) {
                 })() : ''}
                                             <input type="text" value="${r.value}" placeholder="0" 
                                                 onchange="window.saveEventValue('${c.id}', '${r.teamId}', '${r.participantName}', this.value)" 
-                                                style="width: ${(['altares', 'cuentos', 'calaverita', 'catrines'].includes(c.type)) ? '55px' : '80px'}; text-align: right; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: 6px; padding: 6px; font-family: monospace; color: ${r.dq ? '#ff4b2b' : 'var(--accent-yellow)'}; font-weight: 700; ${r.dq ? 'text-decoration: line-through;' : ''}">
+                                                style="width: ${(['altares', 'cuentos', 'calaverita', 'catrines', 'lapida'].includes(c.type)) ? '55px' : '80px'}; text-align: right; background: rgba(0,0,0,0.5); border: 1px solid var(--border-glass); border-radius: 6px; padding: 6px; font-family: monospace; color: ${r.dq ? '#ff4b2b' : 'var(--accent-yellow)'}; font-weight: 700; ${r.dq ? 'text-decoration: line-through;' : ''}">
                                             <i class="fa-solid fa-ban" 
                                                 style="cursor: pointer; color: ${r.dq ? '#ff4b2b' : 'var(--text-muted)'}; font-size: 0.9rem;" 
                                                 title="Descalificar"
@@ -2288,6 +2303,277 @@ window.openRubricCatrinesModal = (compId, teamId, pName) => {
         const res = State.eventResults.find(r => r.competitionId === cId && r.teamId === tId && r.participantName === pN);
         State.submitEventResult(cId, tId, pN, String(finalAvg), res ? res.dq : false, rubricData);
         const m = document.getElementById('modal-rubric-catrines');
+        if (m) m.remove();
+        render();
+    };
+
+    renderModalBody();
+    document.body.appendChild(modal);
+};
+
+// --- RÚBRICA OFICIAL ALEBRIJES 2026 ---
+const RUBRIC_ALEBRIJES = [
+    {
+        id: 'estructura',
+        name: 'Estructura e Integración',
+        icon: 'fa-shapes',
+        maxPts: 10,
+        desc: 'El conjunto se integra al Altar y respeta las dimensiones permitidas.'
+    },
+    {
+        id: 'concepto',
+        name: 'Concepto y Fusión Fantástica',
+        icon: 'fa-dragon',
+        maxPts: 10,
+        desc: 'Representa un acompañamiento al personaje del Altar mediante elementos simbólicos y creativos, combina armónicamente al menos 3 animales o seres fantásticos. Clara intención anatómica en la fusión.'
+    },
+    {
+        id: 'creatividad',
+        name: 'Creatividad y Transformación de Materiales',
+        icon: 'fa-palette',
+        maxPts: 10,
+        desc: 'Originalidad y creación creativa, transforman los materiales en forma innovadora, creatividad gráfica.'
+    }
+];
+
+const RUBRIC_ALEBRIJES_LEVELS = [
+    { label: 'Excelente', range: '9 - 10', pts: [10, 9], color: '#2ec4b6' },
+    { label: 'Óptimo', range: '7 - 8', pts: [8, 7], color: '#00b4d8' },
+    { label: 'Avanzado', range: '5 - 6', pts: [6, 5], color: '#ffb703' },
+    { label: 'Suficiente', range: '3 - 4', pts: [4, 3], color: '#fb8500' },
+    { label: 'Básico', range: '1 - 2', pts: [2, 1], color: '#ff7e33' },
+    { label: 'Insuficiente', range: '0', pts: [0], color: '#ff4b2b' }
+];
+
+window.openRubricAlebrijesModal = (compId, teamId, pName) => {
+    const comp = State.competitions.find(c => c.id === compId);
+    const team = State.teams.find(t => t.id === teamId);
+    const res = State.eventResults.find(r => r.competitionId === compId && r.teamId === teamId && r.participantName === pName);
+
+    // Inicializar estructura de jueces (1, 2 y 3)
+    let activeJudge = 1;
+    let judgesData = {
+        1: { estructura: 0, concepto: 0, creatividad: 0 },
+        2: { estructura: 0, concepto: 0, creatividad: 0 },
+        3: { estructura: 0, concepto: 0, creatividad: 0 }
+    };
+
+    if (res && res.rubric) {
+        if (res.rubric.judges) {
+            judgesData = {
+                1: { ...judgesData[1], ...(res.rubric.judges[1] || {}) },
+                2: { ...judgesData[2], ...(res.rubric.judges[2] || {}) },
+                3: { ...judgesData[3], ...(res.rubric.judges[3] || {}) }
+            };
+        } else if (res.rubric.estructura !== undefined || res.rubric.concepto !== undefined || res.rubric.creatividad !== undefined) {
+            judgesData[1] = {
+                estructura: res.rubric.estructura || 0,
+                concepto: res.rubric.concepto || 0,
+                creatividad: res.rubric.creatividad || 0
+            };
+        }
+    }
+
+    const existingModal = document.getElementById('modal-rubric-alebrijes');
+    if (existingModal) existingModal.remove();
+
+    const modal = document.createElement('div');
+    modal.id = 'modal-rubric-alebrijes';
+    modal.className = 'modal-overlay';
+
+    const isJudgeEvaluated = (j) => {
+        const d = judgesData[j];
+        return d && ((d.estructura !== undefined && d.estructura > 0) || (d.concepto !== undefined && d.concepto > 0) || (d.creatividad !== undefined && d.creatividad > 0));
+    };
+
+    const getJudgeTotal = (j) => {
+        const d = judgesData[j];
+        if (!d) return 0;
+        return (d.estructura || 0) + (d.concepto || 0) + (d.creatividad || 0);
+    };
+
+    const renderModalBody = () => {
+        const evaluatedJudges = [1, 2, 3].filter(j => isJudgeEvaluated(j));
+        const count = evaluatedJudges.length || 1;
+
+        const sumEst = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].estructura || 0), 0);
+        const sumConc = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].concepto || 0), 0);
+        const sumCreat = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].creatividad || 0), 0);
+        const sumTotals = evaluatedJudges.reduce((acc, j) => acc + getJudgeTotal(j), 0);
+
+        const avgEst = +(sumEst / count).toFixed(1);
+        const avgConc = +(sumConc / count).toFixed(1);
+        const avgCreat = +(sumCreat / count).toFixed(1);
+        const finalAvg = evaluatedJudges.length > 0 ? +(sumTotals / count).toFixed(2) : 0;
+
+        const currentJudgeCriteria = judgesData[activeJudge] || { estructura: 0, concepto: 0, creatividad: 0 };
+        const currentJudgeTotal = getJudgeTotal(activeJudge);
+
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 720px; width: 94%; max-height: 92vh; overflow-y: auto; text-align: left; padding: 25px; border: 1px solid var(--accent-gold);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--accent-gold); font-weight: 800; text-transform: uppercase;">
+                            <i class="fa-solid fa-scroll"></i> Rúbrica Oficial de Evaluación - Alebrijes 2026
+                        </div>
+                        <h2 style="margin: 4px 0 0; color: white; font-size: 1.4rem;">${team?.name || '---'} ${pName ? `(${pName})` : ''}</h2>
+                        <div style="font-size: 0.85rem; color: var(--accent-blue); font-weight: 600; margin-top: 2px;">
+                            <i class="fa-solid fa-dragon"></i> 3 Criterios de Evaluación Oficial (Máximo 30 Pts)
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" onclick="document.getElementById('modal-rubric-alebrijes').remove()" style="padding: 5px 12px; font-size: 0.8rem;">✕ Cerrar</button>
+                </div>
+
+                <!-- SELECTOR DE JUECES -->
+                <div style="display: flex; gap: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+                    ${[1, 2, 3].map(j => {
+                        const isAct = activeJudge === j;
+                        const isEval = isJudgeEvaluated(j);
+                        const jTot = getJudgeTotal(j);
+                        return `
+                            <button type="button" class="btn" onclick="window.switchRubricAlebrijesJudge(${j})"
+                                style="flex: 1; padding: 10px 8px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: all 0.2s;
+                                ${isAct 
+                                    ? 'background: var(--accent-gold); color: #000; box-shadow: 0 4px 15px rgba(245,200,66,0.35); transform: translateY(-1px);' 
+                                    : (isEval ? 'background: rgba(46,196,182,0.15); color: #2ec4b6; border: 1px solid rgba(46,196,182,0.4);' : 'background: rgba(255,255,255,0.04); color: var(--text-muted); border: 1px solid rgba(255,255,255,0.06);')}">
+                                <span><i class="fa-solid ${isEval ? 'fa-user-check' : 'fa-user'}"></i> Juez ${j}</span>
+                                <span style="font-size: 0.72rem; font-weight: 700; opacity: 0.9;">
+                                    ${isEval ? `${jTot} / 30 pts` : '(Sin evaluar)'}
+                                </span>
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 6px 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                    <span style="font-size: 0.8rem; color: var(--accent-gold); font-weight: 700;">
+                        <i class="fa-solid fa-pen-to-square"></i> Calificando como: <strong>Juez ${activeJudge}</strong> (Subtotal: ${currentJudgeTotal} / 30 pts)
+                    </span>
+                    ${isJudgeEvaluated(activeJudge) ? `
+                        <button type="button" class="btn btn-secondary" onclick="window.clearJudgeAlebrijesRubric(${activeJudge})" style="padding: 2px 8px; font-size: 0.65rem; color: #ff7e33;">
+                            Limpiar Juez ${activeJudge}
+                        </button>
+                    ` : ''}
+                </div>
+
+                <!-- CRITERIOS DEL JUEZ ACTIVO -->
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                    ${RUBRIC_ALEBRIJES.map(crit => {
+                        const selectedVal = currentJudgeCriteria[crit.id] !== undefined ? currentJudgeCriteria[crit.id] : -1;
+                        const isSelected = selectedVal >= 0;
+                        return `
+                            <div style="background: rgba(255,255,255,0.025); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.06);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                                    <span style="font-weight: 700; font-size: 0.95rem; color: white;">
+                                        <i class="fa-solid ${crit.icon}" style="color: var(--accent-gold); margin-right: 8px;"></i>
+                                        ${crit.name}
+                                    </span>
+                                    <span style="font-size: 0.9rem; font-weight: 800; color: ${isSelected ? 'var(--accent-yellow)' : 'var(--text-muted)'}; font-family: monospace;">
+                                        ${isSelected ? selectedVal + ' / 10 pts' : 'Sin calificar'}
+                                    </span>
+                                </div>
+                                <div style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.45;">
+                                    ${crit.desc}
+                                </div>
+                                
+                                <!-- Botones de Escala por Nivel (10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0) -->
+                                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                                    ${RUBRIC_ALEBRIJES_LEVELS.map(lvl => {
+                                        return `
+                                            <div style="flex: 1 1 100px; min-width: 95px; background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.07); border-radius: 8px; padding: 6px; display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                                                <div style="font-size: 0.68rem; font-weight: 700; color: ${lvl.color}; text-transform: uppercase;">
+                                                    ${lvl.label}
+                                                </div>
+                                                <div style="display: flex; gap: 4px; width: 100%; justify-content: center;">
+                                                    ${lvl.pts.map(p => {
+                                                        const isP = selectedVal === p;
+                                                        return `
+                                                            <button type="button" class="btn" onclick="window.selectRubricAlebrijesValue('${crit.id}', ${p})"
+                                                                style="flex: 1; padding: 6px 4px; font-size: 0.8rem; font-weight: 800; border-radius: 6px; font-family: monospace; transition: all 0.2s;
+                                                                ${isP 
+                                                                    ? 'background: var(--accent-gold); color: #000; box-shadow: 0 0 10px rgba(245,200,66,0.4); transform: scale(1.05);' 
+                                                                    : 'background: rgba(255,255,255,0.06); color: white; border: 1px solid rgba(255,255,255,0.1);'}">
+                                                                ${p}
+                                                            </button>
+                                                        `;
+                                                    }).join('')}
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+
+                <!-- RESUMEN GENERAL Y PROMEDIO -->
+                <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">
+                            Promedio Final Automático (${evaluatedJudges.length} ${evaluatedJudges.length === 1 ? 'juez' : 'jueces'})
+                        </div>
+                        <div style="font-size: 2rem; font-family: 'Outfit'; font-weight: 900; color: var(--accent-yellow); line-height: 1.1;">
+                            ${finalAvg} <span style="font-size: 1rem; color: var(--text-muted); font-weight: 400;">/ 30 pts</span>
+                        </div>
+                        <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 5px;">
+                            Estructura: <strong style="color: white;">${avgEst}</strong>/10 &nbsp;|&nbsp; Concepto: <strong style="color: white;">${avgConc}</strong>/10 &nbsp;|&nbsp; Creatividad: <strong style="color: white;">${avgCreat}</strong>/10
+                            ${evaluatedJudges.length > 0 ? ` &nbsp;|&nbsp; Desglose: ${[1, 2, 3].filter(j => isJudgeEvaluated(j)).map(j => `Juez ${j}: <strong>${getJudgeTotal(j)}</strong> pts`).join(' · ')}` : ''}
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-secondary" onclick="document.getElementById('modal-rubric-alebrijes').remove()">Cancelar</button>
+                        <button class="btn" onclick="window.saveRubricAlebrijesResult('${compId}', '${teamId}', '${pName}')" style="background: var(--accent-gold); color: #000; font-weight: 800; padding: 10px 22px;">
+                            <i class="fa-solid fa-check"></i> Guardar Evaluación
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+
+    window.switchRubricAlebrijesJudge = (j) => {
+        activeJudge = j;
+        renderModalBody();
+    };
+
+    window.clearJudgeAlebrijesRubric = (j) => {
+        judgesData[j] = { estructura: 0, concepto: 0, creatividad: 0 };
+        renderModalBody();
+    };
+
+    window.selectRubricAlebrijesValue = (critId, pts) => {
+        if (!judgesData[activeJudge]) judgesData[activeJudge] = { estructura: 0, concepto: 0, creatividad: 0 };
+        judgesData[activeJudge][critId] = pts;
+        renderModalBody();
+    };
+
+    window.saveRubricAlebrijesResult = (cId, tId, pN) => {
+        const evaluatedJudges = [1, 2, 3].filter(j => isJudgeEvaluated(j));
+        const count = evaluatedJudges.length || 1;
+
+        const sumEst = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].estructura || 0), 0);
+        const sumConc = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].concepto || 0), 0);
+        const sumCreat = evaluatedJudges.reduce((acc, j) => acc + (judgesData[j].creatividad || 0), 0);
+        const sumTotals = evaluatedJudges.reduce((acc, j) => acc + getJudgeTotal(j), 0);
+
+        const avgEst = +(sumEst / count).toFixed(1);
+        const avgConc = +(sumConc / count).toFixed(1);
+        const avgCreat = +(sumCreat / count).toFixed(1);
+        const finalAvg = evaluatedJudges.length > 0 ? +(sumTotals / count).toFixed(2) : 0;
+
+        const rubricData = {
+            judges: judgesData,
+            judgeCount: evaluatedJudges.length,
+            estructura: avgEst,
+            concepto: avgConc,
+            creatividad: avgCreat,
+            total: finalAvg
+        };
+
+        const res = State.eventResults.find(r => r.competitionId === cId && r.teamId === tId && r.participantName === pN);
+        State.submitEventResult(cId, tId, pN, String(finalAvg), res ? res.dq : false, rubricData);
+        const m = document.getElementById('modal-rubric-alebrijes');
         if (m) m.remove();
         render();
     };
