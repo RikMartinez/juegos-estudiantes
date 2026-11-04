@@ -557,7 +557,7 @@
                   <span id="badge-reto-b2" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Pendiente</span>
                 </div>
                 <p class="text-xs text-slate-300 leading-relaxed">
-                  Si <strong>$450 pesos</strong> corresponden al <strong>\(15\%\)</strong> del costo total de una herramienta, ¿cuál es el precio total (\(100\%\))?
+                  Si <strong>$450 pesos</strong> corresponden al <strong>\(15\%\)</strong> del costo total de una herramienta, ¿cuál es el precio total [\(100\%\)]?
                 </p>
                 <div class="flex items-center gap-2">
                   <input type="number" id="input-reto-b2" placeholder="Resultado" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-teal-500 font-mono">
@@ -1238,31 +1238,34 @@
         const total = parseFloat(document.getElementById('input-b-total').value) || 0;
         const pct = parseFloat(document.getElementById('input-b-pct').value) || 0;
         const ans = total * (pct / 100);
+        const ansStr = Number.isInteger(ans) ? ans : ans.toFixed(2);
         trace.innerHTML = `
           <div class="text-teal-300 font-bold">1. Fórmula de la Parte:</div>
           <div>\\( \\text{Parte} = \\text{Total} \\cdot \\frac{P}{100} \\)</div>
           <div class="text-indigo-300 font-bold mt-2">2. Sustitución y Operación Decimal:</div>
-          <div>\\( \\text{Parte} = ${total} \\cdot ${(pct/100).toFixed(4)} = <strong>${Number.isInteger(ans) ? ans : ans.toFixed(2)}</strong> \\)</div>
+          <div>\\( \\text{Parte} = ${total} \\cdot ${(pct/100).toFixed(4)} = \\mathbf{${ansStr}} \\)</div>
         `;
       } else if (currentProbType === 2) {
         const part = parseFloat(document.getElementById('input-b-part').value) || 0;
         const total = parseFloat(document.getElementById('input-b-total2').value) || 1;
         const ans = (part / total) * 100;
+        const ansStr = Number.isInteger(ans) ? ans : ans.toFixed(2);
         trace.innerHTML = `
           <div class="text-teal-300 font-bold">1. Fórmula del Tanto por Ciento:</div>
           <div>\\( P\\% = \\left( \\frac{\\text{Parte}}{\\text{Total}} \\right) \\cdot 100 \\)</div>
           <div class="text-indigo-300 font-bold mt-2">2. Cociente y Conversión Porcentual:</div>
-          <div>\\( P\\% = \\left( \\frac{${part}}{${total}} \\right) \\cdot 100 = ${(part/total).toFixed(4)} \\cdot 100 = <strong>${Number.isInteger(ans) ? ans : ans.toFixed(2)}\\%</strong> \\)</div>
+          <div>\\( P\\% = \\left( \\frac{${part}}{${total}} \\right) \\cdot 100 = ${(part/total).toFixed(4)} \\cdot 100 = \\mathbf{${ansStr}\\%} \\)</div>
         `;
       } else if (currentProbType === 3) {
         const part = parseFloat(document.getElementById('input-b-part3').value) || 0;
         const pct = parseFloat(document.getElementById('input-b-pct3').value) || 1;
         const ans = part / (pct / 100);
+        const ansStr = Number.isInteger(ans) ? ans : ans.toFixed(2);
         trace.innerHTML = `
           <div class="text-teal-300 font-bold">1. Fórmula de la Base o Total:</div>
           <div>\\( \\text{Total} = \\frac{\\text{Parte}}{\\frac{P}{100}} \\)</div>
           <div class="text-indigo-300 font-bold mt-2">2. Despeje Directo:</div>
-          <div>\\( \\text{Total} = \\frac{${part}}{${(pct/100).toFixed(4)}} = <strong>${Number.isInteger(ans) ? ans : ans.toFixed(2)}</strong> \\)</div>
+          <div>\\( \\text{Total} = \\frac{${part}}{${(pct/100).toFixed(4)}} = \\mathbf{${ansStr}} \\)</div>
         `;
       }
       renderAllMath();
