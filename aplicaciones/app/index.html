@@ -1,0 +1,1869 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OA 2.15: Porcentajes</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Google Fonts Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(51, 65, 85, 0.6);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fadeIn {
+      animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-rose-500/30 selection:text-rose-300">
+
+  <!-- SCORM API Integration Script -->
+  <script>
+    let scormConnected = false;
+    let scormScore = 0;
+
+    function findLMSAPI(win) {
+      let findAttempts = 0;
+      while ((win.API == null) && (win.parent != null) && (win.parent != win)) {
+        findAttempts++;
+        if (findAttempts > 7) return null;
+        win = win.parent;
+      }
+      return win.API;
+    }
+
+    function initSCORM() {
+      const api = findLMSAPI(window);
+      if (api) {
+        const result = api.LMSInitialize("");
+        if (result === "true" || result === true) {
+          scormConnected = true;
+          const status = api.LMSGetValue("cmi.core.lesson_status");
+          if (status === "not attempted" || !status) {
+            api.LMSSetValue("cmi.core.lesson_status", "incomplete");
+            api.LMSCommit("");
+          }
+          const savedScore = api.LMSGetValue("cmi.core.score.raw");
+          if (savedScore && !isNaN(parseFloat(savedScore))) {
+            scormScore = parseFloat(savedScore);
+          }
+        }
+      }
+    }
+
+    function commitSCORM(score, passed = false) {
+      scormScore = Math.max(scormScore, score);
+      const api = findLMSAPI(window);
+      if (api && scormConnected) {
+        api.LMSSetValue("cmi.core.score.raw", scormScore.toString());
+        api.LMSSetValue("cmi.core.score.min", "0");
+        api.LMSSetValue("cmi.core.score.max", "100");
+        if (passed || scormScore >= 70) {
+          api.LMSSetValue("cmi.core.lesson_status", "passed");
+        } else {
+          api.LMSSetValue("cmi.core.lesson_status", "incomplete");
+        }
+        api.LMSCommit("");
+      }
+    }
+
+    window.addEventListener("beforeunload", () => {
+      const api = findLMSAPI(window);
+      if (api && scormConnected) {
+        api.LMSSetValue("cmi.core.exit", "suspend");
+        api.LMSFinish("");
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+      initSCORM();
+    });
+  </script>
+
+  <!-- ========================================================================= -->
+  <!-- TOP APP BAR & HEADER                                                      -->
+  <!-- ========================================================================= -->
+  <header class="border-b border-slate-800/80 bg-slate-900/90 sticky top-0 z-50 backdrop-blur-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center shadow-lg shadow-rose-500/20">
+          <i data-lucide="percent" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <span class="text-[10px] font-bold uppercase tracking-wider text-rose-400 font-mono">Bloque 2 • Razones y Proporciones</span>
+          <h1 class="text-sm sm:text-base font-bold text-white leading-tight">OA 2.15: Porcentajes</h1>
+        </div>
+      </div>
+
+      <!-- Live Score Badge (Math.max protected) -->
+      <div class="flex items-center gap-3">
+        <div class="hidden sm:flex flex-col items-end">
+          <span class="text-[10px] font-mono text-slate-400 uppercase">Calificación SCORM</span>
+          <span id="header-score-text" class="text-xs font-bold font-mono text-emerald-400">0 / 100 Pts</span>
+        </div>
+        <div class="h-9 px-3 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center gap-2">
+          <i data-lucide="award" class="w-4 h-4 text-amber-400"></i>
+          <span id="badge-total-score" class="text-sm font-bold font-mono text-white">0%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CANONICAL NAVIGATION TABS -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800/60">
+      <nav class="flex gap-1 sm:gap-2 py-2 overflow-x-auto no-scrollbar" aria-label="Tabs Principales">
+        <button id="nav-btn-teoria" onclick="switchMainTab('teoria')" class="tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 bg-rose-600 text-white shadow-md shadow-rose-600/30">
+          <i data-lucide="book-open" class="w-4 h-4"></i>
+          <span>Conceptos</span>
+        </button>
+
+        <button id="nav-btn-laboratorio" onclick="switchMainTab('laboratorio')" class="tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all flex items-center gap-2">
+          <i data-lucide="flask-conical" class="w-4 h-4 text-teal-400"></i>
+          <span>Laboratorio</span>
+          <span id="lab-score-pill" class="text-[10px] font-mono bg-teal-500/20 text-teal-300 px-1.5 py-0.5 rounded-full border border-teal-500/30">0/30</span>
+        </button>
+
+        <button id="nav-btn-evaluacion" onclick="switchMainTab('evaluacion')" class="tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all flex items-center gap-2">
+          <i data-lucide="graduation-cap" class="w-4 h-4 text-indigo-400"></i>
+          <span>Evaluación</span>
+          <span id="eval-score-pill" class="text-[10px] font-mono bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded-full border border-indigo-500/30">0/70</span>
+        </button>
+
+        <!-- RETO MENTAL STRICTLY AT THE END -->
+        <button id="nav-btn-arcade" onclick="switchMainTab('arcade')" class="tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all flex items-center gap-2">
+          <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+          <span>Reto Mental</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTAINER WITH STRICT VIEW ISOLATION                                  -->
+  <!-- ========================================================================= -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- ======================================================================= -->
+    <!-- 1. SECCIÓN: CONCEPTOS CLAVE                                             -->
+    <!-- ======================================================================= -->
+    <section id="sec-teoria" class="space-y-8 animate-fadeIn">
+      <!-- Hero Banner -->
+      <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-rose-950 via-slate-900 to-slate-900 border border-rose-500/30 p-6 sm:p-10 shadow-2xl">
+        <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-rose-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 max-w-3xl space-y-3">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 text-xs font-semibold border border-rose-500/30">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
+            Razones, Proporciones y Aplicaciones Financieras
+          </div>
+          <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+            Porcentajes: El Lenguaje de la Proporcionalidad en Base 100
+          </h2>
+          <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            Un porcentaje representa una razón cuyo denominador o referencia fija es el número <strong>100</strong>. Comprender su triple naturaleza (porcentaje, fracción y decimal) es la clave para resolver cálculos comerciales, descuentos, recargos y variaciones porcentuales.
+          </p>
+        </div>
+      </div>
+
+      <!-- Core Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Card 1: La Triple Representación -->
+        <div class="glass-card rounded-2xl p-6 space-y-4 border-slate-800 hover:border-rose-500/40 transition-all">
+          <div class="w-12 h-12 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
+            <i data-lucide="layers" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">1. La Triple Equivalencia</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Cualquier tanto por ciento \(P\%\) puede expresarse de tres maneras exactamente equivalentes:
+          </p>
+          <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800 text-center font-mono text-rose-300 font-bold text-sm">
+            \[ P\% = \frac{P}{100} = \text{Decimal} \]
+          </div>
+          <p class="text-xs text-slate-400">
+            Por ejemplo: \(25\% = \frac{25}{100} = \frac{1}{4} = 0.25\). Para multiplicar cantidades, la forma decimal es la más eficiente.
+          </p>
+        </div>
+
+        <!-- Card 2: Los Tres Problemas Clásicos -->
+        <div class="glass-card rounded-2xl p-6 space-y-4 border-slate-800 hover:border-teal-500/40 transition-all">
+          <div class="w-12 h-12 rounded-xl bg-teal-500/10 border border-teal-500/30 flex items-center justify-center text-teal-400">
+            <i data-lucide="help-circle" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">2. Los 3 Problemas Fundamentales</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            A partir de la proporción \(\frac{\text{Parte}}{\text{Total}} = \frac{P}{100}\), existen 3 incógnitas posibles:
+          </p>
+          <ul class="text-xs text-slate-300 space-y-1.5 list-disc list-inside">
+            <li><strong>Hallar la Parte:</strong> \(\text{Parte} = \text{Total} \cdot \frac{P}{100}\).</li>
+            <li><strong>Hallar el Tanto por Ciento:</strong> \(P\% = \left(\frac{\text{Parte}}{\text{Total}}\right) \cdot 100\).</li>
+            <li><strong>Hallar la Base o Total:</strong> \(\text{Total} = \frac{\text{Parte}}{\frac{P}{100}}\).</li>
+          </ul>
+        </div>
+
+        <!-- Card 3: Factores Multiplicadores -->
+        <div class="glass-card rounded-2xl p-6 space-y-4 border-slate-800 hover:border-amber-500/40 transition-all">
+          <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+            <i data-lucide="trending-up" class="w-6 h-6"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">3. Descuentos e Incrementos Directos</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            En lugar de calcular el porcentaje y luego restar o sumar, se emplea el <strong>factor multiplicador</strong>:
+          </p>
+          <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800 text-center font-mono text-amber-300 font-bold text-xs">
+            \[ \text{Descuento } d\% \implies \text{Total} \cdot (1 - \frac{d}{100}) \]
+            \[ \text{Incremento / IVA } i\% \implies \text{Total} \cdot (1 + \frac{i}{100}) \]
+          </div>
+          <p class="text-xs text-slate-400">
+            Ejemplo: Con \(20\%\) de descuento se paga el \(80\%\) [multiplicar por \(0.80\)]. Con \(16\%\) de IVA se paga el \(116\%\) [multiplicar por \(1.16\)].
+          </p>
+        </div>
+      </div>
+
+      <!-- Quick Conversion Reference Table -->
+      <div class="glass-card rounded-2xl p-6 space-y-4 border-slate-800">
+        <div class="flex items-center gap-2 text-white font-bold text-base sm:text-lg">
+          <i data-lucide="table" class="w-5 h-5 text-rose-400"></i>
+          <span>Tabla de Equivalencias Frecuentes de Uso Cotidiano</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm border-collapse">
+            <thead>
+              <tr class="border-b border-slate-800 bg-slate-900/60 text-slate-400 uppercase text-[11px] font-mono">
+                <th class="p-3">Porcentaje</th>
+                <th class="p-3 text-rose-400">Fracción Irreducible</th>
+                <th class="p-3 text-teal-400">Forma Decimal</th>
+                <th class="p-3 text-amber-400">Cálculo Mental Rápido</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-800/60 text-slate-300">
+              <tr>
+                <td class="p-3 font-semibold text-white">\(10\%\)</td>
+                <td class="p-3 font-mono text-rose-300">\(\frac{1}{10}\)</td>
+                <td class="p-3 font-mono text-teal-300">\(0.10\)</td>
+                <td class="p-3">Recorrer el punto decimal un lugar a la izquierda (dividir entre \(10\)).</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold text-white">\(20\%\)</td>
+                <td class="p-3 font-mono text-rose-300">\(\frac{1}{5}\)</td>
+                <td class="p-3 font-mono text-teal-300">\(0.20\)</td>
+                <td class="p-3">Dividir entre \(5\), o calcular el \(10\%\) y duplicar.</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold text-white">\(25\%\)</td>
+                <td class="p-3 font-mono text-rose-300">\(\frac{1}{4}\)</td>
+                <td class="p-3 font-mono text-teal-300">\(0.25\)</td>
+                <td class="p-3">Obtener la mitad de la mitad (dividir entre \(4\)).</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold text-white">\(50\%\)</td>
+                <td class="p-3 font-mono text-rose-300">\(\frac{1}{2}\)</td>
+                <td class="p-3 font-mono text-teal-300">\(0.50\)</td>
+                <td class="p-3">Calcular exactamente la mitad (dividir entre \(2\)).</td>
+              </tr>
+              <tr>
+                <td class="p-3 font-semibold text-white">\(75\%\)</td>
+                <td class="p-3 font-mono text-rose-300">\(\frac{3}{4}\)</td>
+                <td class="p-3 font-mono text-teal-300">\(0.75\)</td>
+                <td class="p-3">Sumar el \(50\%\) y el \(25\%\), o restar la cuarta parte al total.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="pt-4 flex justify-end">
+          <button onclick="switchMainTab('laboratorio')" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-semibold text-xs sm:text-sm flex items-center gap-2 transition-all shadow-lg shadow-rose-600/30">
+            <span>Experimentar en el Laboratorio Modular</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- 2. SECCIÓN: LABORATORIO INTERACTIVO MODULAR (30 PUNTOS)                 -->
+    <!-- ======================================================================= -->
+    <section id="sec-laboratorio" class="space-y-6 animate-fadeIn hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <div class="inline-flex items-center gap-2 text-xs font-semibold text-teal-400 uppercase tracking-wider">
+            <i data-lucide="flask-conical" class="w-3.5 h-3.5"></i>
+            Laboratorio Interactivo Modular • 30 Puntos Totales
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold text-white">
+            Simulación y Dinámica de Porcentajes
+          </h2>
+        </div>
+
+        <!-- Pill Navigation Bar -->
+        <div class="inline-flex p-1 rounded-2xl bg-slate-900 border border-slate-800 self-start sm:self-auto">
+          <button id="tab-btn-a" onclick="switchLabModule('a')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 bg-rose-600 text-white shadow-md">
+            <span>Módulo A</span>
+            <span class="text-[10px] opacity-80">Matriz Cuadrícula 100</span>
+          </button>
+          <button id="tab-btn-b" onclick="switchLabModule('b')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all flex items-center gap-2">
+            <span>Módulo B</span>
+            <span class="text-[10px] opacity-80">Los 3 Problemas</span>
+          </button>
+          <button id="tab-btn-c" onclick="switchLabModule('c')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all flex items-center gap-2">
+            <span>Módulo C</span>
+            <span class="text-[10px] opacity-80">Descuentos e IVA</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- MÓDULO A: MATRIZ BASE 100 Y TRIPLE CONVERSIÓN                        -->
+      <!-- ===================================================================== -->
+      <div id="module-a" class="space-y-6 animate-fadeIn">
+        <div class="glass-card rounded-2xl p-6 sm:p-8 space-y-6 border-slate-800">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div class="space-y-1">
+              <span class="text-xs font-mono text-rose-400 uppercase tracking-wider font-semibold">Módulo A • 10 Puntos</span>
+              <h3 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                <i data-lucide="grid" class="w-5 h-5 text-rose-400"></i>
+                Visualizador de Cuadrícula \(10 \times 10\) y Triple Equivalencia
+              </h3>
+            </div>
+            <span class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-300 self-start sm:self-auto font-mono">
+              Representación Visual Directa
+            </span>
+          </div>
+
+          <!-- Grid Simulator Container -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            <!-- 10x10 Grid View -->
+            <div class="lg:col-span-5 bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col items-center justify-center">
+              <span class="text-xs font-mono text-slate-400 mb-2">Cuadrícula Centesimal (100 Celdas)</span>
+              <div id="grid-100" class="grid grid-cols-10 gap-1 p-2 bg-slate-900 rounded-xl border border-slate-800 w-full max-w-[280px] aspect-square">
+                <!-- 100 cells generated dynamically -->
+              </div>
+              <div class="mt-3 text-xs font-mono text-slate-400">
+                Celdas activas: <strong id="grid-active-count" class="text-rose-400 text-sm">35</strong> / 100
+              </div>
+            </div>
+
+            <!-- Controls and Dynamic Equivalences -->
+            <div class="lg:col-span-7 space-y-4">
+              <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+                <div class="flex justify-between items-center">
+                  <label class="text-xs font-mono text-slate-300">Deslizador de Porcentaje:</label>
+                  <span id="slider-pct-val" class="text-base font-bold font-mono text-rose-400">35%</span>
+                </div>
+                <input type="range" id="slider-pct" min="0" max="100" step="1" value="35" oninput="updateGridModuleA()" class="w-full accent-rose-500 cursor-pointer">
+
+                <!-- Quick Preset Buttons -->
+                <div class="flex flex-wrap gap-2 pt-1">
+                  <button onclick="setGridPreset(10)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg font-mono">10%</button>
+                  <button onclick="setGridPreset(25)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg font-mono">25%</button>
+                  <button onclick="setGridPreset(50)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg font-mono">50%</button>
+                  <button onclick="setGridPreset(75)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg font-mono">75%</button>
+                  <button onclick="setGridPreset(100)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg font-mono">100%</button>
+                </div>
+              </div>
+
+              <!-- Triple Equivalence Display -->
+              <div class="grid grid-cols-3 gap-3 text-center">
+                <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl space-y-1">
+                  <div class="text-[10px] font-mono text-slate-400 uppercase">Tanto por Ciento</div>
+                  <div id="disp-triple-pct" class="text-base sm:text-lg font-bold font-mono text-rose-400">35%</div>
+                </div>
+                <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl space-y-1">
+                  <div class="text-[10px] font-mono text-slate-400 uppercase">Fracción Irreducible</div>
+                  <div id="disp-triple-frac" class="text-base sm:text-lg font-bold font-mono text-teal-300">7/20</div>
+                </div>
+                <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl space-y-1">
+                  <div class="text-[10px] font-mono text-slate-400 uppercase">Número Decimal</div>
+                  <div id="disp-triple-dec" class="text-base sm:text-lg font-bold font-mono text-amber-300">0.35</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Micro-Retos Módulo A (10 Puntos) -->
+          <div class="border-t border-slate-800 pt-6 space-y-4">
+            <h4 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <i data-lucide="check-circle" class="w-4 h-4 text-teal-400"></i>
+              Micro-Retos Formativos Módulo A (10 Puntos)
+            </h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Micro-Reto A1 -->
+              <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-rose-300">Reto A1 • 5 Pts</span>
+                  <span id="badge-reto-a1" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Pendiente</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  ¿Cuál es el valor decimal exacto equivalente a <strong>\(4.5\%\)</strong>?
+                </p>
+                <div class="flex items-center gap-2">
+                  <input type="number" id="input-reto-a1" step="0.0001" placeholder="Resultado" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-rose-500 font-mono">
+                  <button onclick="checkRetoA1()" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold whitespace-nowrap transition-colors">
+                    Validar
+                  </button>
+                </div>
+                <div id="fb-reto-a1" class="text-xs hidden"></div>
+              </div>
+
+              <!-- Micro-Reto A2 -->
+              <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-rose-300">Reto A2 • 5 Pts</span>
+                  <span id="badge-reto-a2" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Pendiente</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  Al simplificar la fracción representativa del <strong>\(64\%\)</strong>, ¿cuál es el denominador irreducible?
+                </p>
+                <div class="flex items-center gap-2">
+                  <input type="number" id="input-reto-a2" placeholder="Resultado" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-rose-500 font-mono">
+                  <button onclick="checkRetoA2()" class="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-semibold whitespace-nowrap transition-colors">
+                    Validar
+                  </button>
+                </div>
+                <div id="fb-reto-a2" class="text-xs hidden"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Navigation to Module B -->
+          <div class="flex justify-between items-center pt-2">
+            <span class="text-xs text-slate-400">Progreso Módulo A: <strong id="score-mod-a" class="text-white">0 / 10 Pts</strong></span>
+            <button onclick="switchLabModule('b')" class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold flex items-center gap-2 transition-all">
+              <span>Avanzar al Módulo B (Los 3 Problemas)</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- MÓDULO B: LOS 3 PROBLEMAS FUNDAMENTALES DE PORCENTAJES               -->
+      <!-- ===================================================================== -->
+      <div id="module-b" class="space-y-6 animate-fadeIn hidden">
+        <div class="glass-card rounded-2xl p-6 sm:p-8 space-y-6 border-slate-800">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div class="space-y-1">
+              <span class="text-xs font-mono text-teal-400 uppercase tracking-wider font-semibold">Módulo B • 10 Puntos</span>
+              <h3 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                <i data-lucide="help-circle" class="w-5 h-5 text-teal-400"></i>
+                Resolutor Interactivo de los Tres Tipos de Problemas
+              </h3>
+            </div>
+            <span class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-300 self-start sm:self-auto font-mono">
+              Parte • Total • Porcentaje
+            </span>
+          </div>
+
+          <!-- Selector of Problem Type -->
+          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-6">
+            <div class="flex flex-wrap gap-2">
+              <button id="btn-type-1" onclick="switchProbType(1)" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-teal-600 text-white transition-all shadow-md">
+                Caso 1: Hallar la Parte
+              </button>
+              <button id="btn-type-2" onclick="switchProbType(2)" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white transition-all">
+                Caso 2: Hallar el Porcentaje
+              </button>
+              <button id="btn-type-3" onclick="switchProbType(3)" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white transition-all">
+                Caso 3: Hallar la Base (Total)
+              </button>
+            </div>
+
+            <!-- Dynamic Form for Active Case -->
+            <div id="prob-form-container" class="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-4">
+              <!-- Dynamically populated in switchProbType -->
+            </div>
+
+            <!-- Step by Step Math Trace -->
+            <div id="prob-trace-container" class="p-4 rounded-xl bg-slate-900 border border-teal-500/30 text-xs font-mono space-y-2">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Micro-Retos Módulo B (10 Puntos) -->
+          <div class="border-t border-slate-800 pt-6 space-y-4">
+            <h4 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <i data-lucide="check-circle" class="w-4 h-4 text-teal-400"></i>
+              Micro-Retos Formativos Módulo B (10 Puntos)
+            </h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Micro-Reto B1 -->
+              <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-teal-300">Reto B1 • 5 Pts</span>
+                  <span id="badge-reto-b1" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Pendiente</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  En un grupo de <strong>80 alumnos</strong>, <strong>28</strong> obtuvieron calificación sobresaliente. ¿Qué porcentaje del total representa?
+                </p>
+                <div class="flex items-center gap-2">
+                  <input type="number" id="input-reto-b1" placeholder="Resultado" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-teal-500 font-mono">
+                  <button onclick="checkRetoB1()" class="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold whitespace-nowrap transition-colors">
+                    Validar
+                  </button>
+                </div>
+                <div id="fb-reto-b1" class="text-xs hidden"></div>
+              </div>
+
+              <!-- Micro-Reto B2 -->
+              <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-teal-300">Reto B2 • 5 Pts</span>
+                  <span id="badge-reto-b2" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Pendiente</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  Si <strong>$450 pesos</strong> corresponden al <strong>\(15\%\)</strong> del costo total de una herramienta, ¿cuál es el precio total (\(100\%\))?
+                </p>
+                <div class="flex items-center gap-2">
+                  <input type="number" id="input-reto-b2" placeholder="Resultado" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-teal-500 font-mono">
+                  <button onclick="checkRetoB2()" class="px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white text-xs font-semibold whitespace-nowrap transition-colors">
+                    Validar
+                  </button>
+                </div>
+                <div id="fb-reto-b2" class="text-xs hidden"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Navigation -->
+          <div class="flex justify-between items-center pt-2">
+            <button onclick="switchLabModule('a')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-2 transition-all">
+              <i data-lucide="arrow-left" class="w-4 h-4"></i>
+              <span>Regresar al Módulo A</span>
+            </button>
+            <button onclick="switchLabModule('c')" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-slate-950 text-xs font-bold flex items-center gap-2 transition-all">
+              <span>Avanzar al Módulo C (Descuentos e IVA)</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- MÓDULO C: SIMULADOR DE DESCUENTOS COMERCIALES E IVA (FACTORES)        -->
+      <!-- ===================================================================== -->
+      <div id="module-c" class="space-y-6 animate-fadeIn hidden">
+        <div class="glass-card rounded-2xl p-6 sm:p-8 space-y-6 border-slate-800">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+            <div class="space-y-1">
+              <span class="text-xs font-mono text-amber-400 uppercase tracking-wider font-semibold">Módulo C • 10 Puntos</span>
+              <h3 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                <i data-lucide="shopping-cart" class="w-5 h-5 text-amber-400"></i>
+                Simulador Comercial: Descuentos, IVA y Factores Multiplicadores
+              </h3>
+            </div>
+            <span class="text-xs bg-slate-800 px-3 py-1 rounded-full text-slate-300 self-start sm:self-auto font-mono">
+              Factores Directos: (1 - d) y (1 + i)
+            </span>
+          </div>
+
+          <!-- Simulator Container -->
+          <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-5 sm:p-6 space-y-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-slate-950 p-4 rounded-xl border border-slate-800">
+              <div>
+                <label class="block text-xs font-mono text-slate-400 mb-1">Precio de Lista Base ($):</label>
+                <input type="number" id="sim-c-price" value="1200" oninput="updateModuleCSim()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-slate-400 mb-1">Descuento (%):</label>
+                <input type="number" id="sim-c-discount" value="20" min="0" max="90" oninput="updateModuleCSim()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-mono text-slate-400 mb-1">Tasa de IVA (%):</label>
+                <input type="number" id="sim-c-tax" value="16" min="0" max="30" oninput="updateModuleCSim()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono">
+              </div>
+            </div>
+
+            <!-- Dynamic Ticket / Breakdown Card -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 items-center">
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 text-center space-y-1">
+                <div class="text-[11px] font-mono text-slate-400 uppercase">1. Con Descuento Aplicado</div>
+                <div id="c-subtotal-val" class="text-xl font-bold font-mono text-teal-300">$960.00</div>
+                <div id="c-subtotal-factor" class="text-[10px] text-slate-400">Factor = 0.80</div>
+              </div>
+
+              <div class="p-4 rounded-xl bg-slate-950 border border-slate-800 text-center space-y-1">
+                <div class="text-[11px] font-mono text-slate-400 uppercase">2. Impuesto (IVA)</div>
+                <div id="c-tax-val" class="text-xl font-bold font-mono text-amber-300">+$153.60</div>
+                <div id="c-tax-factor" class="text-[10px] text-slate-400">16% de $960.00</div>
+              </div>
+
+              <div class="p-4 rounded-xl bg-rose-950/40 border border-rose-500/40 text-center space-y-1">
+                <div class="text-[11px] font-mono text-rose-300 uppercase">3. Precio Final a Pagar</div>
+                <div id="c-total-val" class="text-2xl font-bold font-mono text-white">$1,113.60</div>
+                <div class="text-[10px] text-emerald-400 font-semibold">Cálculo en Cadena Resuelto</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Micro-Retos Módulo C (10 Puntos) -->
+          <div class="border-t border-slate-800 pt-6 space-y-4">
+            <h4 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+              <i data-lucide="check-circle" class="w-4 h-4 text-teal-400"></i>
+              Micro-Retos Formativos Módulo C (10 Puntos)
+            </h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- Micro-Reto C1 -->
+              <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-amber-300">Reto C1 • 5 Pts</span>
+                  <span id="badge-reto-c1" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Pendiente</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  Una chamarra cuesta <strong>$850 pesos</strong> y tiene un descuento del <strong>\(30\%\)</strong>. ¿Cuánto se paga por ella?
+                </p>
+                <div class="flex items-center gap-2">
+                  <input type="number" id="input-reto-c1" placeholder="Resultado" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500 font-mono">
+                  <button onclick="checkRetoC1()" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-slate-950 text-xs font-bold whitespace-nowrap transition-colors">
+                    Validar
+                  </button>
+                </div>
+                <div id="fb-reto-c1" class="text-xs hidden"></div>
+              </div>
+
+              <!-- Micro-Reto C2 -->
+              <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-amber-300">Reto C2 • 5 Pts</span>
+                  <span id="badge-reto-c2" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Pendiente</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                  Un smartphone cuesta <strong>$4,200 pesos</strong> antes de impuestos. Si se le agrega el <strong>\(16\%\) de IVA</strong>, ¿cuál es el precio final?
+                </p>
+                <div class="flex items-center gap-2">
+                  <input type="number" id="input-reto-c2" placeholder="Resultado" class="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500 font-mono">
+                  <button onclick="checkRetoC2()" class="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-500 text-slate-950 text-xs font-bold whitespace-nowrap transition-colors">
+                    Validar
+                  </button>
+                </div>
+                <div id="fb-reto-c2" class="text-xs hidden"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Bottom Navigation to Evaluation -->
+          <div class="flex justify-between items-center pt-2">
+            <button onclick="switchLabModule('b')" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-2 transition-all">
+              <i data-lucide="arrow-left" class="w-4 h-4"></i>
+              <span>Regresar al Módulo B</span>
+            </button>
+            <button onclick="switchMainTab('evaluacion')" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all shadow-lg shadow-rose-600/30">
+              <span>Ir a la Evaluación Formativa (70 Pts)</span>
+              <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- 3. SECCIÓN: EVALUACIÓN FORMATIVA (70 PUNTOS, 1 REACTIVO POR VISTA)       -->
+    <!-- ======================================================================= -->
+    <section id="sec-evaluacion" class="space-y-6 animate-fadeIn hidden">
+      <!-- Title strictly clean for user: no internal technical jargon -->
+      <div class="glass-card rounded-2xl p-6 sm:p-8 space-y-6 border-slate-800">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div>
+            <div class="inline-flex items-center gap-2 text-xs font-semibold text-rose-400 uppercase tracking-wider">
+              <i data-lucide="graduation-cap" class="w-4 h-4"></i>
+              Tarea Evaluativa de Conocimientos • 70 Puntos Totales
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white">
+              Evaluación Formativa
+            </h2>
+          </div>
+
+          <!-- Stepper and Progress -->
+          <div class="flex items-center gap-3 self-start sm:self-auto">
+            <div class="text-right">
+              <span class="text-[10px] font-mono text-slate-400 uppercase block">Reactivo</span>
+              <span id="eval-stepper-label" class="text-xs font-mono font-bold text-rose-300">1 de 7</span>
+            </div>
+            <div class="w-24 bg-slate-800 h-2.5 rounded-full overflow-hidden border border-slate-700">
+              <div id="eval-progress-bar" class="bg-gradient-to-r from-rose-500 to-amber-400 h-full w-0 transition-all duration-300"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Evaluation Container Card -->
+        <div id="eval-main-card" class="space-y-6">
+          <!-- Question Header Banner -->
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span id="eval-question-category" class="text-xs font-mono text-teal-400 font-semibold px-3 py-1 bg-teal-500/10 border border-teal-500/20 rounded-full">
+              Categoría
+            </span>
+            <span id="eval-question-points" class="text-xs font-mono text-amber-400 font-semibold px-3 py-1 bg-amber-500/10 border border-amber-500/20 rounded-full">
+              10 Puntos
+            </span>
+          </div>
+
+          <!-- Prompt Box -->
+          <div id="eval-question-prompt" class="text-sm sm:text-base font-medium text-slate-100 leading-relaxed bg-slate-900/60 p-4 sm:p-5 rounded-2xl border border-slate-800">
+            <!-- Dynamically populated -->
+          </div>
+
+          <!-- Progressive Hints Accordion -->
+          <div class="space-y-2">
+            <button id="btn-request-hint" onclick="revealNextHint()" class="inline-flex items-center gap-2 text-xs font-semibold text-amber-400 hover:text-amber-300 transition-colors">
+              <i data-lucide="lightbulb" class="w-3.5 h-3.5"></i>
+              <span id="hint-button-text">¿Necesitas una pista? (0/2 disponibles)</span>
+            </button>
+            <div id="hints-container" class="space-y-2">
+              <!-- Dynamically populated hints -->
+            </div>
+          </div>
+
+          <!-- Options Grid (Randomized with safe .opt-icon-slot container) -->
+          <div id="eval-options-grid" class="grid grid-cols-1 gap-3">
+            <!-- Dynamically populated option buttons -->
+          </div>
+
+          <!-- Immediate Feedback Box -->
+          <div id="eval-feedback-box" class="rounded-xl p-4 hidden space-y-2 text-xs">
+            <!-- Dynamically populated feedback -->
+          </div>
+
+          <!-- Action Bar (Next Question Button) -->
+          <div class="flex items-center justify-between pt-4 border-t border-slate-800">
+            <span class="text-xs text-slate-400">
+              Responde la pregunta para habilitar el siguiente reactivo.
+            </span>
+            <button id="btn-next-question" onclick="goToNextQuestion()" disabled class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all shadow-md">
+              <span>Siguiente Reactivo</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Final Results Screen (Hidden initially) -->
+        <div id="eval-results-screen" class="hidden space-y-6 text-center py-8">
+          <div class="w-16 h-16 rounded-2xl bg-rose-500/20 border border-rose-500/40 text-rose-400 mx-auto flex items-center justify-center">
+            <i data-lucide="trophy" class="w-8 h-8"></i>
+          </div>
+
+          <div class="space-y-2">
+            <h3 class="text-2xl font-bold text-white">¡Evaluación Concluida!</h3>
+            <p class="text-xs sm:text-sm text-slate-400 max-w-md mx-auto">
+              Has completado los 7 reactivos de la evaluación formativa de porcentajes.
+            </p>
+          </div>
+
+          <!-- Detailed Score Breakdown -->
+          <div class="max-w-md mx-auto grid grid-cols-3 gap-3">
+            <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl">
+              <span class="text-[10px] font-mono text-slate-400 uppercase block">Laboratorio</span>
+              <span id="final-lab-score" class="text-sm font-mono font-bold text-teal-400">0 / 30</span>
+            </div>
+            <div class="p-3 bg-slate-900 border border-slate-800 rounded-xl">
+              <span class="text-[10px] font-mono text-slate-400 uppercase block">Evaluación</span>
+              <span id="final-eval-score" class="text-sm font-mono font-bold text-rose-400">0 / 70</span>
+            </div>
+            <div class="p-3 bg-rose-950/60 border border-rose-500/40 rounded-xl">
+              <span class="text-[10px] font-mono text-rose-300 uppercase block">Global</span>
+              <span id="final-total-score" class="text-sm font-mono font-bold text-white">0 / 100</span>
+            </div>
+          </div>
+
+          <div id="final-status-badge" class="inline-block px-4 py-1.5 rounded-full text-xs font-bold font-mono">
+            ESTADO SCORM
+          </div>
+
+          <div class="pt-4 flex items-center justify-center gap-3">
+            <button onclick="restartEvaluation()" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition-colors flex items-center gap-2">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+              <span>Reintentar Evaluación</span>
+            </button>
+            <button onclick="switchMainTab('arcade')" class="px-4 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-slate-950 text-xs font-bold transition-colors flex items-center gap-2">
+              <i data-lucide="zap" class="w-4 h-4"></i>
+              <span>Ir al Reto Mental</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- 4. SECCIÓN: RETO MENTAL (PRÁCTICA LIBRE ESTRICTAMENTE AL FINAL)         -->
+    <!-- ======================================================================= -->
+    <section id="sec-arcade" class="space-y-6 animate-fadeIn hidden">
+      <div class="glass-card rounded-2xl p-6 sm:p-8 space-y-6 border-slate-800">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+          <div>
+            <div class="inline-flex items-center gap-2 text-xs font-semibold text-amber-400 uppercase tracking-wider">
+              <i data-lucide="zap" class="w-4 h-4"></i>
+              Gimnasio de Agilidad Mental • Práctica Libre Voluntaria
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white">
+              Reto Mental: Cálculo Relámpago de Porcentajes (60 Segundos)
+            </h2>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <div class="text-right">
+              <span class="text-[10px] font-mono text-slate-400 uppercase block">Racha</span>
+              <span id="arcade-streak" class="text-sm font-mono font-bold text-amber-400">0 🔥</span>
+            </div>
+            <div class="text-right">
+              <span class="text-[10px] font-mono text-slate-400 uppercase block">Puntuación</span>
+              <span id="arcade-score" class="text-sm font-mono font-bold text-emerald-400">0 Pts</span>
+            </div>
+            <div class="h-10 px-3 rounded-xl bg-slate-900 border border-slate-800 flex items-center gap-2 text-amber-300 font-mono text-sm font-bold">
+              <i data-lucide="timer" class="w-4 h-4"></i>
+              <span id="arcade-timer">60s</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Arcade Game Area -->
+        <div id="arcade-welcome" class="text-center py-10 space-y-4">
+          <div class="w-16 h-16 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 mx-auto flex items-center justify-center">
+            <i data-lucide="flame" class="w-8 h-8"></i>
+          </div>
+          <div class="space-y-1">
+            <h3 class="text-lg font-bold text-white">¿Qué tan rápido puedes calcular porcentajes mentales?</h3>
+            <p class="text-xs text-slate-400 max-w-md mx-auto">
+              Resuelve tantos porcentajes cotidianos (\(10\%\), \(25\%\), \(50\%\), etc.) como puedas en 60 segundos. No afecta tu calificación SCORM.
+            </p>
+          </div>
+          <button onclick="startArcadeGame()" class="px-6 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm transition-all shadow-lg shadow-amber-500/20">
+            ¡Comenzar Desafío!
+          </button>
+        </div>
+
+        <div id="arcade-play" class="hidden space-y-6">
+          <div id="arcade-prompt" class="p-5 rounded-2xl bg-slate-900 border border-slate-800 text-center font-medium text-slate-100 text-base sm:text-lg">
+            <!-- Populated dynamically -->
+          </div>
+
+          <div id="arcade-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <!-- Populated dynamically with shuffleArray -->
+          </div>
+        </div>
+
+        <div id="arcade-finish" class="hidden text-center py-8 space-y-4">
+          <h3 class="text-xl font-bold text-white">¡Tiempo Terminado!</h3>
+          <p class="text-xs text-slate-300">
+            Lograste acumular <strong id="arcade-final-pts" class="text-amber-400 text-sm">0</strong> puntos en tu sesión de agilidad mental.
+          </p>
+          <button onclick="startArcadeGame()" class="px-5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold">
+            Jugar Otra Ronda
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- FOOTER                                                                    -->
+  <!-- ========================================================================= -->
+  <footer class="border-t border-slate-800/80 bg-slate-900/60 py-4 mt-auto">
+    <div class="max-w-7xl mx-auto px-4 text-center text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span>Conocimiento Matemático I • Bloque 2: Razones y Proporciones</span>
+      <span class="font-mono text-[11px] text-slate-400">OA 2.15 • SCORM 1.2 Compliant • Calificación más alta preservada</span>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- JAVASCRIPT LOGIC & INTERACTIONS                                           -->
+  <!-- ========================================================================= -->
+  <script>
+    /* ==========================================================================
+       1. GLOBAL STATE & SOUND EFFECTS (WEB AUDIO API)
+       ========================================================================== */
+    let labScoreA = 0;
+    let labScoreB = 0;
+    let labScoreC = 0;
+    let evalScore = 0;
+
+    let a1Solved = false, a2Solved = false;
+    let b1Solved = false, b2Solved = false;
+    let c1Solved = false, c2Solved = false;
+
+    const audioCtx = (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined')
+      ? new (window.AudioContext || window.webkitAudioContext)()
+      : null;
+
+    function playTone(freq = 440, type = 'sine', duration = 0.15) {
+      if (!audioCtx) return;
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {
+        // Silent audio fallback
+      }
+    }
+
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.7 }
+        });
+      }
+    }
+
+    function renderAllMath() {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(document.body, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '\\[', right: '\\]', display: true },
+            { left: '\\(', right: '\\)', display: false }
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    function gcd(a, b) {
+      return b === 0 ? a : gcd(b, a % b);
+    }
+
+    function shuffleArray(arr) {
+      const cloned = [...arr];
+      for (let i = cloned.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cloned[i], cloned[j]] = [cloned[j], cloned[i]];
+      }
+      return cloned;
+    }
+
+    function updateScoreDisplay() {
+      const totalLab = labScoreA + labScoreB + labScoreC;
+      const totalScore = totalLab + evalScore;
+
+      document.getElementById('header-score-text').textContent = `${totalScore} / 100 Pts`;
+      document.getElementById('badge-total-score').textContent = `${totalScore}%`;
+      document.getElementById('lab-score-pill').textContent = `${totalLab}/30`;
+      document.getElementById('eval-score-pill').textContent = `${evalScore}/70`;
+
+      commitSCORM(totalScore, totalScore >= 70);
+    }
+
+    /* ==========================================================================
+       2. CANONICAL MAIN TABS (STRICT VIEW ISOLATION)
+       ========================================================================== */
+    function switchMainTab(tab) {
+      document.getElementById('sec-teoria').classList.add('hidden');
+      document.getElementById('sec-laboratorio').classList.add('hidden');
+      document.getElementById('sec-evaluacion').classList.add('hidden');
+      document.getElementById('sec-arcade').classList.add('hidden');
+
+      const tabs = ['teoria', 'laboratorio', 'evaluacion', 'arcade'];
+      tabs.forEach(t => {
+        const btn = document.getElementById(`nav-btn-${t}`);
+        if (!btn) return;
+        btn.className = "tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all flex items-center gap-2";
+      });
+
+      const activeBtn = document.getElementById(`nav-btn-${tab}`);
+      if (tab === 'teoria') {
+        document.getElementById('sec-teoria').classList.remove('hidden');
+        if (activeBtn) activeBtn.className = "tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-rose-600 text-white shadow-md shadow-rose-600/30 flex items-center gap-2";
+      } else if (tab === 'laboratorio') {
+        document.getElementById('sec-laboratorio').classList.remove('hidden');
+        if (activeBtn) activeBtn.className = "tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-teal-600 text-white shadow-md shadow-teal-600/30 flex items-center gap-2";
+      } else if (tab === 'evaluacion') {
+        document.getElementById('sec-evaluacion').classList.remove('hidden');
+        if (activeBtn) activeBtn.className = "tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-rose-600 text-white shadow-md shadow-rose-600/30 flex items-center gap-2";
+      } else if (tab === 'arcade') {
+        document.getElementById('sec-arcade').classList.remove('hidden');
+        if (activeBtn) activeBtn.className = "tab-btn px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold bg-amber-500 text-slate-950 shadow-md shadow-amber-500/30 flex items-center gap-2 font-bold";
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      lucide.createIcons();
+      renderAllMath();
+    }
+
+    /* ==========================================================================
+       3. MODULAR LAB SUB-TABS (ONE MODULE VISIBLE AT A TIME)
+       ========================================================================== */
+    function switchLabModule(mod) {
+      document.getElementById('module-a').classList.add('hidden');
+      document.getElementById('module-b').classList.add('hidden');
+      document.getElementById('module-c').classList.add('hidden');
+
+      const mods = ['a', 'b', 'c'];
+      mods.forEach(m => {
+        const btn = document.getElementById(`tab-btn-${m}`);
+        if (!btn) return;
+        btn.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 transition-all flex items-center gap-2";
+      });
+
+      const activeBtn = document.getElementById(`tab-btn-${mod}`);
+      if (mod === 'a') {
+        document.getElementById('module-a').classList.remove('hidden');
+        if (activeBtn) activeBtn.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-rose-600 text-white shadow-md flex items-center gap-2";
+        updateGridModuleA();
+      } else if (mod === 'b') {
+        document.getElementById('module-b').classList.remove('hidden');
+        if (activeBtn) activeBtn.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-teal-600 text-white shadow-md flex items-center gap-2";
+        switchProbType(currentProbType);
+      } else if (mod === 'c') {
+        document.getElementById('module-c').classList.remove('hidden');
+        if (activeBtn) activeBtn.className = "px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-amber-600 text-slate-950 font-bold shadow-md flex items-center gap-2";
+        updateModuleCSim();
+      }
+
+      lucide.createIcons();
+      renderAllMath();
+    }
+
+    /* ==========================================================================
+       4. MÓDULO A: CUADRÍCULA 100 Y TRIPLE CONVERSIÓN
+       ========================================================================== */
+    function initGrid100() {
+      const container = document.getElementById('grid-100');
+      container.innerHTML = '';
+      for (let i = 0; i < 100; i++) {
+        const cell = document.createElement('div');
+        cell.id = `grid-cell-${i}`;
+        cell.className = "w-full h-full rounded-[2px] bg-slate-800 transition-colors duration-150";
+        container.appendChild(cell);
+      }
+    }
+
+    function setGridPreset(val) {
+      document.getElementById('slider-pct').value = val;
+      updateGridModuleA();
+    }
+
+    function updateGridModuleA() {
+      const pct = parseInt(document.getElementById('slider-pct').value, 10);
+      document.getElementById('slider-pct-val').textContent = `${pct}%`;
+      document.getElementById('grid-active-count').textContent = pct;
+
+      // Update cells
+      for (let i = 0; i < 100; i++) {
+        const cell = document.getElementById(`grid-cell-${i}`);
+        if (cell) {
+          if (i < pct) {
+            cell.className = "w-full h-full rounded-[2px] bg-rose-500 shadow-sm shadow-rose-500/50";
+          } else {
+            cell.className = "w-full h-full rounded-[2px] bg-slate-800";
+          }
+        }
+      }
+
+      // Triple conversion calculations
+      document.getElementById('disp-triple-pct').textContent = `${pct}%`;
+      const divGcd = gcd(pct, 100);
+      const num = pct / divGcd;
+      const den = 100 / divGcd;
+      document.getElementById('disp-triple-frac').textContent = (pct === 0) ? "0" : (den === 1 ? num : `${num}/${den}`);
+      document.getElementById('disp-triple-dec').textContent = (pct / 100).toFixed(2);
+    }
+
+    function checkRetoA1() {
+      const val = parseFloat(document.getElementById('input-reto-a1').value);
+      const fb = document.getElementById('fb-reto-a1');
+      fb.classList.remove('hidden');
+
+      // 4.5% = 0.045
+      if (Math.abs(val - 0.045) < 0.0001) {
+        if (!a1Solved) {
+          labScoreA += 5;
+          a1Solved = true;
+          updateScoreDisplay();
+        }
+        document.getElementById('badge-reto-a1').className = "text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+        document.getElementById('badge-reto-a1').textContent = "Completado (+5 pts)";
+        fb.className = "text-xs p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300";
+        fb.innerHTML = "¡Correcto! Al dividir entre 100, el punto decimal recorre 2 posiciones a la izquierda: \\(4.5 \\div 100 = 0.045\\).";
+        playTone(523.25);
+      } else {
+        fb.className = "text-xs p-2.5 rounded-lg bg-rose-950/40 border border-rose-500/40 text-rose-300";
+        fb.innerHTML = "Recorre el punto dos cifras a la izquierda: \\(4.5 \\implies 0.045\\).";
+        playTone(220, 'sawtooth');
+      }
+      document.getElementById('score-mod-a').textContent = `${labScoreA} / 10 Pts`;
+      renderAllMath();
+    }
+
+    function checkRetoA2() {
+      const val = parseInt(document.getElementById('input-reto-a2').value, 10);
+      const fb = document.getElementById('fb-reto-a2');
+      fb.classList.remove('hidden');
+
+      // 64% = 64/100 = 16/25 => Denominator is 25
+      if (val === 25) {
+        if (!a2Solved) {
+          labScoreA += 5;
+          a2Solved = true;
+          updateScoreDisplay();
+        }
+        document.getElementById('badge-reto-a2').className = "text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+        document.getElementById('badge-reto-a2').textContent = "Completado (+5 pts)";
+        fb.className = "text-xs p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300";
+        fb.innerHTML = "¡Excelente! \\(\\frac{64}{100}\\) simplificada dividiendo entre 4 resulta en \\(\\frac{16}{25}\\). El denominador irreducible es 25.";
+        playTone(587.33);
+      } else {
+        fb.className = "text-xs p-2.5 rounded-lg bg-rose-950/40 border border-rose-500/40 text-rose-300";
+        fb.innerHTML = "Simplifica \\(\\frac{64}{100}\\) sacando cuarta parte tanto al numerador como al denominador.";
+        playTone(220, 'sawtooth');
+      }
+      document.getElementById('score-mod-a').textContent = `${labScoreA} / 10 Pts`;
+      renderAllMath();
+    }
+
+    /* ==========================================================================
+       5. MÓDULO B: LOS 3 PROBLEMAS FUNDAMENTALES
+       ========================================================================== */
+    let currentProbType = 1;
+
+    function switchProbType(type) {
+      currentProbType = type;
+      for (let i = 1; i <= 3; i++) {
+        const btn = document.getElementById(`btn-type-${i}`);
+        if (i === type) {
+          btn.className = "px-3.5 py-2 rounded-xl text-xs font-semibold bg-teal-600 text-white transition-all shadow-md";
+        } else {
+          btn.className = "px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-800 text-slate-300 hover:text-white transition-all";
+        }
+      }
+
+      const form = document.getElementById('prob-form-container');
+      if (type === 1) {
+        // Find Part given Total and P%
+        form.innerHTML = `
+          <div class="text-xs font-mono text-teal-300 font-bold mb-1">Caso 1: Calcular la Parte conocida la Base y el Tanto por Ciento</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-mono text-slate-400 mb-1">Total o Base [\\(T\\)]:</label>
+              <input type="number" id="input-b-total" value="450" oninput="solveModuleBProb()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-slate-400 mb-1">Porcentaje a calcular [\\(P\\%\\)]:</label>
+              <input type="number" id="input-b-pct" value="18" oninput="solveModuleBProb()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono">
+            </div>
+          </div>
+        `;
+      } else if (type === 2) {
+        // Find P% given Part and Total
+        form.innerHTML = `
+          <div class="text-xs font-mono text-teal-300 font-bold mb-1">Caso 2: Determinar qué Porcentaje representa una Parte respecto al Total</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-mono text-slate-400 mb-1">Parte analizada [\\(p\\)]:</label>
+              <input type="number" id="input-b-part" value="84" oninput="solveModuleBProb()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-slate-400 mb-1">Total de Referencia [\\(T\\)]:</label>
+              <input type="number" id="input-b-total2" value="240" oninput="solveModuleBProb()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono">
+            </div>
+          </div>
+        `;
+      } else if (type === 3) {
+        // Find Total given Part and P%
+        form.innerHTML = `
+          <div class="text-xs font-mono text-teal-300 font-bold mb-1">Caso 3: Hallar el Total o Base conocida una Parte y su Porcentaje</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-mono text-slate-400 mb-1">Valor de la Parte [\\(p\\)]:</label>
+              <input type="number" id="input-b-part3" value="135" oninput="solveModuleBProb()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono">
+            </div>
+            <div>
+              <label class="block text-xs font-mono text-slate-400 mb-1">Porcentaje que representa [\\(P\\%\\)]:</label>
+              <input type="number" id="input-b-pct3" value="30" oninput="solveModuleBProb()" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-xs text-white font-mono">
+            </div>
+          </div>
+        `;
+      }
+
+      solveModuleBProb();
+      renderAllMath();
+    }
+
+    function solveModuleBProb() {
+      const trace = document.getElementById('prob-trace-container');
+      if (currentProbType === 1) {
+        const total = parseFloat(document.getElementById('input-b-total').value) || 0;
+        const pct = parseFloat(document.getElementById('input-b-pct').value) || 0;
+        const ans = total * (pct / 100);
+        trace.innerHTML = `
+          <div class="text-teal-300 font-bold">1. Fórmula de la Parte:</div>
+          <div>\\( \\text{Parte} = \\text{Total} \\cdot \\frac{P}{100} \\)</div>
+          <div class="text-indigo-300 font-bold mt-2">2. Sustitución y Operación Decimal:</div>
+          <div>\\( \\text{Parte} = ${total} \\cdot ${(pct/100).toFixed(4)} = <strong>${Number.isInteger(ans) ? ans : ans.toFixed(2)}</strong> \\)</div>
+        `;
+      } else if (currentProbType === 2) {
+        const part = parseFloat(document.getElementById('input-b-part').value) || 0;
+        const total = parseFloat(document.getElementById('input-b-total2').value) || 1;
+        const ans = (part / total) * 100;
+        trace.innerHTML = `
+          <div class="text-teal-300 font-bold">1. Fórmula del Tanto por Ciento:</div>
+          <div>\\( P\\% = \\left( \\frac{\\text{Parte}}{\\text{Total}} \\right) \\cdot 100 \\)</div>
+          <div class="text-indigo-300 font-bold mt-2">2. Cociente y Conversión Porcentual:</div>
+          <div>\\( P\\% = \\left( \\frac{${part}}{${total}} \\right) \\cdot 100 = ${(part/total).toFixed(4)} \\cdot 100 = <strong>${Number.isInteger(ans) ? ans : ans.toFixed(2)}\\%</strong> \\)</div>
+        `;
+      } else if (currentProbType === 3) {
+        const part = parseFloat(document.getElementById('input-b-part3').value) || 0;
+        const pct = parseFloat(document.getElementById('input-b-pct3').value) || 1;
+        const ans = part / (pct / 100);
+        trace.innerHTML = `
+          <div class="text-teal-300 font-bold">1. Fórmula de la Base o Total:</div>
+          <div>\\( \\text{Total} = \\frac{\\text{Parte}}{\\frac{P}{100}} \\)</div>
+          <div class="text-indigo-300 font-bold mt-2">2. Despeje Directo:</div>
+          <div>\\( \\text{Total} = \\frac{${part}}{${(pct/100).toFixed(4)}} = <strong>${Number.isInteger(ans) ? ans : ans.toFixed(2)}</strong> \\)</div>
+        `;
+      }
+      renderAllMath();
+    }
+
+    function checkRetoB1() {
+      const val = parseFloat(document.getElementById('input-reto-b1').value);
+      const fb = document.getElementById('fb-reto-b1');
+      fb.classList.remove('hidden');
+
+      // 28 / 80 = 0.35 => 35%
+      if (val === 35) {
+        if (!b1Solved) {
+          labScoreB += 5;
+          b1Solved = true;
+          updateScoreDisplay();
+        }
+        document.getElementById('badge-reto-b1').className = "text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+        document.getElementById('badge-reto-b1').textContent = "Completado (+5 pts)";
+        fb.className = "text-xs p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300";
+        fb.innerHTML = "¡Correcto! \\(P\\% = \\frac{28}{80} \\cdot 100 = 0.35 \\cdot 100 = 35\\%\\).";
+        playTone(659.25);
+      } else {
+        fb.className = "text-xs p-2.5 rounded-lg bg-rose-950/40 border border-rose-500/40 text-rose-300";
+        fb.innerHTML = "Divide la parte entre el total: \\(28 \\div 80\\) y multiplica por 100.";
+        playTone(220, 'sawtooth');
+      }
+      renderAllMath();
+    }
+
+    function checkRetoB2() {
+      const val = parseFloat(document.getElementById('input-reto-b2').value);
+      const fb = document.getElementById('fb-reto-b2');
+      fb.classList.remove('hidden');
+
+      // Part = 450, P = 15% => Total = 450 / 0.15 = 3000
+      if (val === 3000) {
+        if (!b2Solved) {
+          labScoreB += 5;
+          b2Solved = true;
+          updateScoreDisplay();
+        }
+        document.getElementById('badge-reto-b2').className = "text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+        document.getElementById('badge-reto-b2').textContent = "Completado (+5 pts)";
+        fb.className = "text-xs p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300";
+        fb.innerHTML = "¡Excelente! Al despejar la base: \\(\\text{Total} = \\frac{450}{0.15} = 3000\\text{ pesos}\\).";
+        playTone(698.46);
+      } else {
+        fb.className = "text-xs p-2.5 rounded-lg bg-rose-950/40 border border-rose-500/40 text-rose-300";
+        fb.innerHTML = "Aplica la división de la parte entre la forma decimal del porcentaje: \\(450 \\div 0.15\\).";
+        playTone(220, 'sawtooth');
+      }
+      renderAllMath();
+    }
+
+    /* ==========================================================================
+       6. MÓDULO C: SIMULADOR DE DESCUENTOS E IVA
+       ========================================================================== */
+    function updateModuleCSim() {
+      const price = parseFloat(document.getElementById('sim-c-price').value) || 0;
+      const discount = parseFloat(document.getElementById('sim-c-discount').value) || 0;
+      const tax = parseFloat(document.getElementById('sim-c-tax').value) || 0;
+
+      const factorDisc = (1 - discount / 100);
+      const subtotal = price * factorDisc;
+
+      const factorTax = (tax / 100);
+      const taxAmount = subtotal * factorTax;
+
+      const finalTotal = subtotal + taxAmount;
+
+      document.getElementById('c-subtotal-val').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('c-subtotal-factor').textContent = `Factor = ${factorDisc.toFixed(2)}`;
+
+      document.getElementById('c-tax-val').textContent = `+$${taxAmount.toFixed(2)}`;
+      document.getElementById('c-tax-factor').textContent = `${tax}% de $${subtotal.toFixed(2)}`;
+
+      document.getElementById('c-total-val').textContent = `$${finalTotal.toFixed(2)}`;
+    }
+
+    function checkRetoC1() {
+      const val = parseFloat(document.getElementById('input-reto-c1').value);
+      const fb = document.getElementById('fb-reto-c1');
+      fb.classList.remove('hidden');
+
+      // 850 * 0.70 = 595
+      if (val === 595) {
+        if (!c1Solved) {
+          labScoreC += 5;
+          c1Solved = true;
+          updateScoreDisplay();
+        }
+        document.getElementById('badge-reto-c1').className = "text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+        document.getElementById('badge-reto-c1').textContent = "Completado (+5 pts)";
+        fb.className = "text-xs p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300";
+        fb.innerHTML = "¡Correcto! Al tener 30% de descuento, se paga el 70%: \\(850 \\times 0.70 = 595\\text{ pesos}\\).";
+        playTone(783.99);
+      } else {
+        fb.className = "text-xs p-2.5 rounded-lg bg-rose-950/40 border border-rose-500/40 text-rose-300";
+        fb.innerHTML = "Multiplica directamente por el factor de pago: \\(850 \\times 0.70\\).";
+        playTone(220, 'sawtooth');
+      }
+      renderAllMath();
+    }
+
+    function checkRetoC2() {
+      const val = parseFloat(document.getElementById('input-reto-c2').value);
+      const fb = document.getElementById('fb-reto-c2');
+      fb.classList.remove('hidden');
+
+      // 4200 * 1.16 = 4872
+      if (val === 4872) {
+        if (!c2Solved) {
+          labScoreC += 5;
+          c2Solved = true;
+          updateScoreDisplay();
+        }
+        document.getElementById('badge-reto-c2').className = "text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+        document.getElementById('badge-reto-c2').textContent = "Completado (+5 pts)";
+        fb.className = "text-xs p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/40 text-emerald-300";
+        fb.innerHTML = "¡Excelente! Empleando el factor directo con IVA incluido: \\(4200 \\times 1.16 = 4872\\text{ pesos}\\).";
+        playTone(880.00);
+      } else {
+        fb.className = "text-xs p-2.5 rounded-lg bg-rose-950/40 border border-rose-500/40 text-rose-300";
+        fb.innerHTML = "Multiplica por el factor de incremento \\(1.16\\): \\(4200 \\times 1.16\\).";
+        playTone(220, 'sawtooth');
+      }
+      renderAllMath();
+    }
+
+    /* ==========================================================================
+       7. EVALUACIÓN FORMATIVA (7 REACTIVOS, 1 A LA VEZ, SHUFFLE & OPT-ICON-SLOT)
+       ========================================================================== */
+    const evalQuestionsBank = [
+      {
+        id: 1,
+        category: "Triple Conversión y Equivalencias",
+        prompt: "¿Cuál es la fracción irreducible y el número decimal que corresponden de manera exacta al <strong>\\(48\\%\\)</strong>?",
+        points: 10,
+        hints: [
+          "Pista 1: Plantea la razón base 100: \\(\\frac{48}{100}\\) y simplifica dividiendo entre el máximo común divisor.",
+          "Pista 2: Para el número decimal, divide 48 entre 100."
+        ],
+        options: [
+          { text: "Fracción \\(\\frac{12}{25}\\) y decimal \\(0.48\\)", isCorrect: true },
+          { text: "Fracción \\(\\frac{24}{50}\\) y decimal \\(4.80\\)", isCorrect: false },
+          { text: "Fracción \\(\\frac{6}{15}\\) y decimal \\(0.048\\)", isCorrect: false },
+          { text: "Fracción \\(\\frac{48}{10}\\) y decimal \\(0.48\\)", isCorrect: false }
+        ],
+        explanation: "Al simplificar \\(\\frac{48}{100}\\) sacando cuarta parte al numerador y al denominador: \\(\\frac{48 \\div 4}{100 \\div 4} = \\frac{12}{25}\\). En forma decimal: \\(48 \\div 100 = 0.48\\)."
+      },
+      {
+        id: 2,
+        category: "Cálculo de la Parte",
+        prompt: "En un inventario de refacciones automotrices compuesto por <strong>750 piezas</strong>, el <strong>\\(24\\%\\)</strong> corresponde a filtros de aceite. ¿Cuántos filtros de aceite hay en existencia?",
+        points: 10,
+        hints: [
+          "Pista 1: Multiplica el total de piezas por la forma decimal del porcentaje: \\(750 \\cdot 0.24\\).",
+          "Pista 2: También puedes calcular \\(\\frac{750 \\cdot 24}{100}\\)."
+        ],
+        options: [
+          { text: "\\(180\\text{ filtros}\\)", isCorrect: true },
+          { text: "\\(160\\text{ filtros}\\)", isCorrect: false },
+          { text: "\\(210\\text{ filtros}\\)", isCorrect: false },
+          { text: "\\(195\\text{ filtros}\\)", isCorrect: false }
+        ],
+        explanation: "La cantidad de filtros se obtiene multiplicando: \\(750 \\times 0.24 = 180\\text{ filtros}\\)."
+      },
+      {
+        id: 3,
+        category: "Cálculo del Tanto por Ciento",
+        prompt: "En una encuesta aplicada a <strong>320 personas</strong> sobre preferencias de transporte, <strong>112 respondieron</strong> que utilizan bicicleta habitualmente. ¿Qué porcentaje de los encuestados representa?",
+        points: 10,
+        hints: [
+          "Pista 1: Divide la parte entre el total: \\(\\frac{112}{320}\\).",
+          "Pista 2: Multiplica el cociente resultante por 100 para obtener el porcentaje."
+        ],
+        options: [
+          { text: "\\(35\\%\\)", isCorrect: true },
+          { text: "\\(32\\%\\)", isCorrect: false },
+          { text: "\\(28\\%\\)", isCorrect: false },
+          { text: "\\(38\\%\\)", isCorrect: false }
+        ],
+        explanation: "El tanto por ciento se determina como: \\(P\\% = \\left(\\frac{112}{320}\\right) \\cdot 100 = 0.35 \\cdot 100 = 35\\%\\)."
+      },
+      {
+        id: 4,
+        category: "Cálculo del Total o Base",
+        prompt: "Durante la preventa de un espectáculo musical se vendieron <strong>540 boletos</strong>, lo que representa exactamente el <strong>\\(45\\%\\)</strong> de la capacidad total del auditorio. ¿Cuál es la capacidad total del auditorio?",
+        points: 10,
+        hints: [
+          "Pista 1: Si \\(540\\) boletos equivalen al \\(45\\%\\), divide \\(540\\) entre \\(0.45\\).",
+          "Pista 2: Plantea la proporción: \\(\\frac{540}{\\text{Total}} = \\frac{45}{100}\\)."
+        ],
+        options: [
+          { text: "\\(1,200\\text{ boletos}\\)", isCorrect: true },
+          { text: "\\(1,100\\text{ boletos}\\)", isCorrect: false },
+          { text: "\\(1,350\\text{ boletos}\\)", isCorrect: false },
+          { text: "\\(980\\text{ boletos}\\)", isCorrect: false }
+        ],
+        explanation: "La capacidad total [\\(100\\%\\)] es: \\(\\text{Total} = \\frac{540}{0.45} = 1,200\\text{ boletos}\\)."
+      },
+      {
+        id: 5,
+        category: "Descuento Comercial",
+        prompt: "Una pantalla de televisión tiene un precio de lista de <strong>$8,600.00 pesos</strong>. Si la tienda departamental ofrece un descuento especial del <strong>\\(25\\%\\)</strong> por venta nocturna, ¿cuál es el precio que se pagará por la pantalla?",
+        points: 10,
+        hints: [
+          "Pista 1: Si te descuentan el \\(25\\%\\), terminas pagando el \\(75\\%\\) del valor original.",
+          "Pista 2: Multiplica directamente por el factor de pago: \\(8,600 \\cdot 0.75\\)."
+        ],
+        options: [
+          { text: "\\(\\$6,450.00\\text{ pesos}\\)", isCorrect: true },
+          { text: "\\(\\$6,200.00\\text{ pesos}\\)", isCorrect: false },
+          { text: "\\(\\$6,800.00\\text{ pesos}\\)", isCorrect: false },
+          { text: "\\(\\$5,950.00\\text{ pesos}\\)", isCorrect: false }
+        ],
+        explanation: "El monto a pagar corresponde al 75% del precio de lista: \\(8,600 \\times 0.75 = 6,450.00\\text{ pesos}\\) [o bien restando el descuento: \\(8,600 - 2,150 = 6,450\\)]."
+      },
+      {
+        id: 6,
+        category: "Incremento e Impuesto al Valor Agregado",
+        prompt: "Un despacho de contadores factura honorarios por un subtotal de <strong>$7,500.00 pesos</strong> más el <strong>\\(16\\%\\) de IVA</strong>. ¿Cuál es el importe total que ampara la factura?",
+        points: 10,
+        hints: [
+          "Pista 1: Al subtotal se le adiciona el 16%, lo que equivale a pagar el 116%.",
+          "Pista 2: Multiplica por el factor directo de incremento: \\(7,500 \\cdot 1.16\\)."
+        ],
+        options: [
+          { text: "\\(\\$8,700.00\\text{ pesos}\\)", isCorrect: true },
+          { text: "\\(\\$8,500.00\\text{ pesos}\\)", isCorrect: false },
+          { text: "\\(\\$8,950.00\\text{ pesos}\\)", isCorrect: false },
+          { text: "\\(\\$8,400.00\\text{ pesos}\\)", isCorrect: false }
+        ],
+        explanation: "Con el factor de incremento \\(1 + 0.16 = 1.16\\): \\(7,500 \\times 1.16 = 8,700.00\\text{ pesos}\\) [el IVA son \\(7,500 \\times 0.16 = 1,200\\), total \\(7,500 + 1,200 = 8,700\\)]."
+      },
+      {
+        id: 7,
+        category: "Descuento Sucesivo / Concepto Clave",
+        prompt: "Un comerciante afirma: <em>'Si a un artículo se le aplica un descuento del <strong>\\(20\\%\\)</strong> y posteriormente se le aplica un segundo descuento del <strong>\\(10\\%\\)</strong> sobre lo que quedó, equivale a un descuento total único del <strong>\\(30\\%\\)</strong>'</em>. ¿Es verdadera o falsa dicha afirmación y por qué?",
+        points: 10,
+        hints: [
+          "Pista 1: Con el primer descuento pagas el 80% [factor \\(0.80\\)].",
+          "Pista 2: El segundo descuento del 10% se aplica sobre el 80%: \\(0.80 \\cdot 0.90 = 0.72\\), por lo que pagas el 72%."
+        ],
+        options: [
+          { text: "Es falsa, porque el segundo descuento se calcula sobre la cantidad ya rebajada, resultando en pagar el \\(72\\%\\) [descuento real único del \\(28\\%\\)].", isCorrect: true },
+          { text: "Es verdadera, porque los porcentajes siempre se suman algebraicamente: \\(20\\% + 10\\% = 30\\%\\).", isCorrect: false },
+          { text: "Es falsa, porque el descuento acumulado siempre resulta mayor a la suma: \\(32\\%\\).", isCorrect: false },
+          { text: "Es verdadera únicamente si el precio base del producto es mayor a $1,000 pesos.", isCorrect: false }
+        ],
+        explanation: "Los porcentajes sucesivos <strong>no son aditivos</strong>. Tras el primer descuento queda el \\(80\\%\\). El segundo descuento del \\(10\\%\\) rebaja el \\(10\\%\\) de \\(80\\%\\) [que es \\(8\\%\\)]. El descuento neto acumulado es \\(20\\% + 8\\% = 28\\%\\), pagándose el \\(72\\%\\)."
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let currentHintsRevealed = 0;
+    let questionAnswered = false;
+    let shuffledQuestions = [];
+
+    function initEvaluation() {
+      currentQuestionIndex = 0;
+      evalScore = 0;
+      shuffledQuestions = shuffleArray(evalQuestionsBank).map(q => {
+        return {
+          ...q,
+          options: shuffleArray(q.options)
+        };
+      });
+      loadQuestion(currentQuestionIndex);
+    }
+
+    function loadQuestion(index) {
+      if (index >= shuffledQuestions.length) {
+        showFinalResults();
+        return;
+      }
+
+      const q = shuffledQuestions[index];
+      currentHintsRevealed = 0;
+      questionAnswered = false;
+
+      // Update Header Stepper
+      document.getElementById('eval-stepper-label').textContent = `${index + 1} de ${shuffledQuestions.length}`;
+      document.getElementById('eval-progress-bar').style.width = `${((index + 1) / shuffledQuestions.length) * 100}%`;
+      document.getElementById('eval-question-category').textContent = q.category;
+      document.getElementById('eval-question-points').textContent = `${q.points} Puntos`;
+      document.getElementById('eval-question-prompt').innerHTML = q.prompt;
+
+      // Reset Hints
+      document.getElementById('hint-button-text').textContent = `¿Necesitas una pista? (0/${q.hints.length} disponibles)`;
+      document.getElementById('hints-container').innerHTML = '';
+      document.getElementById('btn-request-hint').style.display = 'inline-flex';
+
+      // Reset Feedback
+      const fbBox = document.getElementById('eval-feedback-box');
+      fbBox.className = "rounded-xl p-4 hidden space-y-2 text-xs";
+      fbBox.innerHTML = '';
+
+      // Reset Next button
+      const nextBtn = document.getElementById('btn-next-question');
+      nextBtn.disabled = true;
+
+      // Populate Options with safe slot
+      const grid = document.getElementById('eval-options-grid');
+      grid.innerHTML = '';
+
+      q.options.forEach((opt, optIdx) => {
+        const btn = document.createElement('button');
+        btn.id = `opt-btn-${optIdx}`;
+        btn.className = "w-full text-left bg-slate-900 hover:bg-slate-800/80 border border-slate-800 hover:border-rose-500/50 p-4 rounded-xl text-xs sm:text-sm font-medium text-slate-200 transition-all flex items-center justify-between group";
+        btn.innerHTML = `
+          <span class="flex items-center gap-3">
+            <span class="w-6 h-6 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-mono text-slate-400 group-hover:text-rose-400 group-hover:border-rose-500/40">
+              ${String.fromCharCode(65 + optIdx)}
+            </span>
+            <span>${opt.text}</span>
+          </span>
+          <span class="opt-icon-slot flex items-center justify-center">
+            <i data-lucide="circle" class="w-4 h-4 text-slate-600 group-hover:text-rose-400"></i>
+          </span>
+        `;
+        btn.onclick = () => selectOption(optIdx);
+        grid.appendChild(btn);
+      });
+
+      lucide.createIcons();
+      renderAllMath();
+    }
+
+    function revealNextHint() {
+      const q = shuffledQuestions[currentQuestionIndex];
+      if (currentHintsRevealed < q.hints.length) {
+        const hintText = q.hints[currentHintsRevealed];
+        const container = document.getElementById('hints-container');
+
+        const hintEl = document.createElement('div');
+        hintEl.className = "bg-amber-950/30 border border-amber-500/30 text-amber-200 text-xs p-3 rounded-xl flex items-start gap-2 animate-fadeIn";
+        hintEl.innerHTML = `
+          <i data-lucide="help-circle" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+          <div>${hintText}</div>
+        `;
+        container.appendChild(hintEl);
+        currentHintsRevealed++;
+
+        document.getElementById('hint-button-text').textContent = `¿Necesitas otra pista? (${currentHintsRevealed}/${q.hints.length} usadas)`;
+        if (currentHintsRevealed >= q.hints.length) {
+          document.getElementById('btn-request-hint').style.display = 'none';
+        }
+        lucide.createIcons();
+        renderAllMath();
+      }
+    }
+
+    function selectOption(selectedIdx) {
+      if (questionAnswered) return;
+      questionAnswered = true;
+
+      const q = shuffledQuestions[currentQuestionIndex];
+      const selectedOption = q.options[selectedIdx];
+      const isCorrect = selectedOption.isCorrect;
+
+      // Safe highlight with .opt-icon-slot container
+      q.options.forEach((opt, idx) => {
+        const btn = document.getElementById(`opt-btn-${idx}`);
+        if (!btn) return;
+        btn.disabled = true;
+        btn.classList.remove('hover:bg-slate-800/80', 'hover:border-rose-500/50');
+
+        const iconSlot = btn.querySelector('.opt-icon-slot');
+        if (opt.isCorrect) {
+          btn.className = "w-full text-left bg-emerald-950/40 border border-emerald-500/60 p-4 rounded-xl text-xs sm:text-sm font-medium text-emerald-200 flex items-center justify-between";
+          if (iconSlot) {
+            iconSlot.innerHTML = '<i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400"></i>';
+          }
+        } else if (idx === selectedIdx && !isCorrect) {
+          btn.className = "w-full text-left bg-rose-950/40 border border-rose-500/60 p-4 rounded-xl text-xs sm:text-sm font-medium text-rose-200 flex items-center justify-between";
+          if (iconSlot) {
+            iconSlot.innerHTML = '<i data-lucide="x-circle" class="w-5 h-5 text-rose-400"></i>';
+          }
+        } else {
+          btn.classList.add('opacity-40');
+        }
+      });
+
+      // Show Feedback
+      const fbBox = document.getElementById('eval-feedback-box');
+      fbBox.classList.remove('hidden');
+
+      if (isCorrect) {
+        evalScore += q.points;
+        fbBox.className = "rounded-xl p-4 bg-emerald-950/30 border border-emerald-500/30 space-y-2 text-xs animate-fadeIn";
+        fbBox.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-emerald-400">
+            <i data-lucide="check" class="w-4 h-4"></i>
+            <span>¡Excelente respuesta! (+${q.points} Puntos)</span>
+          </div>
+          <div class="text-slate-300 leading-relaxed">${q.explanation}</div>
+        `;
+        playTone(659.25);
+        triggerConfetti();
+      } else {
+        fbBox.className = "rounded-xl p-4 bg-rose-950/30 border border-rose-500/30 space-y-2 text-xs animate-fadeIn";
+        fbBox.innerHTML = `
+          <div class="flex items-center gap-2 font-bold text-rose-400">
+            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+            <span>Respuesta incorrecta (+0 Puntos)</span>
+          </div>
+          <div class="text-slate-300 leading-relaxed">${q.explanation}</div>
+        `;
+        playTone(220, 'sawtooth');
+      }
+
+      updateScoreDisplay();
+
+      // Enable Next button safely
+      const nextBtn = document.getElementById('btn-next-question');
+      nextBtn.disabled = false;
+
+      lucide.createIcons();
+      renderAllMath();
+    }
+
+    function goToNextQuestion() {
+      currentQuestionIndex++;
+      loadQuestion(currentQuestionIndex);
+    }
+
+    function showFinalResults() {
+      document.getElementById('eval-main-card').classList.add('hidden');
+      const resultsScreen = document.getElementById('eval-results-screen');
+      resultsScreen.classList.remove('hidden');
+
+      const totalLab = labScoreA + labScoreB + labScoreC;
+      const totalScore = totalLab + evalScore;
+
+      document.getElementById('final-lab-score').textContent = `${totalLab} / 30`;
+      document.getElementById('final-eval-score').textContent = `${evalScore} / 70`;
+      document.getElementById('final-total-score').textContent = `${totalScore} / 100`;
+
+      const badge = document.getElementById('final-status-badge');
+      if (totalScore >= 70) {
+        badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-bold font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+        badge.textContent = `ESTADO SCORM: APROBADO (${totalScore} PTS)`;
+        triggerConfetti();
+      } else {
+        badge.className = "inline-block px-4 py-1.5 rounded-full text-xs font-bold font-mono bg-amber-500/20 text-amber-300 border border-amber-500/40";
+        badge.textContent = `ESTADO SCORM: REVISIÓN REQUERIDA (${totalScore} PTS)`;
+      }
+
+      commitSCORM(totalScore, true);
+      lucide.createIcons();
+      renderAllMath();
+    }
+
+    function restartEvaluation() {
+      document.getElementById('eval-results-screen').classList.add('hidden');
+      document.getElementById('eval-main-card').classList.remove('hidden');
+      initEvaluation();
+    }
+
+    /* ==========================================================================
+       8. RETO MENTAL ARCADE (PRACTICE MODE STRICTLY OPTIONAL & AT THE END)
+       ========================================================================== */
+    let arcadeTimer = 60;
+    let arcadeScore = 0;
+    let arcadeStreak = 0;
+    let arcadeInterval = null;
+    let arcadeCurrentAnswer = 0;
+    let lastArcadeQIndex = -1;
+
+    const arcadeQuestionsPool = [
+      {
+        prompt: "¿Cuánto es el <strong>\\(10\\%\\) de 350</strong>?",
+        ans: 35,
+        options: [35, 3.5, 70, 350]
+      },
+      {
+        prompt: "¿Cuánto es el <strong>\\(50\\%\\) de 480</strong>?",
+        ans: 240,
+        options: [240, 120, 200, 280]
+      },
+      {
+        prompt: "¿Cuánto es el <strong>\\(25\\%\\) de 160</strong>?",
+        ans: 40,
+        options: [40, 80, 20, 50]
+      },
+      {
+        prompt: "¿Cuánto es el <strong>\\(20\\%\\) de 250</strong>?",
+        ans: 50,
+        options: [50, 25, 75, 40]
+      },
+      {
+        prompt: "¿Cuánto es el <strong>\\(75\\%\\) de 200</strong>?",
+        ans: 150,
+        options: [150, 100, 175, 125]
+      },
+      {
+        prompt: "¿Cuánto es el <strong>\\(5\\%\\) de 300</strong>?",
+        ans: 15,
+        options: [15, 30, 1.5, 60]
+      },
+      {
+        prompt: "Si un artículo de $500 tiene <strong>\\(20\\%\\) de descuento</strong>, ¿cuánto pagas?",
+        ans: 400,
+        options: [400, 450, 350, 420]
+      },
+      {
+        prompt: "¿Qué porcentaje representa <strong>30 respecto a 60</strong>?",
+        ans: 50,
+        options: [50, 25, 30, 20]
+      }
+    ];
+
+    function startArcadeGame() {
+      document.getElementById('arcade-welcome').classList.add('hidden');
+      document.getElementById('arcade-finish').classList.add('hidden');
+      document.getElementById('arcade-play').classList.remove('hidden');
+
+      arcadeScore = 0;
+      arcadeStreak = 0;
+      arcadeTimer = 60;
+      document.getElementById('arcade-score').textContent = '0 Pts';
+      document.getElementById('arcade-streak').textContent = '0 🔥';
+      document.getElementById('arcade-timer').textContent = '60s';
+
+      if (arcadeInterval) clearInterval(arcadeInterval);
+      arcadeInterval = setInterval(() => {
+        arcadeTimer--;
+        document.getElementById('arcade-timer').textContent = `${arcadeTimer}s`;
+        if (arcadeTimer <= 0) {
+          endArcadeGame();
+        }
+      }, 1000);
+
+      generateNextArcadeQuestion();
+    }
+
+    function generateNextArcadeQuestion() {
+      let qIdx;
+      do {
+        qIdx = Math.floor(Math.random() * arcadeQuestionsPool.length);
+      } while (qIdx === lastArcadeQIndex && arcadeQuestionsPool.length > 1);
+      lastArcadeQIndex = qIdx;
+
+      const q = arcadeQuestionsPool[qIdx];
+      arcadeCurrentAnswer = q.ans;
+      document.getElementById('arcade-prompt').innerHTML = q.prompt;
+
+      const grid = document.getElementById('arcade-options');
+      grid.innerHTML = '';
+
+      const shuffledOptions = shuffleArray(q.options);
+      shuffledOptions.forEach((optVal) => {
+        const btn = document.createElement('button');
+        btn.className = "p-4 rounded-xl bg-slate-950 border border-slate-800 hover:border-amber-400 font-mono font-bold text-slate-100 hover:text-amber-300 text-sm transition-all";
+        btn.textContent = optVal;
+        btn.onclick = () => checkArcadeAnswer(optVal);
+        grid.appendChild(btn);
+      });
+
+      renderAllMath();
+    }
+
+    function checkArcadeAnswer(selectedVal) {
+      if (selectedVal === arcadeCurrentAnswer) {
+        arcadeStreak++;
+        const pts = 10 + arcadeStreak * 2;
+        arcadeScore += pts;
+        document.getElementById('arcade-score').textContent = `${arcadeScore} Pts`;
+        document.getElementById('arcade-streak').textContent = `${arcadeStreak} 🔥`;
+        playTone(700, 'sine', 0.1);
+      } else {
+        arcadeStreak = 0;
+        document.getElementById('arcade-streak').textContent = '0 🔥';
+        playTone(180, 'sawtooth', 0.2);
+      }
+      generateNextArcadeQuestion();
+    }
+
+    function endArcadeGame() {
+      clearInterval(arcadeInterval);
+      document.getElementById('arcade-play').classList.add('hidden');
+      document.getElementById('arcade-finish').classList.remove('hidden');
+      document.getElementById('arcade-final-pts').textContent = arcadeScore;
+      playTone(523.25, 'triangle', 0.4);
+    }
+
+    /* ==========================================================================
+       9. INITIALIZATION ON PAGE LOAD
+       ========================================================================== */
+    window.addEventListener('load', () => {
+      lucide.createIcons();
+      initGrid100();
+      updateGridModuleA();
+      switchProbType(1);
+      updateModuleCSim();
+      initEvaluation();
+      updateScoreDisplay();
+      renderAllMath();
+    });
+  </script>
+</body>
+</html>
