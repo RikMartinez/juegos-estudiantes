@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendario de Exámenes Departamentales de Inglés 2026B | Preparatoria Regional de Chapala</title>
+  <style>
+    /* Reset & Base Fonts */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: #f8fafc;
+      color: #1e293b;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+
+    /* Header */
+    .header {
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    .header-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+    .brand-wrap { display: flex; align-items: center; gap: 14px; }
+    .brand-badge {
+      width: 40px;
+      height: 40px;
+      background: #0f172a;
+      color: #fff;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: -0.5px;
+    }
+    .brand-sub {
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .brand-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.2;
+    }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .btn-secondary { background: #f1f5f9; color: #334155; border-color: #e2e8f0; }
+    .btn-secondary:hover { background: #e2e8f0; color: #0f172a; }
+    .btn-primary { background: #4f46e5; color: #fff; }
+    .btn-primary:hover { background: #4338ca; }
+    .btn-dark { background: #0f172a; color: #fff; }
+    .btn-dark:hover { background: #1e293b; }
+
+    /* Main Container */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      width: 100%;
+    }
+
+    /* Banner Card */
+    .banner {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+    .banner-text h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.5px;
+      margin-top: 4px;
+    }
+    .banner-meta {
+      font-size: 12px;
+      color: #64748b;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .banner-desc {
+      font-size: 13px;
+      color: #475569;
+      margin-top: 6px;
+      max-width: 700px;
+    }
+    .stats-box {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      gap: 16px;
+      text-align: center;
+    }
+    .stat-num { font-size: 22px; font-weight: 800; color: #0f172a; display: block; font-family: monospace; }
+    .stat-lbl { font-size: 10px; font-weight: 700; color: #64748b; text-transform: uppercase; }
+
+    /* Controls Bar */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .search-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .search-input-wrap {
+      position: relative;
+      flex: 1;
+      max-width: 440px;
+      min-width: 260px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+      font-size: 13px;
+      background: #fff;
+      outline: none;
+    }
+    .search-input:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
+    .view-switcher {
+      display: flex;
+      background: #e2e8f0;
+      padding: 3px;
+      border-radius: 8px;
+      gap: 3px;
+    }
+    .view-btn {
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      border-radius: 6px;
+      color: #475569;
+      cursor: pointer;
+    }
+    .view-btn.active {
+      background: #fff;
+      color: #0f172a;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    }
+    .filters-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+    }
+    .filter-group {
+      display: flex;
+      background: #f1f5f9;
+      padding: 2px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      gap: 2px;
+      overflow-x: auto;
+    }
+    .filter-btn {
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      border: none;
+      background: transparent;
+      border-radius: 4px;
+      color: #475569;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .filter-btn.active {
+      background: #fff;
+      color: #0f172a;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    /* Key legend */
+    .legend-bar {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 11px;
+    }
+    .legend-items { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .legend-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+    /* Colors by semester */
+    .dot-sem-1 { background: #4f46e5; }
+    .dot-sem-2 { background: #0284c7; }
+    .dot-sem-3 { background: #059669; }
+    .dot-sem-4 { background: #d97706; }
+    .dot-sem-5 { background: #e11d48; }
+    .dot-sem-6 { background: #9333ea; }
+    .dot-btt { background: #1e293b; }
+
+    .card-sem-1 { background: #eef2ff; border-color: #c7d2fe; color: #3730a3; }
+    .badge-sem-1 { background: #4f46e5; color: #fff; }
+    .card-sem-2 { background: #f0f9ff; border-color: #bae6fd; color: #0369a1; }
+    .badge-sem-2 { background: #0284c7; color: #fff; }
+    .card-sem-3 { background: #ecfdf5; border-color: #a7f3d0; color: #047857; }
+    .badge-sem-3 { background: #059669; color: #fff; }
+    .card-sem-4 { background: #fffbeb; border-color: #fde68a; color: #b45309; }
+    .badge-sem-4 { background: #d97706; color: #fff; }
+    .card-sem-5 { background: #fff1f2; border-color: #fecdd3; color: #be123c; }
+    .badge-sem-5 { background: #e11d48; color: #fff; }
+    .card-sem-6 { background: #faf5ff; border-color: #e9d5ff; color: #7e22ce; }
+    .badge-sem-6 { background: #9333ea; color: #fff; }
+
+    /* Table Matrix */
+    .table-card {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+    .table-header {
+      padding: 14px 18px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .table-scroll { overflow-x: auto; width: 100%; }
+    .grid-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      min-width: 960px;
+    }
+    .grid-table th, .grid-table td {
+      border: 1px solid #e2e8f0;
+      padding: 6px;
+      vertical-align: top;
+    }
+    .grid-table th { background: #f1f5f9; text-align: center; font-weight: 700; color: #334155; }
+    .th-day { font-size: 13px; font-weight: 800; color: #0f172a; padding: 10px 6px; }
+    .th-lab { font-size: 11px; font-weight: 600; color: #64748b; background: #f8fafc; width: 72px; }
+    .td-hour {
+      background: #f8fafc;
+      font-weight: 700;
+      text-align: center;
+      width: 70px;
+      font-family: monospace;
+      color: #334155;
+      vertical-align: middle;
+    }
+    .exam-cell-block {
+      border-radius: 6px;
+      border: 1px solid;
+      padding: 6px;
+      min-height: 58px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .exam-cell-block:hover { transform: translateY(-1px); box-shadow: 0 2px 4px rgba(0,0,0,0.08); }
+    .exam-badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 5px;
+      border-radius: 4px;
+      display: inline-block;
+    }
+    .exam-subject {
+      font-size: 10px;
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.2;
+      margin-top: 3px;
+    }
+    .exam-shift { font-size: 9px; font-weight: 600; color: #64748b; text-transform: uppercase; }
+
+    /* Directory table */
+    .dir-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      text-align: left;
+    }
+    .dir-table th {
+      background: #f8fafc;
+      padding: 12px 14px;
+      font-weight: 700;
+      color: #475569;
+      border-bottom: 1px solid #e2e8f0;
+      text-transform: uppercase;
+      font-size: 11px;
+    }
+    .dir-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #1e293b;
+    }
+    .dir-table tr:hover { background: #f8fafc; cursor: pointer; }
+
+    /* Day View */
+    .day-tabs {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .day-tab-card {
+      background: #fff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 14px;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s;
+    }
+    .day-tab-card.active {
+      background: #0f172a;
+      color: #fff;
+      border-color: #0f172a;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.08);
+    }
+    .day-labs-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .lab-col {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .lab-col-header {
+      padding: 12px 14px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+    .lab-col-body {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(2px);
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-box {
+      background: #fff;
+      border-radius: 14px;
+      max-width: 500px;
+      width: 100%;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+      border: 1px solid #e2e8f0;
+    }
+    .modal-header {
+      padding: 18px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .modal-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; font-size: 13px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .info-tile {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 10px;
+    }
+    .info-tile-lbl { font-size: 11px; color: #64748b; font-weight: 600; display: block; }
+    .info-tile-val { font-size: 13px; color: #0f172a; font-weight: 700; margin-top: 2px; display: block; }
+    .instructions-box {
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      border-radius: 8px;
+      padding: 12px;
+      color: #3730a3;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: auto;
+      border-top: 1px solid #e2e8f0;
+      background: #fff;
+      padding: 20px 0;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .footer-inner {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    /* Print styling */
+    @media print {
+      .header, .controls, .btn, .no-print { display: none !important; }
+      body { background: #fff !important; color: #000 !important; }
+      .container { padding: 0 !important; }
+      .table-card { border: none !important; box-shadow: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header no-print">
+    <div class="header-inner">
+      <div class="brand-wrap">
+        <div class="brand-badge">UDG</div>
+        <div>
+          <div class="brand-sub">SEMS UdeG · Prep. Regional de Chapala</div>
+          <h1 class="brand-title">Calendario de Exámenes Departamentales de Inglés</h1>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="openGeneralInfo()">
+          ℹ Indicaciones
+        </button>
+        <button class="btn btn-secondary" onclick="window.print()">
+          🖨 Imprimir
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="container">
+
+    <!-- Top Banner -->
+    <section class="banner">
+      <div class="banner-text">
+        <div class="banner-meta">
+          <strong>Ciclo 2026B</strong> · <span>Colegio Departamental de Inglés</span> · <span>1° a 6° Semestre</span>
+        </div>
+        <h2>Rol Oficial en Laboratorios de Cómputo</h2>
+        <p class="banner-desc">
+          Horarios y laboratorios asignados para cada grupo del Bachillerato General por Competencias (BGC) y Técnico en Turismo (BTT).
+          Lunes 16 de noviembre es suspensión oficial.
+        </p>
+      </div>
+      <div class="stats-box">
+        <div><span class="stat-num">31</span><span class="stat-lbl">Exámenes</span></div>
+        <div><span class="stat-num" style="color:#4f46e5;">4</span><span class="stat-lbl">Días</span></div>
+        <div><span class="stat-num" style="color:#059669;">3</span><span class="stat-lbl">Laboratorios</span></div>
+        <div><span class="stat-num" style="color:#d97706;">6</span><span class="stat-lbl">Semestres</span></div>
+      </div>
+    </section>
+
+    <!-- Controls -->
+    <section class="controls no-print">
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <input type="text" id="searchInput" class="search-input" placeholder="🔍 Buscar grupo (ej. 1AM, 4BV), materia o turno..." oninput="onSearch(this.value)">
+        </div>
+        <div class="view-switcher">
+          <button id="viewBtn-matrix" class="view-btn active" onclick="setView('matrix')">Horario Completo</button>
+          <button id="viewBtn-day" class="view-btn" onclick="setView('day')">Por Día</button>
+          <button id="viewBtn-list" class="view-btn" onclick="setView('list')">Directorio de Grupos</button>
+        </div>
+      </div>
+
+      <div class="filters-row">
+        <span style="font-weight: 700; color:#64748b;">Filtrar:</span>
+        <div class="filter-group" id="semFilterGroup">
+          <button class="filter-btn active" onclick="setSem('all')">Todos</button>
+          <button class="filter-btn" onclick="setSem('1')">1°</button>
+          <button class="filter-btn" onclick="setSem('2')">2°</button>
+          <button class="filter-btn" onclick="setSem('3')">3°</button>
+          <button class="filter-btn" onclick="setSem('4')">4°</button>
+          <button class="filter-btn" onclick="setSem('5')">5°</button>
+          <button class="filter-btn" onclick="setSem('6')">6°</button>
+          <button class="filter-btn" onclick="setSem('BTT')">BTT Turismo</button>
+        </div>
+
+        <div class="filter-group" id="shiftFilterGroup">
+          <button class="filter-btn active" onclick="setShift('all')">Turnos</button>
+          <button class="filter-btn" onclick="setShift('Matutino')">Matutino</button>
+          <button class="filter-btn" onclick="setShift('Vespertino')">Vespertino</button>
+        </div>
+
+        <div class="filter-group" id="labFilterGroup">
+          <button class="filter-btn active" onclick="setLab('all')">Laboratorios</button>
+          <button class="filter-btn" onclick="setLab('Lab. 1')">Lab 1</button>
+          <button class="filter-btn" onclick="setLab('Lab. 2')">Lab 2</button>
+          <button class="filter-btn" onclick="setLab('Lab. 3')">Lab 3</button>
+        </div>
+
+        <label style="display:flex; align-items:center; gap:6px; cursor:pointer; margin-left:auto; background:#f1f5f9; padding:4px 10px; border-radius:6px; font-size:11px;">
+          <input type="checkbox" id="ticsCheck" onchange="toggleTics(this.checked)">
+          <span>Ver horas de clase TIC's</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- Legend -->
+    <div class="legend-bar">
+      <div class="legend-items">
+        <span style="font-weight:700; color:#64748b;">Semestres:</span>
+        <span class="legend-tag"><span class="dot dot-sem-1"></span> 1° Semestre</span>
+        <span class="legend-tag"><span class="dot dot-sem-2"></span> 2° Semestre</span>
+        <span class="legend-tag"><span class="dot dot-sem-3"></span> 3° Semestre</span>
+        <span class="legend-tag"><span class="dot dot-sem-4"></span> 4° Semestre</span>
+        <span class="legend-tag"><span class="dot dot-sem-5"></span> 5° Semestre</span>
+        <span class="legend-tag"><span class="dot dot-sem-6"></span> 6° Semestre</span>
+        <span class="legend-tag"><span class="dot dot-btt"></span> Técnico BTT</span>
+      </div>
+      <div style="color:#64748b;">
+        Haz clic en cualquier examen para ver los detalles y agendarlo
+      </div>
+    </div>
+
+    <!-- VIEW 1: MATRIX HORARIO COMPLETO -->
+    <section id="sec-matrix" class="table-card">
+      <div class="table-header">
+        <div>
+          <strong style="font-size:14px; color:#0f172a;">Matriz General de Horarios (Ciclo 2026B)</strong>
+          <span style="font-size:12px; color:#64748b; display:block;">Laboratorios 1, 2 y 3 · 17 al 20 de noviembre</span>
+        </div>
+        <span id="matrixCount" style="font-size:12px; font-family:monospace; background:#f1f5f9; padding:3px 8px; border-radius:4px;">
+          31 de 31 exámenes visibles
+        </span>
+      </div>
+      <div class="table-scroll">
+        <table class="grid-table">
+          <thead>
+            <tr>
+              <th rowspan="2" class="td-hour">HORA</th>
+              <th colspan="3" class="th-day">Martes 17 nov</th>
+              <th colspan="3" class="th-day">Miércoles 18 nov</th>
+              <th colspan="3" class="th-day">Jueves 19 nov</th>
+              <th colspan="3" class="th-day">Viernes 20 nov</th>
+            </tr>
+            <tr>
+              <th class="th-lab">Lab. 1</th><th class="th-lab">Lab. 2</th><th class="th-lab">Lab. 3</th>
+              <th class="th-lab">Lab. 1</th><th class="th-lab">Lab. 2</th><th class="th-lab">Lab. 3</th>
+              <th class="th-lab">Lab. 1</th><th class="th-lab">Lab. 2</th><th class="th-lab">Lab. 3</th>
+              <th class="th-lab">Lab. 1</th><th class="th-lab">Lab. 2</th><th class="th-lab">Lab. 3</th>
+            </tr>
+          </thead>
+          <tbody id="matrixBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- VIEW 2: POR DÍA -->
+    <section id="sec-day" style="display:none; flex-direction:column; gap:16px;">
+      <div class="day-tabs" id="dayTabsWrap"></div>
+      <div class="day-labs-grid" id="dayLabsWrap"></div>
+    </section>
+
+    <!-- VIEW 3: DIRECTORIO DE GRUPOS -->
+    <section id="sec-list" class="table-card" style="display:none;">
+      <div class="table-header">
+        <div>
+          <strong style="font-size:14px; color:#0f172a;">Directorio de Grupos</strong>
+          <span style="font-size:12px; color:#64748b; display:block;">31 grupos programados con su horario y laboratorio</span>
+        </div>
+        <span id="listCount" style="font-size:12px; font-family:monospace; background:#f1f5f9; padding:3px 8px; border-radius:4px;">
+          31 registros
+        </span>
+      </div>
+      <div class="table-scroll">
+        <table class="dir-table">
+          <thead>
+            <tr>
+              <th>Grupo</th>
+              <th>Asignatura</th>
+              <th>Semestre</th>
+              <th>Turno</th>
+              <th>Fecha</th>
+              <th>Horario</th>
+              <th>Laboratorio</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody id="dirBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Guidelines info -->
+    <section style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+      <div style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px;">
+        <strong style="color:#059669; font-size:13px; display:block; margin-bottom:6px;">✓ Requisitos del Alumno</strong>
+        <p style="font-size:12px; color:#475569; line-height:1.6;">
+          · Presentarse con credencial oficial vigente de la UdeG o identificación con foto.<br>
+          · Contar con código y contraseña de cuenta institucional activa.<br>
+          · Llegar 10 minutos antes de la hora programada.
+        </p>
+      </div>
+      <div style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px;">
+        <strong style="color:#4f46e5; font-size:13px; display:block; margin-bottom:6px;">🏢 Ubicación</strong>
+        <p style="font-size:12px; color:#475569; line-height:1.6;">
+          · <strong>Lab. 1:</strong> Edificio de Tecnologías, Planta Alta.<br>
+          · <strong>Lab. 2:</strong> Edificio de Tecnologías, Planta Baja.<br>
+          · <strong>Lab. 3:</strong> Edificio Anexo, Sala Audiovisual.
+        </p>
+      </div>
+      <div style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px;">
+        <strong style="color:#d97706; font-size:13px; display:block; margin-bottom:6px;">⚠ Suspensión y Reglas</strong>
+        <p style="font-size:12px; color:#475569; line-height:1.6;">
+          · <strong>Lunes 16 de noviembre:</strong> Suspensión oficial de labores.<br>
+          · Duración de la evaluación: 50 a 60 minutos en plataforma digital.<br>
+          · Prohibido el uso de teléfonos celulares durante el examen.
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer no-print">
+    <div class="footer-inner">
+      <div>
+        <strong>Universidad de Guadalajara</strong> · SEMS · Escuela Preparatoria Regional de Chapala
+      </div>
+      <div>
+        Colegio Departamental de Inglés — Ciclo 2026B
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal Detalle Examen -->
+  <div id="examModal" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeModal()">
+    <div class="modal-box">
+      <div class="modal-header" id="modalHead">
+        <div>
+          <span id="mBadge" class="exam-badge" style="font-size:14px; padding:4px 8px;">1AM</span>
+          <span id="mKicker" style="font-size:11px; color:#64748b; font-weight:700; margin-left:8px; text-transform:uppercase;">1° Semestre · Matutino</span>
+          <h3 id="mTitle" style="font-size:17px; font-weight:800; color:#0f172a; margin-top:4px;">Inglés Nivel 1</h3>
+        </div>
+        <button onclick="closeModal()" style="border:none; background:none; font-size:18px; cursor:pointer; color:#64748b;">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="grid-2">
+          <div class="info-tile">
+            <span class="info-tile-lbl">Fecha</span>
+            <span class="info-tile-val" id="mDate">Martes 17 nov</span>
+          </div>
+          <div class="info-tile">
+            <span class="info-tile-lbl">Horario</span>
+            <span class="info-tile-val" id="mTime" style="font-family:monospace;">08:00 - 09:00 hrs</span>
+          </div>
+          <div class="info-tile">
+            <span class="info-tile-lbl">Laboratorio</span>
+            <span class="info-tile-val" id="mLab">Lab. 1</span>
+          </div>
+          <div class="info-tile">
+            <span class="info-tile-lbl">Modalidad</span>
+            <span class="info-tile-val" id="mProg">BGC</span>
+          </div>
+        </div>
+
+        <div class="instructions-box">
+          <strong>Indicaciones de Aplicación:</strong><br>
+          Presentarse puntualmente con credencial institucional vigente y contraseña institucional para ingresar a la plataforma de evaluación.
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <button class="btn btn-dark" style="flex:1; justify-content:center;" onclick="downloadIcs(curExam)">
+            📅 Descargar Evento (.ics)
+          </button>
+          <button class="btn btn-secondary" onclick="window.print()">
+            🖨 Imprimir
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- General Info Modal -->
+  <div id="infoModal" class="modal-overlay" style="display:none;" onclick="if(event.target===this)closeGeneralInfo()">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="font-size:16px; font-weight:800; color:#0f172a;">Indicaciones Generales para Exámenes</h3>
+        <button onclick="closeGeneralInfo()" style="border:none; background:none; font-size:18px; cursor:pointer; color:#64748b;">✕</button>
+      </div>
+      <div class="modal-body">
+        <p><strong>1. Horarios:</strong> El rol inicia puntualmente en la hora marcada. Llega con 10 minutos de anticipación.</p>
+        <p><strong>2. Identificación:</strong> Es obligatorio presentar credencial de estudiante física o credencial digital oficial.</p>
+        <p><strong>3. Plataforma:</strong> Los exámenes se aplicarán en línea a través de las computadoras de los laboratorios designados.</p>
+        <p><strong>4. Lunes 16 de noviembre:</strong> Suspensión oficial en apego al calendario institucional de la UdeG.</p>
+        <div style="text-align:right;">
+          <button class="btn btn-dark" onclick="closeGeneralInfo()">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const EXAMS = [
+      { id: '1am', group: '1AM', sem: 1, subject: 'Inglés Nivel 1', shift: 'Matutino', prog: 'BGC', day: 'Martes 17 de noviembre', slot: '8 a 9', start: '08:00', end: '09:00', lab: 'Lab. 1', date: '2026-11-17' },
+      { id: '3bm', group: '3BM', sem: 3, subject: 'Inglés Nivel 3', shift: 'Matutino', prog: 'BGC', day: 'Martes 17 de noviembre', slot: '10 a 11', start: '10:00', end: '11:00', lab: 'Lab. 3', date: '2026-11-17' },
+      { id: '1cm', group: '1CM', sem: 1, subject: 'Inglés Nivel 1', shift: 'Matutino', prog: 'BGC', day: 'Martes 17 de noviembre', slot: '11 a 12', start: '11:00', end: '12:00', lab: 'Lab. 1', date: '2026-11-17' },
+      { id: '4am', group: '4AM', sem: 4, subject: 'Lengua Extranjera IV', shift: 'Matutino', prog: 'BGC', day: 'Martes 17 de noviembre', slot: '11 a 12', start: '11:00', end: '12:00', lab: 'Lab. 2', date: '2026-11-17' },
+      { id: '3am', group: '3AM', sem: 3, subject: 'Inglés Nivel 3', shift: 'Matutino', prog: 'BGC', day: 'Martes 17 de noviembre', slot: '12 a 13', start: '12:00', end: '13:00', lab: 'Lab. 1', date: '2026-11-17' },
+      { id: '1av', group: '1AV', sem: 1, subject: 'Inglés Nivel 1', shift: 'Vespertino', prog: 'BGC', day: 'Martes 17 de noviembre', slot: '13 a 14', start: '13:00', end: '14:00', lab: 'Lab. 1', date: '2026-11-17' },
+      { id: '1bv', group: '1BV', sem: 1, subject: 'Inglés Nivel 1', shift: 'Vespertino', prog: 'BGC', day: 'Martes 17 de noviembre', slot: '14 a 15', start: '14:00', end: '15:00', lab: 'Lab. 3', date: '2026-11-17' },
+      { id: '2bv', group: '2BV', sem: 2, subject: 'Inglés Nivel 2', shift: 'Vespertino', prog: 'BGC', day: 'Martes 17 de noviembre', slot: '15 a 16', start: '15:00', end: '16:00', lab: 'Lab. 2', date: '2026-11-17' },
+      { id: '3bv', group: '3BV', sem: 3, subject: 'Inglés Nivel 3', shift: 'Vespertino', prog: 'BGC', day: 'Martes 17 de noviembre', slot: '15 a 16', start: '15:00', end: '16:00', lab: 'Lab. 3', date: '2026-11-17' },
+      { id: '6av', group: '6AV', sem: 6, subject: 'Lengua Extranjera VI', shift: 'Vespertino', prog: 'BGC', day: 'Martes 17 de noviembre', slot: '17 a 18', start: '17:00', end: '18:00', lab: 'Lab. 1', date: '2026-11-17' },
+      { id: '3av', group: '3AV', sem: 3, subject: 'Inglés Nivel 3', shift: 'Vespertino', prog: 'BGC', day: 'Martes 17 de noviembre', slot: '17 a 18', start: '17:00', end: '18:00', lab: 'Lab. 2', date: '2026-11-17' },
+      { id: '4bv', group: '4BV', sem: 4, subject: 'Lengua Extranjera IV', shift: 'Vespertino', prog: 'BGC', day: 'Martes 17 de noviembre', slot: '17 a 18', start: '17:00', end: '18:00', lab: 'Lab. 3', date: '2026-11-17' },
+      { id: '6bv', group: '6BV', sem: 6, subject: 'Lengua Extranjera VI', shift: 'Vespertino', prog: 'BGC', day: 'Martes 17 de noviembre', slot: '18 a 19', start: '18:00', end: '19:00', lab: 'Lab. 1', date: '2026-11-17' },
+      { id: '2btt', group: '2BTT', sem: 2, subject: 'English Meals', shift: 'Vespertino', prog: 'BTT', day: 'Martes 17 de noviembre', slot: '18 a 19', start: '18:00', end: '19:00', lab: 'Lab. 2', date: '2026-11-17' },
+
+      // Miércoles 18
+      { id: '1btt', group: '1BTT', sem: 1, subject: 'Inglés Básico', shift: 'Matutino', prog: 'BTT', day: 'Miércoles 18 de noviembre', slot: '7 a 8', start: '07:00', end: '08:00', lab: 'Lab. 2', date: '2026-11-18' },
+      { id: '2bm', group: '2BM', sem: 2, subject: 'Inglés Nivel 2', shift: 'Matutino', prog: 'BGC', day: 'Miércoles 18 de noviembre', slot: '8 a 9', start: '08:00', end: '09:00', lab: 'Lab. 1', date: '2026-11-18' },
+      { id: '4bm', group: '4BM', sem: 4, subject: 'Lengua Extranjera IV', shift: 'Matutino', prog: 'BGC', day: 'Miércoles 18 de noviembre', slot: '9 a 10', start: '09:00', end: '10:00', lab: 'Lab. 1', date: '2026-11-18' },
+      { id: '1bm', group: '1BM', sem: 1, subject: 'Inglés Nivel 1', shift: 'Matutino', prog: 'BGC', day: 'Miércoles 18 de noviembre', slot: '10 a 11', start: '10:00', end: '11:00', lab: 'Lab. 1', date: '2026-11-18' },
+      { id: '5bm', group: '5BM', sem: 5, subject: 'Lengua Extranjera V', shift: 'Matutino', prog: 'BGC', day: 'Miércoles 18 de noviembre', slot: '11 a 12', start: '11:00', end: '12:00', lab: 'Lab. 1', date: '2026-11-18' },
+      { id: '5av', group: '5AV', sem: 5, subject: 'Lengua Extranjera V', shift: 'Vespertino', prog: 'BGC', day: 'Miércoles 18 de noviembre', slot: '16 a 17', start: '16:00', end: '17:00', lab: 'Lab. 1', date: '2026-11-18' },
+      { id: '4av', group: '4AV', sem: 4, subject: 'Lengua Extranjera IV', shift: 'Vespertino', prog: 'BGC', day: 'Miércoles 18 de noviembre', slot: '17 a 18', start: '17:00', end: '18:00', lab: 'Lab. 1', date: '2026-11-18' },
+
+      // Jueves 19
+      { id: '2am', group: '2AM', sem: 2, subject: 'Inglés Nivel 2', shift: 'Matutino', prog: 'BGC', day: 'Jueves 19 de noviembre', slot: '7 a 8', start: '07:00', end: '08:00', lab: 'Lab. 1', date: '2026-11-19' },
+      { id: '3btt', group: '3BTT', sem: 3, subject: 'English Service', shift: 'Matutino', prog: 'BTT', day: 'Jueves 19 de noviembre', slot: '7 a 8', start: '07:00', end: '08:00', lab: 'Lab. 2', date: '2026-11-19' },
+      { id: '3cm', group: '3CM', sem: 3, subject: 'Inglés Nivel 3', shift: 'Matutino', prog: 'BGC', day: 'Jueves 19 de noviembre', slot: '9 a 10', start: '09:00', end: '10:00', lab: 'Lab. 1', date: '2026-11-19' },
+      { id: '5am', group: '5AM', sem: 5, subject: 'Lengua Extranjera V', shift: 'Matutino', prog: 'BGC', day: 'Jueves 19 de noviembre', slot: '10 a 11', start: '10:00', end: '11:00', lab: 'Lab. 1', date: '2026-11-19' },
+      { id: '4btt', group: '4BTT', sem: 4, subject: 'English Tour', shift: 'Vespertino', prog: 'BTT', day: 'Jueves 19 de noviembre', slot: '13 a 14', start: '13:00', end: '14:00', lab: 'Lab. 1', date: '2026-11-19' },
+      { id: '5bv', group: '5BV', sem: 5, subject: 'Lengua Extranjera V', shift: 'Vespertino', prog: 'BGC', day: 'Jueves 19 de noviembre', slot: '16 a 17', start: '16:00', end: '17:00', lab: 'Lab. 2', date: '2026-11-19' },
+      { id: '2cv', group: '2CV', sem: 2, subject: 'Inglés Nivel 2', shift: 'Vespertino', prog: 'BGC', day: 'Jueves 19 de noviembre', slot: '17 a 18', start: '17:00', end: '18:00', lab: 'Lab. 1', date: '2026-11-19' },
+
+      // Viernes 20
+      { id: '6am', group: '6AM', sem: 6, subject: 'Lengua Extranjera VI', shift: 'Matutino', prog: 'BGC', day: 'Viernes 20 de noviembre', slot: '9 a 10', start: '09:00', end: '10:00', lab: 'Lab. 2', date: '2026-11-20' },
+      { id: '6bm', group: '6BM', sem: 6, subject: 'Lengua Extranjera VI', shift: 'Matutino', prog: 'BGC', day: 'Viernes 20 de noviembre', slot: '11 a 12', start: '11:00', end: '12:00', lab: 'Lab. 1', date: '2026-11-20' },
+      { id: '2av', group: '2AV', sem: 2, subject: 'Inglés Nivel 2', shift: 'Vespertino', prog: 'BGC', day: 'Viernes 20 de noviembre', slot: '13 a 14', start: '13:00', end: '14:00', lab: 'Lab. 2', date: '2026-11-20' },
+    ];
+
+    const DAYS_DEF = [
+      { key: 'Martes 17 de noviembre', label: 'Martes 17 nov', dateStr: '17 Nov 2026' },
+      { key: 'Miércoles 18 de noviembre', label: 'Miércoles 18 nov', dateStr: '18 Nov 2026' },
+      { key: 'Jueves 19 de noviembre', label: 'Jueves 19 nov', dateStr: '19 Nov 2026' },
+      { key: 'Viernes 20 de noviembre', label: 'Viernes 20 nov', dateStr: '20 Nov 2026' },
+    ];
+
+    const LABS_DEF = ['Lab. 1', 'Lab. 2', 'Lab. 3'];
+    const SLOTS_DEF = ['7 a 8', '8 a 9', '9 a 10', '10 a 11', '11 a 12', '12 a 13', '13 a 14', '14 a 15', '15 a 16', '16 a 17', '17 a 18', '18 a 19'];
+
+    let curView = 'matrix';
+    let curDay = 'Martes 17 de noviembre';
+    let filterSem = 'all';
+    let filterShift = 'all';
+    let filterLab = 'all';
+    let searchQ = '';
+    let showTics = false;
+    let curExam = null;
+
+    function getFiltered() {
+      return EXAMS.filter(e => {
+        if (filterSem !== 'all') {
+          if (filterSem === 'BTT' && !e.group.includes('BTT')) return false;
+          if (filterSem !== 'BTT' && e.sem !== parseInt(filterSem, 10)) return false;
+        }
+        if (filterShift !== 'all' && e.shift !== filterShift) return false;
+        if (filterLab !== 'all' && e.lab !== filterLab) return false;
+        if (searchQ.trim()) {
+          const q = searchQ.toLowerCase().trim();
+          const match = e.group.toLowerCase().includes(q) ||
+                        e.subject.toLowerCase().includes(q) ||
+                        e.day.toLowerCase().includes(q) ||
+                        e.lab.toLowerCase().includes(q) ||
+                        e.shift.toLowerCase().includes(q);
+          if (!match) return false;
+        }
+        return true;
+      });
+    }
+
+    function renderMatrix() {
+      const tbody = document.getElementById('matrixBody');
+      tbody.innerHTML = '';
+      const list = getFiltered();
+      document.getElementById('matrixCount').textContent = list.length + ' de 31 exámenes visibles';
+
+      const map = new Map();
+      EXAMS.forEach(e => map.set(e.day + '|' + e.lab + '|' + e.slot, e));
+
+      SLOTS_DEF.forEach(time => {
+        const tr = document.createElement('tr');
+        const tdH = document.createElement('td');
+        tdH.className = 'td-hour';
+        tdH.textContent = time;
+        tr.appendChild(tdH);
+
+        DAYS_DEF.forEach(d => {
+          LABS_DEF.forEach(lab => {
+            const td = document.createElement('td');
+            const key = d.key + '|' + lab + '|' + time;
+            const exam = map.get(key);
+
+            if (exam) {
+              const isVis = list.some(i => i.id === exam.id);
+              const card = document.createElement('div');
+              card.className = 'exam-cell-block card-sem-' + exam.sem;
+              if (!isVis) {
+                card.style.opacity = '0.2';
+                card.style.filter = 'grayscale(100%)';
+              }
+              card.onclick = () => openModal(exam);
+              card.innerHTML =
+                '<div style="display:flex; justify-content:space-between; align-items:center;">' +
+                  '<span class="exam-badge badge-sem-' + exam.sem + '">' + exam.group + '</span>' +
+                  '<span class="exam-shift">' + (exam.shift === 'Matutino' ? 'M' : 'V') + '</span>' +
+                '</div>' +
+                '<div class="exam-subject">' + exam.subject + '</div>';
+              td.appendChild(card);
+            } else {
+              td.innerHTML = '<span style="color:#cbd5e1; display:block; text-align:center;">·</span>';
+            }
+            tr.appendChild(td);
+          });
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    function renderDay() {
+      const tabsWrap = document.getElementById('dayTabsWrap');
+      tabsWrap.innerHTML = '';
+      const list = getFiltered();
+
+      DAYS_DEF.forEach(d => {
+        const count = list.filter(e => e.day === d.key).length;
+        const isSel = curDay === d.key;
+        const div = document.createElement('div');
+        div.className = 'day-tab-card' + (isSel ? ' active' : '');
+        div.onclick = () => { curDay = d.key; renderDay(); };
+        div.innerHTML =
+          '<div style="display:flex; justify-content:space-between; font-size:11px; text-transform:uppercase; font-weight:700;">' +
+            '<span>' + d.dateStr + '</span>' +
+            '<span>' + count + '</span>' +
+          '</div>' +
+          '<div style="font-size:16px; font-weight:800; margin-top:4px;">' + d.label + '</div>';
+        tabsWrap.appendChild(div);
+      });
+
+      const labsWrap = document.getElementById('dayLabsWrap');
+      labsWrap.innerHTML = '';
+
+      LABS_DEF.forEach(lab => {
+        const labExams = list.filter(e => e.day === curDay && e.lab === lab);
+        const col = document.createElement('div');
+        col.className = 'lab-col';
+        col.innerHTML =
+          '<div class="lab-col-header">' +
+            '<span>' + lab + '</span>' +
+            '<span style="font-size:11px; font-weight:600; color:#64748b;">' + labExams.length + ' exámenes</span>' +
+          '</div>' +
+          '<div class="lab-col-body" id="col-' + lab.replace(/[^a-zA-Z0-9]/g, '') + '"></div>';
+        labsWrap.appendChild(col);
+
+        const body = col.querySelector('#col-' + lab.replace(/[^a-zA-Z0-9]/g, ''));
+        if (labExams.length === 0) {
+          body.innerHTML = '<div style="padding:24px 10px; text-align:center; color:#94a3b8; font-size:12px;">Sin exámenes programados.</div>';
+        } else {
+          labExams.forEach(exam => {
+            const card = document.createElement('div');
+            card.className = 'exam-cell-block card-sem-' + exam.sem;
+            card.onclick = () => openModal(exam);
+            card.innerHTML =
+              '<div style="display:flex; justify-content:space-between; align-items:center;">' +
+                '<span class="exam-badge badge-sem-' + exam.sem + '">' + exam.group + '</span>' +
+                '<span style="font-weight:700; font-family:monospace; font-size:11px;">' + exam.slot + ' hrs</span>' +
+              '</div>' +
+              '<div style="font-size:12px; font-weight:700; margin:4px 0;">' + exam.subject + '</div>' +
+              '<div style="display:flex; justify-content:space-between; font-size:11px; color:#64748b; border-top:1px solid rgba(0,0,0,0.06); padding-top:4px; margin-top:4px;">' +
+                '<span>' + exam.shift + '</span>' +
+                '<span style="color:#4f46e5; font-weight:600;">Ver ficha →</span>' +
+              '</div>';
+            body.appendChild(card);
+          });
+        }
+      });
+    }
+
+    function renderList() {
+      const tbody = document.getElementById('dirBody');
+      tbody.innerHTML = '';
+      const list = getFiltered();
+      document.getElementById('listCount').textContent = list.length + ' registros';
+
+      if (list.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" style="padding:24px; text-align:center; color:#64748b;">No se encontraron exámenes.</td></tr>';
+        return;
+      }
+
+      list.forEach(exam => {
+        const tr = document.createElement('tr');
+        tr.onclick = () => openModal(exam);
+        tr.innerHTML =
+          '<td><span class="exam-badge badge-sem-' + exam.sem + '">' + exam.group + '</span></td>' +
+          '<td><strong>' + exam.subject + '</strong></td>' +
+          '<td>' + exam.sem + '° Semestre</td>' +
+          '<td>' + exam.shift + '</td>' +
+          '<td>' + exam.day + '</td>' +
+          '<td style="font-family:monospace; font-weight:600;">' + exam.start + ' - ' + exam.end + ' hrs</td>' +
+          '<td><span style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-weight:600;">' + exam.lab + '</span></td>' +
+          '<td><button class="btn btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="event.stopPropagation(); downloadIcs(EXAMS.find(x=>x.id===\'' + exam.id + '\'))">.ICS</button></td>';
+        tbody.appendChild(tr);
+      });
+    }
+
+    function render() {
+      if (curView === 'matrix') renderMatrix();
+      else if (curView === 'day') renderDay();
+      else if (curView === 'list') renderList();
+    }
+
+    function setView(v) {
+      curView = v;
+      ['matrix', 'day', 'list'].forEach(name => {
+        document.getElementById('sec-' + name).style.display = (name === v ? (name==='day'?'flex':'block') : 'none');
+        document.getElementById('viewBtn-' + name).className = 'view-btn' + (name === v ? ' active' : '');
+      });
+      render();
+    }
+
+    function onSearch(val) {
+      searchQ = val;
+      render();
+    }
+
+    function setSem(sem) {
+      filterSem = sem;
+      document.querySelectorAll('#semFilterGroup .filter-btn').forEach(btn => {
+        btn.className = 'filter-btn' + (btn.textContent.trim().startsWith(sem) || (sem==='all'&&btn.textContent==='Todos') || (sem==='BTT'&&btn.textContent.includes('BTT')) ? ' active' : '');
+      });
+      render();
+    }
+
+    function setShift(sh) {
+      filterShift = sh;
+      document.querySelectorAll('#shiftFilterGroup .filter-btn').forEach(btn => {
+        btn.className = 'filter-btn' + ((sh==='all'&&btn.textContent==='Turnos') || btn.textContent===sh ? ' active' : '');
+      });
+      render();
+    }
+
+    function setLab(lb) {
+      filterLab = lb;
+      document.querySelectorAll('#labFilterGroup .filter-btn').forEach(btn => {
+        btn.className = 'filter-btn' + ((lb==='all'&&btn.textContent==='Laboratorios') || btn.textContent===lb || (lb==='Lab. 1'&&btn.textContent==='Lab 1') || (lb==='Lab. 2'&&btn.textContent==='Lab 2') || (lb==='Lab. 3'&&btn.textContent==='Lab 3') ? ' active' : '');
+      });
+      render();
+    }
+
+    function toggleTics(c) {
+      showTics = c;
+      render();
+    }
+
+    function openModal(exam) {
+      curExam = exam;
+      document.getElementById('mBadge').className = 'exam-badge badge-sem-' + exam.sem;
+      document.getElementById('mBadge').textContent = exam.group;
+      document.getElementById('mKicker').textContent = exam.sem + '° Semestre · ' + exam.shift;
+      document.getElementById('mTitle').textContent = exam.subject;
+      document.getElementById('mDate').textContent = exam.day;
+      document.getElementById('mTime').textContent = exam.start + ' - ' + exam.end + ' hrs';
+      document.getElementById('mLab').textContent = exam.lab;
+      document.getElementById('mProg').textContent = exam.prog;
+      document.getElementById('examModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('examModal').style.display = 'none';
+    }
+
+    function openGeneralInfo() {
+      document.getElementById('infoModal').style.display = 'flex';
+    }
+
+    function closeGeneralInfo() {
+      document.getElementById('infoModal').style.display = 'none';
+    }
+
+    function downloadIcs(exam) {
+      if (!exam) return;
+      const d = exam.date.replace(/-/g, '');
+      const sH = exam.start.split(':')[0];
+      const sM = exam.start.split(':')[1];
+      const eH = exam.end.split(':')[0];
+      const eM = exam.end.split(':')[1];
+      const ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//Prep Chapala UdeG//Examenes 2026B//ES',
+        'BEGIN:VEVENT',
+        'UID:examen-' + exam.group + '@chapala.udg.mx',
+        'DTSTART:' + d + 'T' + sH + sM + '00',
+        'DTEND:' + d + 'T' + eH + eM + '00',
+        'SUMMARY:Examen Departamental: ' + exam.subject + ' (' + exam.group + ')',
+        'DESCRIPTION:Examen Departamental de Inglés\\nGrupo: ' + exam.group + '\\nTurno: ' + exam.shift + '\\nUbicación: ' + exam.lab + ', Prep. Regional de Chapala',
+        'LOCATION:' + exam.lab + ', Preparatoria Regional de Chapala',
+        'STATUS:CONFIRMED',
+        'END:VEVENT',
+        'END:VCALENDAR'
+      ].join('\r\n');
+
+      const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'Examen_' + exam.group + '_2026B.ics';
+      a.click();
+    }
+
+    // Initial render
+    render();
+  </script>
+</body>
+</html>
