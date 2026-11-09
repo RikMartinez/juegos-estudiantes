@@ -481,6 +481,338 @@
       gap: 12px;
     }
 
+    /* Base Helper classes */
+    .tics-toggle-label {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+      transition: all 0.15s ease;
+    }
+    .matrix-title { color: #0f172a; }
+    .matrix-count-badge {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+    }
+    .lab-badge {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+    }
+    .tic-cell-block {
+      border-radius: 6px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 6px;
+      min-height: 58px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    .tic-label {
+      font-size: 10px;
+      font-weight: 800;
+      color: #475569;
+    }
+    .tic-sub {
+      font-size: 8px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    /* ========================================================================== */
+    /* Dark Mode Theme Rules                                                      */
+    /* ========================================================================== */
+    body.dark {
+      background-color: #0b1120 !important;
+      color: #f1f5f9 !important;
+    }
+    body.dark .header, body.dark .footer {
+      background: #0f172a !important;
+      border-color: #1e293b !important;
+    }
+    body.dark .brand-title, 
+    body.dark .banner-text h2, 
+    body.dark .modal-title, 
+    body.dark .matrix-title,
+    body.dark .table-header strong {
+      color: #f8fafc !important;
+    }
+    body.dark .brand-sub, 
+    body.dark .banner-meta, 
+    body.dark .banner-desc, 
+    body.dark .stat-lbl, 
+    body.dark .table-header span {
+      color: #94a3b8 !important;
+    }
+    body.dark .banner, 
+    body.dark .table-card, 
+    body.dark .guideline-card, 
+    body.dark .modal-box {
+      background: #0f172a !important;
+      border-color: #1e293b !important;
+      color: #f1f5f9 !important;
+    }
+    body.dark .stats-box {
+      background: #1e293b !important;
+      border-color: #334155 !important;
+    }
+    body.dark .stat-num {
+      color: #f8fafc !important;
+    }
+
+    /* Controls Dark Mode */
+    body.dark .search-input {
+      background: #1e293b !important;
+      color: #f8fafc !important;
+      border-color: #334155 !important;
+    }
+    body.dark .search-input::placeholder {
+      color: #64748b !important;
+    }
+    body.dark .view-switcher {
+      background: #1e293b !important;
+      border: 1px solid #334155 !important;
+    }
+    body.dark .view-btn {
+      color: #94a3b8 !important;
+    }
+    body.dark .view-btn.active {
+      background: #0f172a !important;
+      color: #f8fafc !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+    }
+    body.dark .filter-group {
+      background: #1e293b !important;
+      border-color: #334155 !important;
+    }
+    body.dark .filter-btn {
+      background: transparent !important;
+      color: #94a3b8 !important;
+    }
+    body.dark .filter-btn.active {
+      background: #4f46e5 !important;
+      color: #ffffff !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+    }
+    body.dark .tics-toggle-label {
+      background: #1e293b !important;
+      color: #cbd5e1 !important;
+      border-color: #334155 !important;
+    }
+    body.dark .btn-secondary {
+      background: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+    body.dark .btn-secondary:hover {
+      background: #334155 !important;
+      color: #ffffff !important;
+    }
+
+    /* Legend Bar Dark Mode */
+    body.dark .legend-bar {
+      background: #0f172a !important;
+      border-color: #1e293b !important;
+      color: #94a3b8 !important;
+    }
+    body.dark .legend-tag {
+      background: #1e293b !important;
+      border-color: #334155 !important;
+      color: #e2e8f0 !important;
+    }
+    body.dark .dot-btt {
+      background: #cbd5e1 !important;
+    }
+
+    /* Table Matrix (Horario Completo) Dark Mode */
+    body.dark .table-card {
+      background: #0f172a !important;
+      border-color: #1e293b !important;
+    }
+    body.dark .table-header {
+      background: #131d33 !important;
+      border-bottom: 1px solid #1e293b !important;
+    }
+    body.dark .matrix-count-badge, body.dark #matrixCount {
+      background: #1e293b !important;
+      color: #cbd5e1 !important;
+      border: 1px solid #334155 !important;
+    }
+    body.dark .grid-table {
+      border-color: #1e293b !important;
+    }
+    body.dark .grid-table th {
+      background: #141f36 !important;
+      border-color: #1e293b !important;
+      color: #cbd5e1 !important;
+    }
+    body.dark .grid-table td {
+      border-color: #1e293b !important;
+      background: #0b1120 !important;
+    }
+    body.dark .th-day {
+      background: #111a2e !important;
+      color: #f8fafc !important;
+      border-color: #1e293b !important;
+    }
+    body.dark .th-lab {
+      background: #141f36 !important;
+      color: #94a3b8 !important;
+      border-color: #1e293b !important;
+    }
+    body.dark .td-hour {
+      background: #111a2e !important;
+      color: #cbd5e1 !important;
+      border-color: #1e293b !important;
+    }
+
+    /* Semester Exam Cards in Dark Mode */
+    body.dark .card-sem-1 { 
+      background: rgba(79, 70, 229, 0.22) !important; 
+      border-color: rgba(99, 102, 241, 0.5) !important; 
+      color: #c7d2fe !important; 
+    }
+    body.dark .card-sem-2 { 
+      background: rgba(2, 132, 199, 0.22) !important; 
+      border-color: rgba(14, 165, 233, 0.5) !important; 
+      color: #bae6fd !important; 
+    }
+    body.dark .card-sem-3 { 
+      background: rgba(5, 150, 105, 0.22) !important; 
+      border-color: rgba(16, 185, 129, 0.5) !important; 
+      color: #a7f3d0 !important; 
+    }
+    body.dark .card-sem-4 { 
+      background: rgba(217, 119, 6, 0.22) !important; 
+      border-color: rgba(245, 158, 11, 0.5) !important; 
+      color: #fde68a !important; 
+    }
+    body.dark .card-sem-5 { 
+      background: rgba(225, 29, 72, 0.22) !important; 
+      border-color: rgba(244, 63, 94, 0.5) !important; 
+      color: #fecdd3 !important; 
+    }
+    body.dark .card-sem-6 { 
+      background: rgba(147, 51, 234, 0.22) !important; 
+      border-color: rgba(168, 85, 247, 0.5) !important; 
+      color: #e9d5ff !important; 
+    }
+    body.dark .card-btt {
+      background: rgba(30, 41, 59, 0.8) !important;
+      border-color: #475569 !important;
+      color: #f1f5f9 !important;
+    }
+    body.dark .exam-subject { 
+      color: #f8fafc !important; 
+    }
+    body.dark .exam-shift { 
+      color: #94a3b8 !important; 
+    }
+    body.dark .tic-cell-block {
+      background: rgba(30, 41, 59, 0.75) !important;
+      border-color: #334155 !important;
+    }
+    body.dark .tic-label {
+      color: #cbd5e1 !important;
+    }
+    body.dark .tic-sub {
+      color: #64748b !important;
+    }
+
+    /* Day View Dark Mode */
+    body.dark .day-tab-card {
+      background: #0f172a !important;
+      border-color: #1e293b !important;
+      color: #f1f5f9 !important;
+    }
+    body.dark .day-tab-card.active {
+      background: #4f46e5 !important;
+      border-color: #4f46e5 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3) !important;
+    }
+    body.dark .lab-col {
+      background: #0f172a !important;
+      border-color: #1e293b !important;
+    }
+    body.dark .lab-col-header {
+      background: #141f36 !important;
+      border-color: #1e293b !important;
+      color: #f8fafc !important;
+    }
+    body.dark .lab-col-header span {
+      color: #94a3b8 !important;
+    }
+
+    /* Directory Table Dark Mode */
+    body.dark .dir-table th {
+      background: #141f36 !important;
+      border-color: #1e293b !important;
+      color: #cbd5e1 !important;
+    }
+    body.dark .dir-table td {
+      border-color: #1e293b !important;
+      color: #e2e8f0 !important;
+    }
+    body.dark .dir-table tr:hover {
+      background: #141f36 !important;
+    }
+    body.dark .dir-table td strong {
+      color: #f8fafc !important;
+    }
+    body.dark .lab-badge {
+      background: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+
+    /* Modals Dark Mode */
+    body.dark .modal-box {
+      background: #0f172a !important;
+      border-color: #334155 !important;
+      color: #f1f5f9 !important;
+    }
+    body.dark .modal-header {
+      border-color: #1e293b !important;
+    }
+    body.dark .modal-header h3 {
+      color: #f8fafc !important;
+    }
+    body.dark .info-tile {
+      background: #1e293b !important;
+      border-color: #334155 !important;
+    }
+    body.dark .info-tile-lbl {
+      color: #94a3b8 !important;
+    }
+    body.dark .info-tile-val {
+      color: #f8fafc !important;
+    }
+    body.dark .instructions-box {
+      background: #1e1b4b !important;
+      border-color: #3730a3 !important;
+      color: #c7d2fe !important;
+    }
+    body.dark .instructions-box strong {
+      color: #e0e7ff !important;
+    }
+
+    /* Guidelines Cards Dark Mode */
+    body.dark .guideline-card {
+      background: #0f172a !important;
+      border-color: #1e293b !important;
+    }
+    body.dark .guideline-card p {
+      color: #94a3b8 !important;
+    }
+    body.dark .guideline-card p strong {
+      color: #e2e8f0 !important;
+    }
+
     /* Print styling */
     @media print {
       .header, .controls, .btn, .no-print { display: none !important; }
@@ -489,7 +821,7 @@
       .table-card { border: none !important; box-shadow: none !important; }
     }
   </style>
-</head>
+<script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
 <body>
 
   <!-- Header -->
@@ -503,6 +835,9 @@
         </div>
       </div>
       <div class="header-actions">
+        <button class="btn btn-secondary" onclick="toggleDarkMode()" id="themeBtn" title="Cambiar a Modo Oscuro / Claro">
+          🌙 Modo Oscuro
+        </button>
         <button class="btn btn-secondary" onclick="openGeneralInfo()">
           ℹ Indicaciones
         </button>
@@ -575,7 +910,7 @@
           <button class="filter-btn" onclick="setLab('Lab. 3')">Lab 3</button>
         </div>
 
-        <label style="display:flex; align-items:center; gap:6px; cursor:pointer; margin-left:auto; background:#f1f5f9; padding:4px 10px; border-radius:6px; font-size:11px;">
+        <label class="tics-toggle-label" style="display:flex; align-items:center; gap:6px; cursor:pointer; margin-left:auto; padding:4px 10px; border-radius:6px; font-size:11px;">
           <input type="checkbox" id="ticsCheck" onchange="toggleTics(this.checked)">
           <span>Ver horas de clase TIC's</span>
         </label>
@@ -593,6 +928,7 @@
         <span class="legend-tag"><span class="dot dot-sem-5"></span> 5° Semestre</span>
         <span class="legend-tag"><span class="dot dot-sem-6"></span> 6° Semestre</span>
         <span class="legend-tag"><span class="dot dot-btt"></span> Técnico BTT</span>
+        <span id="ticLegendTag" class="legend-tag" style="display:none;"><span class="dot" style="background:#64748b; border-radius:2px;"></span> Clase regular TIC's</span>
       </div>
       <div style="color:#64748b;">
         Haz clic en cualquier examen para ver los detalles y agendarlo
@@ -603,10 +939,10 @@
     <section id="sec-matrix" class="table-card">
       <div class="table-header">
         <div>
-          <strong style="font-size:14px; color:#0f172a;">Matriz General de Horarios (Ciclo 2026B)</strong>
+          <strong class="matrix-title" style="font-size:14px;">Matriz General de Horarios (Ciclo 2026B)</strong>
           <span style="font-size:12px; color:#64748b; display:block;">Laboratorios 1, 2 y 3 · 17 al 20 de noviembre</span>
         </div>
-        <span id="matrixCount" style="font-size:12px; font-family:monospace; background:#f1f5f9; padding:3px 8px; border-radius:4px;">
+        <span id="matrixCount" class="matrix-count-badge" style="font-size:12px; font-family:monospace; padding:3px 8px; border-radius:4px;">
           31 de 31 exámenes visibles
         </span>
       </div>
@@ -670,7 +1006,7 @@
 
     <!-- Guidelines info -->
     <section style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
-      <div style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px;">
+      <div class="guideline-card" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px;">
         <strong style="color:#059669; font-size:13px; display:block; margin-bottom:6px;">✓ Requisitos del Alumno</strong>
         <p style="font-size:12px; color:#475569; line-height:1.6;">
           · Presentarse con credencial oficial vigente de la UdeG o identificación con foto.<br>
@@ -678,15 +1014,15 @@
           · Llegar 10 minutos antes de la hora programada.
         </p>
       </div>
-      <div style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px;">
-        <strong style="color:#4f46e5; font-size:13px; display:block; margin-bottom:6px;">🏢 Ubicación</strong>
+      <div class="guideline-card" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px;">
+        <strong style="color:#4f46e5; font-size:13px; display:block; margin-bottom:6px;">🏢 Ubicación de Laboratorios</strong>
         <p style="font-size:12px; color:#475569; line-height:1.6;">
-          · <strong>Lab. 1:</strong> Edificio de Tecnologías, Planta Alta.<br>
-          · <strong>Lab. 2:</strong> Edificio de Tecnologías, Planta Baja.<br>
-          · <strong>Lab. 3:</strong> Edificio Anexo, Sala Audiovisual.
+          · <strong>Lab. 1:</strong> Edificio B, Planta Alta.<br>
+          · <strong>Lab. 2:</strong> Edificio D, junto a la Biblioteca.<br>
+          · <strong>Lab. 3:</strong> Edificio B, Planta Baja.
         </p>
       </div>
-      <div style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px;">
+      <div class="guideline-card" style="background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:16px;">
         <strong style="color:#d97706; font-size:13px; display:block; margin-bottom:6px;">⚠ Suspensión y Reglas</strong>
         <p style="font-size:12px; color:#475569; line-height:1.6;">
           · <strong>Lunes 16 de noviembre:</strong> Suspensión oficial de labores.<br>
@@ -705,7 +1041,7 @@
         <strong>Universidad de Guadalajara</strong> · SEMS · Escuela Preparatoria Regional de Chapala
       </div>
       <div>
-        Colegio Departamental de Inglés — Ciclo 2026B
+        Colegio Departamental — Ciclo 2026B
       </div>
     </div>
   </footer>
@@ -767,9 +1103,14 @@
       </div>
       <div class="modal-body">
         <p><strong>1. Horarios:</strong> El rol inicia puntualmente en la hora marcada. Llega con 10 minutos de anticipación.</p>
-        <p><strong>2. Identificación:</strong> Es obligatorio presentar credencial de estudiante física o credencial digital oficial.</p>
-        <p><strong>3. Plataforma:</strong> Los exámenes se aplicarán en línea a través de las computadoras de los laboratorios designados.</p>
-        <p><strong>4. Lunes 16 de noviembre:</strong> Suspensión oficial en apego al calendario institucional de la UdeG.</p>
+        <p><strong>2. Ubicación de Laboratorios:</strong><br>
+          · <strong>Lab. 1:</strong> Edificio B, Planta Alta.<br>
+          · <strong>Lab. 2:</strong> Edificio D, junto a la Biblioteca.<br>
+          · <strong>Lab. 3:</strong> Edificio B, Planta Baja.
+        </p>
+        <p><strong>3. Identificación:</strong> Es obligatorio presentar credencial de estudiante física o credencial digital oficial.</p>
+        <p><strong>4. Plataforma:</strong> Los exámenes se aplicarán en línea a través de las computadoras de los laboratorios designados.</p>
+        <p><strong>5. Lunes 16 de noviembre:</strong> Suspensión oficial en apego al calendario institucional de la UdeG.</p>
         <div style="text-align:right;">
           <button class="btn btn-dark" onclick="closeGeneralInfo()">Entendido</button>
         </div>
@@ -828,6 +1169,69 @@
     const LABS_DEF = ['Lab. 1', 'Lab. 2', 'Lab. 3'];
     const SLOTS_DEF = ['7 a 8', '8 a 9', '9 a 10', '10 a 11', '11 a 12', '12 a 13', '13 a 14', '14 a 15', '15 a 16', '16 a 17', '17 a 18', '18 a 19'];
 
+    // Regular TIC's class slots
+    const TIC_SLOTS_DEF = [
+      // Martes 17
+      { day: 'Martes 17 de noviembre', slot: '8 a 9', lab: 'Lab. 2' },
+      { day: 'Martes 17 de noviembre', slot: '9 a 10', lab: 'Lab. 2' },
+      { day: 'Martes 17 de noviembre', slot: '10 a 11', lab: 'Lab. 1' },
+      { day: 'Martes 17 de noviembre', slot: '10 a 11', lab: 'Lab. 2' },
+      { day: 'Martes 17 de noviembre', slot: '13 a 14', lab: 'Lab. 2' },
+      { day: 'Martes 17 de noviembre', slot: '14 a 15', lab: 'Lab. 2' },
+      { day: 'Martes 17 de noviembre', slot: '15 a 16', lab: 'Lab. 1' },
+      { day: 'Martes 17 de noviembre', slot: '16 a 17', lab: 'Lab. 1' },
+
+      // Miércoles 18
+      { day: 'Miércoles 18 de noviembre', slot: '7 a 8', lab: 'Lab. 1' },
+      { day: 'Miércoles 18 de noviembre', slot: '8 a 9', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '9 a 10', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '9 a 10', lab: 'Lab. 3' },
+      { day: 'Miércoles 18 de noviembre', slot: '10 a 11', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '10 a 11', lab: 'Lab. 3' },
+      { day: 'Miércoles 18 de noviembre', slot: '11 a 12', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '11 a 12', lab: 'Lab. 3' },
+      { day: 'Miércoles 18 de noviembre', slot: '12 a 13', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '12 a 13', lab: 'Lab. 3' },
+      { day: 'Miércoles 18 de noviembre', slot: '13 a 14', lab: 'Lab. 1' },
+      { day: 'Miércoles 18 de noviembre', slot: '13 a 14', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '13 a 14', lab: 'Lab. 3' },
+      { day: 'Miércoles 18 de noviembre', slot: '14 a 15', lab: 'Lab. 1' },
+      { day: 'Miércoles 18 de noviembre', slot: '14 a 15', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '14 a 15', lab: 'Lab. 3' },
+      { day: 'Miércoles 18 de noviembre', slot: '15 a 16', lab: 'Lab. 1' },
+      { day: 'Miércoles 18 de noviembre', slot: '15 a 16', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '15 a 16', lab: 'Lab. 3' },
+      { day: 'Miércoles 18 de noviembre', slot: '16 a 17', lab: 'Lab. 2' },
+
+      // Jueves 19
+      { day: 'Jueves 19 de noviembre', slot: '8 a 9', lab: 'Lab. 2' },
+      { day: 'Jueves 19 de noviembre', slot: '8 a 9', lab: 'Lab. 3' },
+      { day: 'Jueves 19 de noviembre', slot: '10 a 11', lab: 'Lab. 2' },
+      { day: 'Jueves 19 de noviembre', slot: '10 a 11', lab: 'Lab. 3' },
+      { day: 'Jueves 19 de noviembre', slot: '11 a 12', lab: 'Lab. 1' },
+      { day: 'Jueves 19 de noviembre', slot: '11 a 12', lab: 'Lab. 2' },
+      { day: 'Jueves 19 de noviembre', slot: '11 a 12', lab: 'Lab. 3' },
+      { day: 'Jueves 19 de noviembre', slot: '12 a 13', lab: 'Lab. 1' },
+      { day: 'Jueves 19 de noviembre', slot: '13 a 14', lab: 'Lab. 2' },
+      { day: 'Jueves 19 de noviembre', slot: '14 a 15', lab: 'Lab. 1' },
+      { day: 'Jueves 19 de noviembre', slot: '14 a 15', lab: 'Lab. 2' },
+      { day: 'Jueves 19 de noviembre', slot: '14 a 15', lab: 'Lab. 3' },
+      { day: 'Jueves 19 de noviembre', slot: '15 a 16', lab: 'Lab. 2' },
+      { day: 'Jueves 19 de noviembre', slot: '15 a 16', lab: 'Lab. 3' },
+      { day: 'Jueves 19 de noviembre', slot: '16 a 17', lab: 'Lab. 3' },
+
+      // Viernes 20
+      { day: 'Viernes 20 de noviembre', slot: '7 a 8', lab: 'Lab. 1' },
+      { day: 'Viernes 20 de noviembre', slot: '8 a 9', lab: 'Lab. 1' },
+      { day: 'Viernes 20 de noviembre', slot: '9 a 10', lab: 'Lab. 1' },
+      { day: 'Viernes 20 de noviembre', slot: '10 a 11', lab: 'Lab. 1' },
+      { day: 'Viernes 20 de noviembre', slot: '10 a 11', lab: 'Lab. 3' },
+      { day: 'Viernes 20 de noviembre', slot: '11 a 12', lab: 'Lab. 2' },
+      { day: 'Viernes 20 de noviembre', slot: '11 a 12', lab: 'Lab. 3' },
+      { day: 'Viernes 20 de noviembre', slot: '12 a 13', lab: 'Lab. 2' },
+      { day: 'Viernes 20 de noviembre', slot: '12 a 13', lab: 'Lab. 3' },
+    ];
+
     let curView = 'matrix';
     let curDay = 'Martes 17 de noviembre';
     let filterSem = 'all';
@@ -867,6 +1271,9 @@
       const map = new Map();
       EXAMS.forEach(e => map.set(e.day + '|' + e.lab + '|' + e.slot, e));
 
+      const ticMap = new Set();
+      TIC_SLOTS_DEF.forEach(s => ticMap.add(s.day + '|' + s.lab + '|' + s.slot));
+
       SLOTS_DEF.forEach(time => {
         const tr = document.createElement('tr');
         const tdH = document.createElement('td');
@@ -879,6 +1286,7 @@
             const td = document.createElement('td');
             const key = d.key + '|' + lab + '|' + time;
             const exam = map.get(key);
+            const isTic = ticMap.has(key);
 
             if (exam) {
               const isVis = list.some(i => i.id === exam.id);
@@ -896,8 +1304,15 @@
                 '</div>' +
                 '<div class="exam-subject">' + exam.subject + '</div>';
               td.appendChild(card);
+            } else if (isTic && showTics) {
+              const ticCard = document.createElement('div');
+              ticCard.className = 'tic-cell-block';
+              ticCard.innerHTML =
+                '<span class="tic-label">TIC\'S</span>' +
+                '<span class="tic-sub">Clase regular</span>';
+              td.appendChild(ticCard);
             } else {
-              td.innerHTML = '<span style="color:#cbd5e1; display:block; text-align:center;">·</span>';
+              td.innerHTML = '<div style="height:100%; min-height:58px;"></div>';
             }
             tr.appendChild(td);
           });
@@ -986,7 +1401,7 @@
           '<td>' + exam.shift + '</td>' +
           '<td>' + exam.day + '</td>' +
           '<td style="font-family:monospace; font-weight:600;">' + exam.start + ' - ' + exam.end + ' hrs</td>' +
-          '<td><span style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-weight:600;">' + exam.lab + '</span></td>' +
+          '<td><span class="lab-badge" style="padding:2px 6px; border-radius:4px; font-weight:600;">' + exam.lab + '</span></td>' +
           '<td><button class="btn btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="event.stopPropagation(); downloadIcs(EXAMS.find(x=>x.id===\'' + exam.id + '\'))">.ICS</button></td>';
         tbody.appendChild(tr);
       });
@@ -1038,8 +1453,30 @@
 
     function toggleTics(c) {
       showTics = c;
+      const tag = document.getElementById('ticLegendTag');
+      if (tag) tag.style.display = c ? 'inline-flex' : 'none';
       render();
     }
+
+    const LAB_LOCATIONS = {
+      'Lab. 1': 'Edificio B, Planta Alta',
+      'Lab. 2': 'Edificio D, junto a la Biblioteca',
+      'Lab. 3': 'Edificio B, Planta Baja'
+    };
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+      const isDark = document.body.classList.contains('dark');
+      try { localStorage.setItem('theme', isDark ? 'dark' : 'light'); } catch (e) {}
+      const btn = document.getElementById('themeBtn');
+      if (btn) btn.innerHTML = isDark ? '☀️ Modo Claro' : '🌙 Modo Oscuro';
+    }
+
+    try {
+      if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.body.classList.add('dark');
+      }
+    } catch (e) {}
 
     function openModal(exam) {
       curExam = exam;
@@ -1049,7 +1486,7 @@
       document.getElementById('mTitle').textContent = exam.subject;
       document.getElementById('mDate').textContent = exam.day;
       document.getElementById('mTime').textContent = exam.start + ' - ' + exam.end + ' hrs';
-      document.getElementById('mLab').textContent = exam.lab;
+      document.getElementById('mLab').innerHTML = exam.lab + '<br><small style="font-size:11px; font-weight:normal; opacity:0.85;">' + (LAB_LOCATIONS[exam.lab] || '') + '</small>';
       document.getElementById('mProg').textContent = exam.prog;
       document.getElementById('examModal').style.display = 'flex';
     }
@@ -1082,8 +1519,8 @@
         'DTSTART:' + d + 'T' + sH + sM + '00',
         'DTEND:' + d + 'T' + eH + eM + '00',
         'SUMMARY:Examen Departamental: ' + exam.subject + ' (' + exam.group + ')',
-        'DESCRIPTION:Examen Departamental de Inglés\\nGrupo: ' + exam.group + '\\nTurno: ' + exam.shift + '\\nUbicación: ' + exam.lab + ', Prep. Regional de Chapala',
-        'LOCATION:' + exam.lab + ', Preparatoria Regional de Chapala',
+        'DESCRIPTION:Examen Departamental de Inglés\\nGrupo: ' + exam.group + '\\nTurno: ' + exam.shift + '\\nUbicación: ' + exam.lab + ' (' + (LAB_LOCATIONS[exam.lab] || '') + '), Prep. Regional de Chapala',
+        'LOCATION:' + exam.lab + ' (' + (LAB_LOCATIONS[exam.lab] || '') + '), Preparatoria Regional de Chapala',
         'STATUS:CONFIRMED',
         'END:VEVENT',
         'END:VCALENDAR'
@@ -1098,6 +1535,10 @@
 
     // Initial render
     render();
+    if (document.body.classList.contains('dark')) {
+      const btn = document.getElementById('themeBtn');
+      if (btn) btn.innerHTML = '☀️ Modo Claro';
+    }
   </script>
 </body>
 </html>
