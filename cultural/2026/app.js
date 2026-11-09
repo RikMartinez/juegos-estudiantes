@@ -2738,17 +2738,58 @@ function renderReport(container) {
                                     `;
         }).join('')}
                                 
-                                <div>
-                                    <h4 style="text-transform: uppercase; color: #ff4b2b; margin-bottom: 15px; border-bottom: 2px solid #ff4b2b; display: inline-block;">
-                                        <i class="fa-solid fa-triangle-exclamation"></i> Penalizaciones
-                                    </h4>
-                                    <div style="background: rgba(255, 75, 43, 0.1); padding: 10px; border-radius: 8px;">
-                                        <div style="display: flex; justify-content: space-between;">
-                                            <span>Amonestaciones (${team.amonestaciones || 0})</span>
-                                            <span style="color: #ff4b2b; font-weight: 800;">-${penalties} pts</span>
+                                ${(() => {
+                                    const technicalPenalties = State.eventResults
+                                        .filter(r => r.teamId === team.id && r.rubric && Number(r.rubric.penalization) > 0)
+                                        .map(r => {
+                                            const comp = State.competitions.find(c => c.id === r.competitionId);
+                                            return {
+                                                compName: comp ? comp.name : 'Disciplina',
+                                                type: comp ? comp.type : '',
+                                                pts: Number(r.rubric.penalization),
+                                                reason: r.rubric.penalizationReason || 'Sanción técnica',
+                                                rawTotal: r.rubric.rawTotal || r.value,
+                                                finalTotal: r.value
+                                            };
+                                        });
+
+                                    return `
+                                        <div>
+                                            <h4 style="text-transform: uppercase; color: #ff4b2b; margin-bottom: 15px; border-bottom: 2px solid #ff4b2b; display: inline-block;">
+                                                <i class="fa-solid fa-triangle-exclamation"></i> Penalizaciones y Sanciones
+                                            </h4>
+                                            <div style="background: rgba(255, 75, 43, 0.08); border: 1px solid rgba(255, 75, 43, 0.2); padding: 12px; border-radius: 8px; display: flex; flex-direction: column; gap: 8px;">
+                                                ${technicalPenalties.length > 0 ? technicalPenalties.map(p => `
+                                                    <div style="border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 6px;">
+                                                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem;">
+                                                            <span style="font-weight: 700; color: #fca5a5;">
+                                                                <i class="fa-solid ${p.type === 'catrines' ? 'fa-hat-cowboy-side' : 'fa-gavel'}"></i> ${p.compName}:
+                                                            </span>
+                                                            <span style="color: #ef4444; font-weight: 800;">-${p.pts} pts</span>
+                                                        </div>
+                                                        <div style="font-size: 0.72rem; color: var(--text-variant); margin-top: 2px;">
+                                                            Motivo: <strong>${p.reason}</strong>
+                                                        </div>
+                                                        <div style="font-size: 0.68rem; color: var(--accent-yellow); opacity: 0.85; margin-top: 1px;">
+                                                            (Deducido en la disciplina: ${p.rawTotal} ➔ ${p.finalTotal} pts)
+                                                        </div>
+                                                    </div>
+                                                `).join('') : ''}
+
+                                                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; ${technicalPenalties.length > 0 ? 'padding-top: 4px;' : ''}">
+                                                    <span style="color: var(--text-variant);">Amonestaciones escolares (${team.amonestaciones || 0})</span>
+                                                    <span style="color: ${penalties > 0 ? '#ef4444' : 'var(--text-muted)'}; font-weight: 800;">-${penalties} pts tabla</span>
+                                                </div>
+
+                                                ${(technicalPenalties.length === 0 && (team.amonestaciones || 0) === 0) ? `
+                                                    <div style="color: var(--text-muted); font-size: 0.75rem; font-style: italic; text-align: center; margin-top: 2px;">
+                                                        <i class="fa-solid fa-circle-check" style="color: #2ec4b6;"></i> Sin penalizaciones registradas
+                                                    </div>
+                                                ` : ''}
+                                            </div>
                                         </div>
-                                    </div>
-                                </div>
+                                    `;
+                                })()}
                             </div>
                         </div>
                     `;
@@ -2802,20 +2843,80 @@ function renderTeamDetails(teamId, competitions) {
         if (points > 0) {
             const posDisplay = Array.isArray(pos) ? pos.join('°, ') + '°' : pos + '°';
             const resItem = results.find(r => r.teamId === teamId);
-            const rubricInfo = (comp.type === 'altares' && resItem && resItem.rubric) ? `
-                <div style="font-size: 0.7rem; color: var(--text-variant); margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap;">
-                    <span>🗣️ Exp: <strong>${resItem.rubric.exposicion || 0}</strong>/10</span>
-                    <span>🏛️ Est: <strong>${resItem.rubric.estructura || 0}</strong>/10</span>
-                    <span>🕯️ Elem: <strong>${resItem.rubric.elementos || 0}</strong>/10</span>
-                    <span>🎨 Creat: <strong>${resItem.rubric.creatividad || 0}</strong>/10</span>
-                </div>
-            ` : '';
+            
+            let maxCompPts = 100;
+            if (comp.type === 'altares') maxCompPts = 40;
+            else if (comp.type === 'cuentos') maxCompPts = 20;
+            else if (comp.type === 'calaverita' || comp.type === 'lapida') maxCompPts = 30;
+            else if (comp.type === 'catrines') maxCompPts = 99;
+
+            let rubricInfo = '';
+            if (resItem && resItem.rubric) {
+                if (comp.type === 'altares') {
+                    rubricInfo = `
+                        <div style="font-size: 0.7rem; color: var(--text-variant); margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap;">
+                            <span>🗣️ Exp: <strong>${resItem.rubric.exposicion || 0}</strong>/10</span>
+                            <span>🏛️ Est: <strong>${resItem.rubric.estructura || 0}</strong>/10</span>
+                            <span>🕯️ Elem: <strong>${resItem.rubric.elementos || 0}</strong>/10</span>
+                            <span>🎨 Creat: <strong>${resItem.rubric.creatividad || 0}</strong>/10</span>
+                        </div>
+                    `;
+                } else if (comp.type === 'cuentos') {
+                    rubricInfo = `
+                        <div style="font-size: 0.7rem; color: var(--text-variant); margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap;">
+                            <span>📐 Est: <strong>${resItem.rubric.estructura || 0}</strong>/10</span>
+                            <span>📖 Cont: <strong>${resItem.rubric.contenido || 0}</strong>/10</span>
+                            ${resItem.rubric.judgeCount > 1 ? `<span style="color: var(--accent-gold); font-weight: 700;">(${resItem.rubric.judgeCount} jueces)</span>` : ''}
+                        </div>
+                    `;
+                } else if (comp.type === 'calaverita') {
+                    rubricInfo = `
+                        <div style="font-size: 0.7rem; color: var(--text-variant); margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap;">
+                            <span>✍️ Forma: <strong>${resItem.rubric.forma || 0}</strong>/10</span>
+                            <span>💀 Fondo: <strong>${resItem.rubric.fondo || 0}</strong>/10</span>
+                            <span>✨ Creat: <strong>${resItem.rubric.creatividad || 0}</strong>/10</span>
+                            ${resItem.rubric.judgeCount > 1 ? `<span style="color: var(--accent-gold); font-weight: 700;">(${resItem.rubric.judgeCount} jueces)</span>` : ''}
+                        </div>
+                    `;
+                } else if (comp.type === 'lapida') {
+                    rubricInfo = `
+                        <div style="font-size: 0.7rem; color: var(--text-variant); margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap;">
+                            <span>🏛️ Est: <strong>${resItem.rubric.estructura || 0}</strong>/10</span>
+                            <span>🐉 Conc: <strong>${resItem.rubric.concepto || 0}</strong>/10</span>
+                            <span>🎨 Creat: <strong>${resItem.rubric.creatividad || 0}</strong>/10</span>
+                            ${resItem.rubric.judgeCount > 1 ? `<span style="color: var(--accent-gold); font-weight: 700;">(${resItem.rubric.judgeCount} jueces)</span>` : ''}
+                        </div>
+                    `;
+                } else if (comp.type === 'catrines') {
+                    const hasPen = resItem.rubric.penalization > 0;
+                    rubricInfo = `
+                        <div style="font-size: 0.7rem; color: var(--text-variant); margin-top: 4px; display: flex; flex-direction: column; gap: 3px;">
+                            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                <span>👗 Vest: <strong>${resItem.rubric.vestuario || 0}</strong></span>
+                                <span>💄 Maq: <strong>${resItem.rubric.maquillaje || 0}</strong></span>
+                                <span>💡 Creat: <strong>${resItem.rubric.creatividad || 0}</strong></span>
+                                <span>🚶 Act: <strong>${resItem.rubric.desempeno || 0}</strong></span>
+                                <span>💎 Acc: <strong>${resItem.rubric.accesorios || 0}</strong></span>
+                                <span>💀 Trad: <strong>${resItem.rubric.tradicion || 0}</strong></span>
+                            </div>
+                            <div style="font-size: 0.72rem; color: var(--accent-gold); margin-top: 2px;">
+                                ${resItem.rubric.judgeCount > 1 ? `Promedio ${resItem.rubric.judgeCount} jueces: <strong>${resItem.rubric.rawTotal || resItem.rubric.total} pts</strong>` : ''}
+                            </div>
+                            ${hasPen ? `
+                                <div style="color: #f87171; font-weight: 700; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239,68,68,0.3); padding: 3px 6px; border-radius: 4px; margin-top: 2px; display: inline-block;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Sanción: -${resItem.rubric.penalization} pts (${resItem.rubric.penalizationReason})
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }
+            }
 
             details.push(`
                 <div style="display: flex; justify-content: space-between; font-size: 0.85rem; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px;">
                     <div style="flex: 1;">
                         <span style="font-weight: 600; color: white;">${comp.name}</span>
-                        ${comp.type === 'altares' && resItem ? `<span style="font-size: 0.75rem; color: var(--accent-gold); margin-left: 6px;">(${resItem.value}/40 pts)</span>` : ''}
+                        ${resItem ? `<span style="font-size: 0.75rem; color: var(--accent-gold); margin-left: 6px;">(${resItem.value}/${maxCompPts} pts)</span>` : ''}
                         <br> 
                         <span style="color: var(--accent-yellow); font-size: 0.75rem;">Lugar obtenido: ${posDisplay}</span>
                         ${rubricInfo}
