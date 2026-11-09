@@ -1,30 +1,38 @@
 <!doctype html>
-<html lang="es">
+<html lang="es" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Calendario de Exámenes Departamentales 2026B - Prep. Regional de Chapala</title>
-  <meta name="description" content="Horario interactivo oficial de exámenes departamentales 2026B - UdeG SEMS">
+  <meta name="description" content="Horario interactivo oficial de exámenes departamentales 2026B - UdeG SEMS. Preparatoria Regional de Chapala.">
   <style>
     :root {
       --bg: #f8fafc;
       --card-bg: #ffffff;
+      --card-hover: #f1f5f9;
       --text: #0f172a;
       --text-muted: #64748b;
       --border: #e2e8f0;
       --primary: #2563eb;
       --primary-hover: #1d4ed8;
       --primary-light: #eff6ff;
+      --accent-badge: #e2e8f0;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
     }
-    .dark {
+    html.dark {
       --bg: #090d16;
       --card-bg: #0f172a;
+      --card-hover: #162035;
       --text: #f8fafc;
       --text-muted: #94a3b8;
       --border: #1e293b;
       --primary: #3b82f6;
       --primary-hover: #60a5fa;
-      --primary-light: #1e293b;
+      --primary-light: #162238;
+      --accent-badge: #1e293b;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -32,7 +40,10 @@
       background: var(--bg);
       color: var(--text);
       line-height: 1.5;
-      padding-bottom: 3rem;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background-color 0.2s ease, color 0.2s ease;
     }
     header {
       background: var(--card-bg);
@@ -40,10 +51,11 @@
       position: sticky;
       top: 0;
       z-index: 40;
-      padding: 0.75rem 1rem;
+      padding: 0.85rem 1rem;
+      box-shadow: var(--shadow-sm);
     }
     .header-inner {
-      max-width: 1200px;
+      max-width: 1280px;
       margin: 0 auto;
       display: flex;
       align-items: center;
@@ -54,222 +66,633 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.85rem;
     }
     .brand-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
       background: linear-gradient(135deg, #1d4ed8, #4338ca);
       color: white;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: bold;
-      font-size: 1.1rem;
+      font-weight: 800;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+      flex-shrink: 0;
     }
-    .brand h1 { font-size: 1rem; font-weight: 700; }
-    .brand p { font-size: 0.75rem; color: var(--text-muted); }
+    .brand h1 { font-size: 1.05rem; font-weight: 700; letter-spacing: -0.01em; }
+    .brand p { font-size: 0.78rem; color: var(--text-muted); }
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
     .container {
-      max-width: 1200px;
+      max-width: 1280px;
+      width: 100%;
       margin: 1.5rem auto;
       padding: 0 1rem;
+      flex: 1;
+    }
+    .banner-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+    }
+    .banner-text h2 { font-size: 0.95rem; font-weight: 700; }
+    .banner-text p { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .quick-stats {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .stat-pill {
+      display: flex;
+      flex-direction: column;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+    .stat-pill strong {
+      font-size: 0.95rem;
+      color: var(--text);
+      font-family: monospace;
     }
     .controls {
       display: flex;
-      gap: 0.5rem;
+      gap: 0.75rem;
       flex-wrap: wrap;
       align-items: center;
       margin-bottom: 1.25rem;
       background: var(--card-bg);
-      padding: 1rem;
-      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      border-radius: 14px;
       border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 240px;
+    }
+    .search-icon {
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      font-size: 0.9rem;
     }
     .search-input {
-      flex: 1;
-      min-width: 220px;
-      padding: 0.5rem 0.75rem;
+      width: 100%;
+      padding: 0.6rem 0.75rem 0.6rem 2.25rem;
       border-radius: 8px;
       border: 1px solid var(--border);
       background: var(--bg);
       color: var(--text);
-      font-size: 0.85rem;
+      font-size: 0.875rem;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
     }
-    select, button {
-      padding: 0.5rem 0.75rem;
+    .search-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+    }
+    select, button.control-btn {
+      padding: 0.6rem 0.9rem;
       border-radius: 8px;
       border: 1px solid var(--border);
       background: var(--card-bg);
       color: var(--text);
-      font-size: 0.85rem;
+      font-size: 0.875rem;
       cursor: pointer;
       font-weight: 500;
+      transition: all 0.15s ease;
+      white-space: nowrap;
     }
-    button.primary {
+    select:focus, button.control-btn:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    button.primary-btn {
       background: var(--primary);
       color: white;
       border-color: var(--primary);
+    }
+    button.primary-btn:hover {
+      background: var(--primary-hover);
+    }
+    button.ghost-btn {
+      background: transparent;
+      border-color: transparent;
+      color: var(--text-muted);
+    }
+    button.ghost-btn:hover {
+      background: var(--bg);
+      color: var(--text);
+    }
+    .view-toggle {
+      display: inline-flex;
+      background: var(--bg);
+      padding: 0.25rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      gap: 0.25rem;
+    }
+    .view-toggle button {
+      padding: 0.4rem 0.75rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .view-toggle button.active {
+      background: var(--card-bg);
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
     }
     .day-tabs {
       display: flex;
       gap: 0.5rem;
       overflow-x: auto;
-      padding-bottom: 0.5rem;
-      margin-bottom: 1rem;
+      padding-bottom: 0.6rem;
+      margin-bottom: 1.25rem;
+      scrollbar-width: thin;
     }
     .day-tab {
-      padding: 0.5rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1rem;
       border-radius: 10px;
       border: 1px solid var(--border);
       background: var(--card-bg);
+      color: var(--text);
       white-space: nowrap;
-      font-size: 0.8rem;
+      font-size: 0.825rem;
       font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .day-tab:hover {
+      border-color: var(--primary);
+      background: var(--card-hover);
     }
     .day-tab.active {
       background: var(--primary);
       color: white;
       border-color: var(--primary);
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+    }
+    .day-tab .tab-badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      padding: 0.1rem 0.4rem;
+      border-radius: 9999px;
+      background: var(--accent-badge);
+      color: var(--text-muted);
+      font-family: monospace;
+    }
+    .day-tab.active .tab-badge {
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
     }
     .grid-labs {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1.25rem;
     }
     .lab-card {
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
+      border-radius: 14px;
       overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
     }
     .lab-header {
-      padding: 0.75rem 1rem;
+      padding: 0.85rem 1.15rem;
       background: var(--primary-light);
       border-bottom: 1px solid var(--border);
       font-weight: 700;
-      font-size: 0.9rem;
+      font-size: 0.925rem;
       display: flex;
       justify-content: space-between;
+      align-items: center;
     }
     .exam-item {
-      padding: 0.75rem;
+      padding: 0.85rem 1.15rem;
       border-bottom: 1px solid var(--border);
       transition: background 0.15s;
+      cursor: pointer;
     }
     .exam-item:last-child { border-bottom: none; }
-    .exam-item:hover { background: var(--bg); }
+    .exam-item:hover { background: var(--card-hover); }
     .exam-time {
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
       font-family: monospace;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.35rem;
       display: flex;
       justify-content: space-between;
+      align-items: center;
     }
     .exam-title {
-      font-size: 0.85rem;
+      font-size: 0.92rem;
       font-weight: 600;
-      line-height: 1.3;
+      line-height: 1.35;
+      color: var(--text);
     }
     .exam-meta {
-      font-size: 0.75rem;
+      font-size: 0.78rem;
       color: var(--text-muted);
-      margin-top: 0.25rem;
+      margin-top: 0.35rem;
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+      flex-wrap: wrap;
     }
     .badge {
       display: inline-block;
-      padding: 0.15rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.7rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
       font-weight: 700;
       background: #e2e8f0;
       color: #1e293b;
     }
-    .dark .badge { background: #334155; color: #f8fafc; }
-    .badge-turismo { background: #ccfbf1; color: #0f766e; }
-    .badge-matutino { background: #e0f2fe; color: #0369a1; }
-    .badge-vespertino { background: #ede9fe; color: #5b21b6; }
-    .badge-tae { background: #fef3c7; color: #b45309; }
-    @media print {
-      header, .controls, .day-tabs { display: none !important; }
-      body { background: white !important; color: black !important; }
-      .lab-card { break-inside: avoid; border: 1px solid #ccc; margin-bottom: 1rem; }
+    html.dark .badge { background: #1e293b; color: #f8fafc; }
+    .badge-turismo { background: #ccfbf1 !important; color: #0f766e !important; }
+    html.dark .badge-turismo { background: #134e4a !important; color: #5eead4 !important; }
+    .badge-matutino { background: #e0f2fe !important; color: #0369a1 !important; }
+    html.dark .badge-matutino { background: #0c4a6e !important; color: #7dd3fc !important; }
+    .badge-vespertino { background: #ede9fe !important; color: #5b21b6 !important; }
+    html.dark .badge-vespertino { background: #3b0764 !important; color: #c4b5fd !important; }
+    .badge-tae { background: #fef3c7 !important; color: #b45309 !important; }
+    html.dark .badge-tae { background: #451a03 !important; color: #fcd34d !important; }
+    .badge-tics { background: #f1f5f9 !important; color: #475569 !important; }
+    html.dark .badge-tics { background: #1e293b !important; color: #94a3b8 !important; }
+
+    /* Timeline / Agenda View */
+    .timeline-view {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
     }
+    .timeline-day-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+    }
+    .timeline-day-header {
+      padding: 0.85rem 1.25rem;
+      background: var(--primary-light);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .timeline-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.85rem;
+    }
+    .timeline-table th {
+      padding: 0.65rem 1rem;
+      background: var(--bg);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+    }
+    .timeline-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .timeline-table tr:last-child td {
+      border-bottom: none;
+    }
+    .timeline-table tr:hover td {
+      background: var(--card-hover);
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(4px);
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      max-width: 500px;
+      width: 100%;
+      padding: 1.5rem;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      border: none;
+      background: transparent;
+      font-size: 1.25rem;
+      cursor: pointer;
+      color: var(--text-muted);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      background: var(--card-bg);
+      padding: 1.5rem 1rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+    footer a { color: var(--primary); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    @media print {
+      header, .controls, .day-tabs, .header-actions, .banner-bar, .view-toggle, .btn-no-print { display: none !important; }
+      body { background: white !important; color: black !important; padding: 0 !important; }
+      .container { max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+      .lab-card, .timeline-day-card { break-inside: avoid; border: 1px solid #999 !important; margin-bottom: 1rem; box-shadow: none !important; }
+      .lab-header, .timeline-day-header { background: #f0f0f0 !important; color: black !important; border-bottom: 1px solid #999 !important; }
+      .badge { border: 1px solid #999 !important; background: transparent !important; color: black !important; }
+      .print-title { display: block !important; margin-bottom: 1rem; font-size: 1.2rem; font-weight: bold; }
+    }
+    .print-title { display: none; }
   </style>
-</head>
+  <script>
+    // Ensure dark mode runs synchronously prior to render to eliminate light mode flashing
+    (function() {
+      const savedTheme = localStorage.getItem('chapala_theme');
+      if (savedTheme === 'light') {
+        document.documentElement.classList.remove('dark');
+      } else {
+        document.documentElement.classList.add('dark');
+      }
+    })();
+  </script>
+<script src="/_aistudio-iframe.js?v=1f94f900"></script></head>
 <body>
   <header>
     <div class="header-inner">
       <div class="brand">
         <div class="brand-icon">🎓</div>
         <div>
-          <h1>Prep. Regional de Chapala</h1>
+          <h1>Prep. Regional de Chapala · UdeG SEMS</h1>
           <p>Exámenes Departamentales 2026B (20 al 30 de Noviembre)</p>
         </div>
       </div>
-      <div>
-        <button onclick="toggleDarkMode()">🌓 Modo Oscuro</button>
-        <button onclick="window.print()">🖨️ Imprimir</button>
+      <div class="header-actions">
+        <button class="control-btn" onclick="toggleDarkMode()" id="themeBtn" title="Cambiar tema">
+          <span id="themeIcon">☀️</span> <span id="themeLabel">Modo Claro</span>
+        </button>
+        <button class="control-btn btn-no-print" onclick="window.print()" title="Imprimir horario">
+          🖨️ Imprimir
+        </button>
       </div>
     </div>
   </header>
 
   <div class="container">
+    <div class="print-title">
+      Preparatoria Regional de Chapala — Calendario Departamentales 2026B (UdeG SEMS)
+    </div>
+
+    <!-- Banner Bar -->
+    <div class="banner-bar">
+      <div class="banner-text">
+        <h2>Periodo Oficial de Evaluación Departamental</h2>
+        <p>Laboratorios de Cómputo 1, 2 y 3 · Presentar credencial vigente y acudir 15 min antes</p>
+      </div>
+      <div class="quick-stats">
+        <div class="stat-pill">
+          <span>Total Exámenes</span>
+          <strong id="statTotalExams">108</strong>
+        </div>
+        <div class="stat-pill">
+          <span>Grupos</span>
+          <strong id="statTotalGroups">35</strong>
+        </div>
+        <div class="stat-pill">
+          <span>Días Hábiles</span>
+          <strong>7 Días</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
     <div class="controls">
-      <input type="text" id="searchInput" class="search-input" placeholder="Buscar materia, grupo (ej. 4AM, 1BTT) o horario..." oninput="renderApp()">
-      <select id="shiftFilter" onchange="renderApp()">
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar materia, grupo (ej. 4AM, 1BTT) o horario..." oninput="renderApp()">
+      </div>
+      <select id="shiftFilter" onchange="renderApp()" aria-label="Filtrar por turno">
         <option value="todos">Todos los Turnos</option>
         <option value="Matutino">Turno Matutino</option>
         <option value="Vespertino">Turno Vespertino</option>
         <option value="BTT">Turismo (BTT)</option>
         <option value="tae">TAE Especializantes</option>
       </select>
-      <select id="groupFilter" onchange="renderApp()">
+      <select id="groupFilter" onchange="renderApp()" aria-label="Filtrar por grupo">
         <option value="todos">Todos los Grupos</option>
       </select>
-      <span id="counter" style="font-size:0.8rem; color:var(--text-muted); margin-left:auto;"></span>
+
+      <div class="view-toggle">
+        <button type="button" id="btnViewLabs" class="active" onclick="setViewMode('labs')">Por Labs</button>
+        <button type="button" id="btnViewAgenda" onclick="setViewMode('agenda')">Lista / Agenda</button>
+      </div>
+
+      <button type="button" class="control-btn ghost-btn" onclick="clearFilters()" id="clearFiltersBtn" style="display:none;">
+        ✕ Limpiar
+      </button>
+
+      <span id="counter" style="font-size:0.825rem; color:var(--text-muted); margin-left:auto; font-weight:600;"></span>
     </div>
 
+    <!-- Day Tabs (only visible in Labs view) -->
     <div class="day-tabs" id="dayTabs"></div>
 
-    <div class="grid-labs" id="labsContainer"></div>
+    <!-- Main Container -->
+    <div id="contentArea">
+      <div class="grid-labs" id="labsContainer"></div>
+      <div class="timeline-view" id="timelineContainer" style="display:none;"></div>
+    </div>
   </div>
 
+  <!-- Detail Modal -->
+  <div class="modal-backdrop" id="examModal" onclick="closeModalOnBackdrop(event)">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal()" title="Cerrar">&times;</button>
+      <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.4rem;" id="modalDay"></div>
+      <h3 style="font-size:1.15rem; font-weight:700; margin-bottom:0.75rem; color:var(--text);" id="modalTitle"></h3>
+      
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; background:var(--bg); padding:0.85rem; border-radius:10px; border:1px solid var(--border); font-size:0.85rem; margin-bottom:1rem;">
+        <div>
+          <span style="color:var(--text-muted); font-size:0.75rem; display:block;">Laboratorio</span>
+          <strong id="modalLab"></strong>
+        </div>
+        <div>
+          <span style="color:var(--text-muted); font-size:0.75rem; display:block;">Horario</span>
+          <strong id="modalTime" style="font-family:monospace;"></strong>
+        </div>
+        <div>
+          <span style="color:var(--text-muted); font-size:0.75rem; display:block;">Grupo / Especialidad</span>
+          <strong id="modalGroup"></strong>
+        </div>
+        <div>
+          <span style="color:var(--text-muted); font-size:0.75rem; display:block;">Turno</span>
+          <strong id="modalShift"></strong>
+        </div>
+      </div>
+
+      <div style="font-size:0.8rem; color:var(--text-muted); line-height:1.45;">
+        <strong style="color:var(--text); display:block; margin-bottom:0.25rem;">Indicaciones para el Examen:</strong>
+        • Presentar credencial de estudiante o identificación oficial con fotografía.<br>
+        • Presentarse con 15 minutos de anticipación al laboratorio asignado.<br>
+        • No se permite el uso de celulares ni dispositivos electrónicos no autorizados.
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div style="max-width:1280px; margin:0 auto; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+      <div>Preparatoria Regional de Chapala · Universidad de Guadalajara (SEMS)</div>
+      <div>Colegio Departamental — Ciclo 2026B</div>
+    </div>
+  </footer>
+
   <script>
-    const SCHEDULE = [{"id":"0-0-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 1","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-0-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 2","isEmpty":false,"title":"Estudio del Movimiento","group":"4AM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"0-0-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 3","isEmpty":false,"title":"Lengua y Comunicación","group":"1AM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"0-1-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 1","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-1-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 2","isEmpty":false,"title":"Habilidad Verbal","group":"6AM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"0-1-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 3","isEmpty":false,"title":"Matemática Avanzada","group":"6BM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"0-2-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 1","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-2-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 2","isEmpty":false,"title":"Lengua Extranjera VI","group":"6AM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"0-2-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 3","isEmpty":false,"title":"Historia Sociocultural de México y el Mundo","group":"1BTT","shift":"Bachillerato Técnico (BTT)","semester":1,"type":"turismo"},{"id":"0-3-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 1","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-3-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 2","isEmpty":false,"title":"El Mundo a través del Arte","group":"3CM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"0-3-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 3","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-4-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 1","isEmpty":false,"title":"Lengua Extranjera VI","group":"6BM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"0-4-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 2","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-4-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 3","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-5-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-5-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 2","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-5-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 3","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-6-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-6-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 2","isEmpty":false,"title":"Inglés Nivel 2","group":"2AV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"0-6-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-7-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 1","isEmpty":false,"title":"Seguridad, Higiene y Atención al Comensal","group":"4BTT","shift":"Bachillerato Tecnológico (BTT)","semester":4,"type":"turismo"},{"id":"0-7-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 2","isEmpty":false,"title":"Comprensión Lectora II","group":"3AV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"0-7-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-8-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-8-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-8-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-9-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-9-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-9-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 3","isEmpty":false,"title":"Estilos de Vida Saludable","group":"1BV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"0-10-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-10-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-10-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-11-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-11-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-11-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"1-0-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 1","isEmpty":false,"title":"Biomas y Ecosistemas Turísticos","group":"3BTT","shift":"Bachillerato Tecnológico (BTT)","semester":3,"type":"turismo"},{"id":"1-0-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 2","isEmpty":false,"title":"Análisis Literario I","group":"4BM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"1-0-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 3","isEmpty":false,"title":"Química del Carbono","group":"3CM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"1-1-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 1","isEmpty":false,"title":"Desarrollo Personal y Actividad Física","group":"2AM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"1-1-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 2","isEmpty":false,"title":"Identidad y Filosofía de Vida","group":"5BM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"1-1-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 3","isEmpty":false,"title":"Habilidad Verbal","group":"6BM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"1-2-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 1","isEmpty":false,"title":"Análisis Filosófico","group":"4BM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"1-2-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 2","isEmpty":false,"title":"Sexualidad y Género","group":"1CM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"1-2-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 3","isEmpty":false,"title":"El Mundo a través del Arte","group":"3AM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"1-3-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 1","isEmpty":false,"title":"Comprensión Lectora II","group":"3CM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"1-3-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 2","isEmpty":false,"title":"Historia e Identidad Universitaria","group":"1AM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"1-3-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 3","isEmpty":false,"title":"Precálculo","group":"5AM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"1-4-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 1","isEmpty":false,"title":"Tour de Grupos","group":"3BTT","shift":"Bachillerato Tecnológico (BTT)","semester":3,"type":"turismo"},{"id":"1-4-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 2","isEmpty":false,"title":"Conocimiento Matemático","group":"1CM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"1-4-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 3","isEmpty":false,"title":"Historia e Identidad Universitaria","group":"1BM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"1-5-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Danza Folclórica Mex. / TAE Alimentación Saludable","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"1-5-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 2","isEmpty":false,"title":"TAEV Corografía / TAEV Propuestas de Innovación","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"1-5-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 3","isEmpty":false,"title":"Lengua y Comunicación","group":"1CM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"1-6-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Policultivos / TAE Música","group":"3AV","shift":"Vespertino","semester":3,"type":"tae"},{"id":"1-6-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 2","isEmpty":false,"title":"Matemática Avanzada","group":"6BV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"1-6-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 3","isEmpty":false,"title":"Habitaciones y Áreas de Servicio","group":"2BTT","shift":"Bachillerato Tecnológico (BTT)","semester":2,"type":"turismo"},{"id":"1-7-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 1","isEmpty":false,"title":"Comprensión Lectora I","group":"2CV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"1-7-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 2","isEmpty":false,"title":"Lengua y Comunicación","group":"1AV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"1-7-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 3","isEmpty":false,"title":"Conocimiento y Ciencia","group":"2BV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"1-8-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 1","isEmpty":false,"title":"Productividad Organizacional","group":"6BTT","shift":"Bachillerato Tecnológico (BTT)","semester":6,"type":"turismo"},{"id":"1-8-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 2","isEmpty":false,"title":"Reflexión y Ética","group":"6AV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"1-8-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 3","isEmpty":false,"title":"Lengua y Comunicación","group":"1BV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"1-9-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Danza Folclórica","group":"4BV","shift":"Vespertino","semester":4,"type":"tae"},{"id":"1-9-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 2","isEmpty":false,"title":"Bioquímica de los Alimentos","group":"2BTT","shift":"Bachillerato Tecnológico (BTT)","semester":2,"type":"turismo"},{"id":"1-9-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 3","isEmpty":false,"title":"Conocimiento y Ciencia","group":"2AV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"1-10-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 1","isEmpty":false,"title":"Desarrollo Personal y Actividad Física","group":"2AV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"1-10-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 2","isEmpty":false,"title":"Estilo y Corrección","group":"5BV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"1-10-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 3","isEmpty":false,"title":"Habilidad Verbal","group":"6AV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"1-11-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 1","isEmpty":false,"title":"Conocimiento Matemático II","group":"2CV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"1-11-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 2","isEmpty":false,"title":"Costumbres y Tradiciones","group":"4BTT","shift":"Bachillerato Tecnológico (BTT)","semester":4,"type":"turismo"},{"id":"1-11-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 3","isEmpty":false,"title":"Ciudadanía Mundial","group":"5AV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"2-0-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 1","isEmpty":false,"title":"Sexualidad y Género","group":"1BM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"2-0-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 2","isEmpty":false,"title":"Comprensión Lectora II","group":"3AM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"2-0-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 3","isEmpty":false,"title":"Desarrollo Personal y Actividad Física","group":"2BM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"2-1-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 1","isEmpty":false,"title":"Educación Socioemocional y Cultura de Paz","group":"2AM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"2-1-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 2","isEmpty":false,"title":"Recreación y Animación","group":"5BTT","shift":"Bachillerato Tecnológico (BTT)","semester":5,"type":"turismo"},{"id":"2-1-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 3","isEmpty":false,"title":"Reflexión y Ética","group":"6BM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"2-2-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 1","isEmpty":false,"title":"Biología II","group":"5BM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"2-2-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 2","isEmpty":false,"title":"Turismo Social","group":"5BTT","shift":"Bachillerato Tecnológico (BTT)","semester":5,"type":"turismo"},{"id":"2-2-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 3","isEmpty":false,"title":"Análisis Económico","group":"6BM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"2-3-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 1","isEmpty":false,"title":"Historia e Identidad Universitaria","group":"1CM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"2-3-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 2","isEmpty":false,"title":"Pensamiento Matemático I","group":"3AM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"2-3-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 3","isEmpty":false,"title":"Química de mi Entorno","group":"2BM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"2-4-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 1","isEmpty":false,"title":"Conocimiento y Ciencia","group":"2BM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"2-4-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 2","isEmpty":false,"title":"TAE Iniciación Musical (Lenguaje Musical y Conjuntos)","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"2-4-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 3","isEmpty":false,"title":"Fisiología Celular","group":"4BM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"2-5-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 1","isEmpty":false,"title":"Pensamiento Matemático I","group":"3BM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"2-5-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 2","isEmpty":false,"title":"TAE Técnicas Básicas de Yoga / TAE Alimentación Saludable","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"2-5-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 3","isEmpty":false,"title":"Estilos de Vida Saludable","group":"1CM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"2-6-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Artes Visuales / TAE Gestión de Riesgos","group":"3BV","shift":"Vespertino","semester":3,"type":"tae"},{"id":"2-6-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 2","isEmpty":false,"title":"Conocimiento y Ciencia","group":"2CV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"2-6-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 3","isEmpty":false,"title":"Diseño de Áreas de Servicio","group":"2BTT","shift":"Bachillerato Tecnológico (BTT)","semester":2,"type":"turismo"},{"id":"2-7-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 1","isEmpty":false,"title":"Espacio y Legado Turístico","group":"4BTT","shift":"Bachillerato Tecnológico (BTT)","semester":4,"type":"turismo"},{"id":"2-7-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 2","isEmpty":false,"title":"Precálculo","group":"5AV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"2-7-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 3","isEmpty":false,"title":"Historia e Identidad Universitaria","group":"1AV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"2-8-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 1","isEmpty":false,"title":"Desarrollo Personal y Actividad Física","group":"2CV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"2-8-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 2","isEmpty":false,"title":"TAE Protección Civil (Difusión y Atención a Contingencias)","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"2-8-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 3","isEmpty":false,"title":"Áreas de Servicio al Huésped","group":"2BTT","shift":"Bachillerato Tecnológico (BTT)","semester":2,"type":"turismo"},{"id":"2-9-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 1","isEmpty":false,"title":"Equidad de Género y Turismo","group":"6BTT","shift":"Bachillerato Tecnológico (BTT)","semester":6,"type":"turismo"},{"id":"2-9-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 2","isEmpty":false,"title":"Habilidad Verbal","group":"6BV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"2-9-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 3","isEmpty":false,"title":"El Mundo a través del Arte","group":"3BV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"2-10-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 1","isEmpty":false,"title":"Sexualidad y Género","group":"1AV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"2-10-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 2","isEmpty":false,"title":"Desarrollo Personal y Actividad Física","group":"2BV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"2-10-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 3","isEmpty":false,"title":"Conocimiento Matemático","group":"1BV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"2-11-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 1","isEmpty":false,"title":"Educación Socioemocional y Cultura de Paz","group":"2CV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"2-11-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 2","isEmpty":false,"title":"Procedimientos Operativos","group":"4BTT","shift":"Bachillerato Tecnológico (BTT)","semester":4,"type":"turismo"},{"id":"2-11-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"3-0-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 1","isEmpty":false,"title":"Comprensión Lectora II","group":"3BM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"3-0-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 2","isEmpty":false,"title":"Deporte y Recreación","group":"3AM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"3-0-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 3","isEmpty":false,"title":"Estilo y Corrección","group":"5BM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"3-1-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 1","isEmpty":false,"title":"Comprensión Lectora I","group":"2AM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"3-1-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 2","isEmpty":false,"title":"Análisis Filosófico","group":"4AM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"3-1-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 3","isEmpty":false,"title":"Gastronomía","group":"3BTT","shift":"Bachillerato Tecnológico (BTT)","semester":3,"type":"turismo"},{"id":"3-2-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 1","isEmpty":false,"title":"Biología II","group":"5AM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"3-2-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 2","isEmpty":false,"title":"Análisis Literario I","group":"4AM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"3-2-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 3","isEmpty":false,"title":"Precálculo","group":"5BM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"3-3-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 1","isEmpty":false,"title":"Historia y Arte Regional","group":"4AM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"3-3-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 2","isEmpty":false,"title":"Ciudadanía Mundial","group":"5BM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"3-3-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 3","isEmpty":false,"title":"Empresas de Servicios Turísticos","group":"1BTT","shift":"Bachillerato Tecnológico (BTT)","semester":1,"type":"turismo"},{"id":"3-4-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 1","isEmpty":false,"title":"Conocimiento Matemático","group":"2AM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"3-4-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 2","isEmpty":false,"title":"TAE Principios de Yoga / TAEV Gestión de Riesgos y P. Civil","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"3-4-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 3","isEmpty":false,"title":"TAE Iniciación Musical (Lenguaje Musical y Conjuntos)","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"3-5-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 1","isEmpty":false,"title":"Pensamiento Matemático II","group":"4BM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"3-5-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 2","isEmpty":false,"title":"Función Celular","group":"1BTT","shift":"Bachillerato Tecnológico (BTT)","semester":1,"type":"turismo"},{"id":"3-5-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 3","isEmpty":false,"title":"Ciudadanía Mundial","group":"5AM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"3-6-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 1","isEmpty":false,"title":"Ubicación Espacial Turística","group":"6BTT","shift":"Bachillerato Tecnológico (BTT)","semester":6,"type":"turismo"},{"id":"3-6-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 2","isEmpty":false,"title":"TAE Policultivo","group":"5AV","shift":"Vespertino","semester":5,"type":"tae"},{"id":"3-6-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 3","isEmpty":false,"title":"Historia e Identidad Universitaria","group":"1BV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"3-7-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Creación de Dibujo y Pintura (Composición Visual)","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"3-7-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 2","isEmpty":false,"title":"Comprensión Lectora II","group":"3BV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"3-7-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 3","isEmpty":false,"title":"TAE Yoga / TAE Alimentación Saludable","group":"4AV","shift":"Vespertino","semester":4,"type":"tae"},{"id":"3-8-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 1","isEmpty":false,"title":"Estudio del Movimiento","group":"4BV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"3-8-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 2","isEmpty":false,"title":"Análisis Literario I","group":"4AV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"3-8-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 3","isEmpty":false,"title":"Ética Aplicada al Campo Laboral","group":"4BTT","shift":"Bachillerato Tecnológico (BTT)","semester":4,"type":"turismo"},{"id":"3-9-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 1","isEmpty":false,"title":"Educación Socioemocional y Cultura de Paz","group":"2AV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"3-9-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 2","isEmpty":false,"title":"Historia y Arte Regional","group":"4AV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"3-9-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 3","isEmpty":false,"title":"Identidad y Filosofía de Vida","group":"5BV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"3-10-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 1","isEmpty":false,"title":"Análisis Filosófico","group":"4BV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"3-10-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 2","isEmpty":false,"title":"Biología II","group":"5AV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"3-10-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 3","isEmpty":false,"title":"Conocimiento Matemático","group":"2BV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"3-11-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 1","isEmpty":false,"title":"Deporte y Recreación","group":"3AV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"3-11-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 2","isEmpty":false,"title":"Química de mi Entorno","group":"2CV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"3-11-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 3","isEmpty":false,"title":"Equidad de Género y Turismo","group":"6BTT","shift":"Bachillerato Tecnológico (BTT)","semester":6,"type":"turismo"},{"id":"4-0-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 1","isEmpty":false,"title":"Estilo y Corrección","group":"5AM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"4-0-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 2","isEmpty":false,"title":"El Mundo a través del Arte","group":"3BM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"4-0-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 3","isEmpty":false,"title":"Pensamiento Matemático I","group":"3CM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"4-1-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 1","isEmpty":false,"title":"Fisiología Celular","group":"4AM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"4-1-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 2","isEmpty":false,"title":"Habilidad Numérica","group":"1BTT","shift":"Bachillerato Tecnológico (BTT)","semester":1,"type":"turismo"},{"id":"4-1-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 3","isEmpty":false,"title":"Geografía y Cuidado del Entorno","group":"6AM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"4-2-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 1","isEmpty":false,"title":"Comprensión Lectora I","group":"2BM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"4-2-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 2","isEmpty":false,"title":"Pensamiento Matemático I","group":"4AM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"4-2-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 3","isEmpty":false,"title":"Análisis Económico","group":"6AM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"4-3-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 1","isEmpty":false,"title":"Lengua y Comunicación","group":"1BM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"4-3-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 2","isEmpty":false,"title":"Matemática Avanzada","group":"6AM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"4-3-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 3","isEmpty":false,"title":"Conocimiento Matemático","group":"1AM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"4-4-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 1","isEmpty":false,"title":"Estilos de Vida Saludable","group":"1BM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"4-4-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 2","isEmpty":false,"title":"Educación Socioemocional y Cultura de Paz","group":"2BM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"4-4-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 3","isEmpty":false,"title":"Toma de Decisiones","group":"5BTT","shift":"Bachillerato Tecnológico (BTT)","semester":5,"type":"turismo"},{"id":"4-5-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Protección Civil (Primeros Auxilios) / TAE Danza Folclórica","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"4-5-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 2","isEmpty":false,"title":"Análisis Literario I","group":"4BV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"4-5-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 3","isEmpty":false,"title":"Conocimiento Matemático I","group":"2BM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"4-6-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 1","isEmpty":false,"title":"Biología II","group":"5BV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"4-6-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 2","isEmpty":false,"title":"TAE Alimentación Saludable","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"4-6-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 3","isEmpty":false,"title":"PensmateI","group":"3BV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"4-7-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 1","isEmpty":false,"title":"Análisis Económico","group":"6AV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"4-7-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 2","isEmpty":false,"title":"El Mundo a través del Arte","group":"3AV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"4-7-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 3","isEmpty":false,"title":"Análisis Filosófico","group":"4AV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"4-8-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 1","isEmpty":false,"title":"Precálculo","group":"5BV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"4-8-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 2","isEmpty":false,"title":"Identidad y Filosofía de Vida","group":"5AV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"4-8-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 3","isEmpty":false,"title":"Análisis Económico","group":"6BV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"4-9-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 1","isEmpty":false,"title":"Comprensión Lectora I","group":"2BV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"4-9-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 2","isEmpty":false,"title":"Química del Carbono","group":"3AV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"4-9-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 3","isEmpty":false,"title":"Estilo y Corrección","group":"5AV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"4-10-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 1","isEmpty":false,"title":"Conocimiento Matemático","group":"1AV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"4-10-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 2","isEmpty":false,"title":"Estudio del Movimiento","group":"4AV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"4-10-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 3","isEmpty":false,"title":"Comprensión Lectora I","group":"2AV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"4-11-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Danza Folclórica","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"4-11-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 2","isEmpty":false,"title":"Historia y Arte Regional","group":"4BV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"4-11-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 3","isEmpty":false,"title":"PensmateI","group":"3AV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"5-0-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 1","isEmpty":false,"title":"Química del Carbono","group":"3BM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"5-0-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 2","isEmpty":false,"title":"Historia y Arte Regional","group":"4BM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"5-0-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 3","isEmpty":false,"title":"Identidad y Filosofía de Vida","group":"5AM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"5-1-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 1","isEmpty":false,"title":"Deporte y Recreación","group":"3CM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"5-1-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 2","isEmpty":false,"title":"Estudio del Movimiento","group":"4BM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"5-1-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 3","isEmpty":false,"title":"Estilos de Vida Saludable","group":"1AM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"5-2-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 1","isEmpty":false,"title":"Química de mi Entorno","group":"2AM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"5-2-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 2","isEmpty":false,"title":"Equivalencias Proporcionales","group":"3BTT","shift":"Bachillerato Tecnológico (BTT)","semester":3,"type":"turismo"},{"id":"5-2-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 3","isEmpty":false,"title":"Geografía y Cuidado del Entorno","group":"6BM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"5-3-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 1","isEmpty":false,"title":"Química del Carbono","group":"3AM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"5-3-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 2","isEmpty":false,"title":"Deporte y Recreación","group":"3BM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"5-3-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 3","isEmpty":false,"title":"Reflexión y Ética","group":"6AM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"5-4-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 1","isEmpty":false,"title":"Sexualidad y Género","group":"1AM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"5-4-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 2","isEmpty":false,"title":"Conocimiento Matemático","group":"1BM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"5-4-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 3","isEmpty":false,"title":"Eventos y Grupos","group":"3BTT","shift":"Bachillerato Tecnológico (BTT)","semester":3,"type":"turismo"},{"id":"5-5-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 1","isEmpty":false,"title":"Conocimiento y Ciencia","group":"2AM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"5-5-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 2","isEmpty":false,"title":"Manejo del Servicio Hotelero","group":"1BTT","shift":"Bachillerato Tecnológico (BTT)","semester":1,"type":"turismo"},{"id":"5-5-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 3","isEmpty":false,"title":"TAEV Formación en Artes Visuales / TAE Policultivo","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"5-6-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 1","isEmpty":false,"title":"Química de mi Entorno","group":"2BV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"5-6-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 2","isEmpty":false,"title":"Pensamiento matI","group":"4BV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"5-6-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 3","isEmpty":false,"title":"Geografía y Cuidado del Entorno","group":"6AV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"5-7-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 1","isEmpty":false,"title":"Conocimiento Matemático","group":"2AV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"5-7-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 2","isEmpty":false,"title":"Estilos de Vida Saludable","group":"1AV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"5-7-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 3","isEmpty":false,"title":"Educación Socioemocional y Cultura de Paz","group":"2BV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"5-8-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 1","isEmpty":false,"title":"PensmateI","group":"4AV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"5-8-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 2","isEmpty":false,"title":"Reflexión y Ética","group":"6BV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"5-8-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 3","isEmpty":false,"title":"Sexualidad y Género","group":"1BV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"5-9-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 1","isEmpty":false,"title":"Matemática Avanzada","group":"6AV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"5-9-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 2","isEmpty":false,"title":"Geografía y Cuidado del Entorno","group":"6BV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"5-9-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 3","isEmpty":false,"title":"Química del Carbono","group":"3BV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"5-10-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 1","isEmpty":false,"title":"Fisiología Celular","group":"4AV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"5-10-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 2","isEmpty":false,"title":"Química de mi Entorno","group":"2AV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"5-10-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 3","isEmpty":false,"title":"Deporte y Recreación","group":"3AV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"5-11-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 1","isEmpty":false,"title":"Fisiología Celular","group":"4BV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"5-11-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 2","isEmpty":false,"title":"Ciudadanía Mundial","group":"5BV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"5-11-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 3","isEmpty":false,"title":"Gestión en Alimentos y Bebidas","group":"2BTT","shift":"Bachillerato Tecnológico (BTT)","semester":2,"type":"turismo"},{"id":"6-0-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-0-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-0-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-1-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 1","isEmpty":false,"title":"Lectura Interpretativa","group":"5BTT","shift":"Bachillerato Tecnológico (BTT)","semester":5,"type":"turismo"},{"id":"6-1-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-1-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-2-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-2-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-2-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-3-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-3-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-3-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-4-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Creación de Dibujo y Pintura","group":"6BM","shift":"Matutino","semester":6,"type":"tae"},{"id":"6-4-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-4-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-5-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-5-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-5-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-6-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-6-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-6-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-7-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-7-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-7-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-8-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-8-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-8-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-9-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-9-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-9-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-10-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-10-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-10-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-11-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-11-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-11-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"}];
-    const DAYS = [{"index":0,"name":"Viernes 20 de noviembre","short":"Vie 20 Nov","date":"2026-11-20"},{"index":1,"name":"Lunes 23 de noviembre","short":"Lun 23 Nov","date":"2026-11-23"},{"index":2,"name":"Martes 24 de noviembre","short":"Mar 24 Nov","date":"2026-11-24"},{"index":3,"name":"Miércoles 25 de noviembre","short":"Mié 25 Nov","date":"2026-11-25"},{"index":4,"name":"Jueves 26 de noviembre","short":"Jue 26 Nov","date":"2026-11-26"},{"index":5,"name":"Viernes 27 de noviembre","short":"Vie 27 Nov","date":"2026-11-27"},{"index":6,"name":"Lunes 30 de noviembre","short":"Lun 30 Nov","date":"2026-11-30"}];
-    const SLOTS = ["07:00 - 08:00","08:00 - 09:00","09:00 - 10:00","10:00 - 11:00","11:00 - 12:00","12:00 - 13:00","13:00 - 14:00","14:00 - 15:00","15:00 - 16:00","16:00 - 17:00","17:00 - 18:00","18:00 - 19:00"];
+    const SCHEDULE = [{"id":"0-0-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 1","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-0-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 2","isEmpty":false,"title":"Estudio del Movimiento","group":"4AM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"0-0-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 3","isEmpty":false,"title":"Lengua y Comunicación","group":"1AM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"0-1-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 1","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-1-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 2","isEmpty":false,"title":"Habilidad Verbal","group":"6AM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"0-1-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 3","isEmpty":false,"title":"Matemática Avanzada","group":"6BM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"0-2-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 1","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-2-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 2","isEmpty":false,"title":"Lengua Extranjera VI","group":"6AM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"0-2-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 3","isEmpty":false,"title":"Historia Sociocultural de México y el Mundo","group":"1BTT","shift":"Bachillerato Tecnológico (BTT)","semester":1,"type":"turismo"},{"id":"0-3-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 1","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-3-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 2","isEmpty":false,"title":"El Mundo a través del Arte","group":"3CM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"0-3-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 3","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-4-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 1","isEmpty":false,"title":"Lengua Extranjera VI","group":"6BM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"0-4-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 2","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-4-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 3","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-5-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-5-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 2","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-5-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 3","isEmpty":false,"title":"Clase Normal de TIC'S","group":"TIC'S","shift":"Ambos Turnos","semester":null,"type":"tics"},{"id":"0-6-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-6-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 2","isEmpty":false,"title":"Inglés Nivel 2","group":"2AV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"0-6-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-7-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 1","isEmpty":false,"title":"Seguridad, Higiene y Atención al Comensal","group":"4BTT","shift":"Bachillerato Tecnológico (BTT)","semester":4,"type":"turismo"},{"id":"0-7-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 2","isEmpty":false,"title":"Comprensión Lectora II","group":"3AV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"0-7-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-8-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-8-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-8-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-9-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-9-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-9-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 3","isEmpty":false,"title":"Estilos de Vida Saludable","group":"1BV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"0-10-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-10-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-10-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-11-Lab1","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-11-Lab2","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"0-11-Lab3","dayIndex":0,"day":"Viernes 20 de noviembre","date":"2026-11-20","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},
+
+    {"id":"1-0-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 1","isEmpty":false,"title":"Biomas y Ecosistemas Turísticos","group":"3BTT","shift":"Bachillerato Tecnológico (BTT)","semester":3,"type":"turismo"},{"id":"1-0-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 2","isEmpty":false,"title":"Análisis Literario I","group":"4BM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"1-0-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 3","isEmpty":false,"title":"Química del Carbono","group":"3CM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"1-1-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 1","isEmpty":false,"title":"Desarrollo Personal y Actividad Física","group":"2AM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"1-1-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 2","isEmpty":false,"title":"Identidad y Filosofía de Vida","group":"5BM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"1-1-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 3","isEmpty":false,"title":"Habilidad Verbal","group":"6BM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"1-2-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 1","isEmpty":false,"title":"Análisis Filosófico","group":"4BM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"1-2-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 2","isEmpty":false,"title":"Sexualidad y Género","group":"1CM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"1-2-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 3","isEmpty":false,"title":"El Mundo a través del Arte","group":"3AM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"1-3-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 1","isEmpty":false,"title":"Comprensión Lectora II","group":"3CM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"1-3-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 2","isEmpty":false,"title":"Historia e Identidad Universitaria","group":"1AM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"1-3-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 3","isEmpty":false,"title":"Precálculo","group":"5AM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"1-4-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 1","isEmpty":false,"title":"Tour de Grupos","group":"3BTT","shift":"Bachillerato Tecnológico (BTT)","semester":3,"type":"turismo"},{"id":"1-4-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 2","isEmpty":false,"title":"Conocimiento Matemático","group":"1CM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"1-4-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 3","isEmpty":false,"title":"Historia e Identidad Universitaria","group":"1BM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"1-5-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Danza Folclórica Mex. / TAE Alimentación Saludable","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"1-5-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 2","isEmpty":false,"title":"TAEV Coreografía / TAEV Propuestas de Innovación","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"1-5-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 3","isEmpty":false,"title":"Lengua y Comunicación","group":"1CM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"1-6-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Policultivos / TAE Música","group":"3AV","shift":"Vespertino","semester":3,"type":"tae"},{"id":"1-6-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 2","isEmpty":false,"title":"Matemática Avanzada","group":"6BV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"1-6-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 3","isEmpty":false,"title":"Habitaciones y Áreas de Servicio","group":"2BTT","shift":"Bachillerato Tecnológico (BTT)","semester":2,"type":"turismo"},{"id":"1-7-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 1","isEmpty":false,"title":"Comprensión Lectora I","group":"2CV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"1-7-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 2","isEmpty":false,"title":"Lengua y Comunicación","group":"1AV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"1-7-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 3","isEmpty":false,"title":"Conocimiento y Ciencia","group":"2BV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"1-8-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 1","isEmpty":false,"title":"Productividad Organizacional","group":"6BTT","shift":"Bachillerato Tecnológico (BTT)","semester":6,"type":"turismo"},{"id":"1-8-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 2","isEmpty":false,"title":"Reflexión y Ética","group":"6AV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"1-8-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 3","isEmpty":false,"title":"Lengua y Comunicación","group":"1BV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"1-9-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Danza Folclórica","group":"4BV","shift":"Vespertino","semester":4,"type":"tae"},{"id":"1-9-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 2","isEmpty":false,"title":"Bioquímica de los Alimentos","group":"2BTT","shift":"Bachillerato Tecnológico (BTT)","semester":2,"type":"turismo"},{"id":"1-9-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 3","isEmpty":false,"title":"Conocimiento y Ciencia","group":"2AV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"1-10-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 1","isEmpty":false,"title":"Desarrollo Personal y Actividad Física","group":"2AV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"1-10-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 2","isEmpty":false,"title":"Estilo y Corrección","group":"5BV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"1-10-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 3","isEmpty":false,"title":"Habilidad Verbal","group":"6AV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"1-11-Lab1","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 1","isEmpty":false,"title":"Conocimiento Matemático II","group":"2CV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"1-11-Lab2","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 2","isEmpty":false,"title":"Costumbres y Tradiciones","group":"4BTT","shift":"Bachillerato Tecnológico (BTT)","semester":4,"type":"turismo"},{"id":"1-11-Lab3","dayIndex":1,"day":"Lunes 23 de noviembre","date":"2026-11-23","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 3","isEmpty":false,"title":"Ciudadanía Mundial","group":"5AV","shift":"Vespertino","semester":5,"type":"bachillerato"},
+
+    {"id":"2-0-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 1","isEmpty":false,"title":"Sexualidad y Género","group":"1BM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"2-0-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 2","isEmpty":false,"title":"Comprensión Lectora II","group":"3AM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"2-0-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 3","isEmpty":false,"title":"Desarrollo Personal y Actividad Física","group":"2BM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"2-1-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 1","isEmpty":false,"title":"Educación Socioemocional y Cultura de Paz","group":"2AM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"2-1-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 2","isEmpty":false,"title":"Recreación y Animación","group":"5BTT","shift":"Bachillerato Tecnológico (BTT)","semester":5,"type":"turismo"},{"id":"2-1-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 3","isEmpty":false,"title":"Reflexión y Ética","group":"6BM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"2-2-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 1","isEmpty":false,"title":"Biología II","group":"5BM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"2-2-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 2","isEmpty":false,"title":"Turismo Social","group":"5BTT","shift":"Bachillerato Tecnológico (BTT)","semester":5,"type":"turismo"},{"id":"2-2-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 3","isEmpty":false,"title":"Análisis Económico","group":"6BM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"2-3-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 1","isEmpty":false,"title":"Historia e Identidad Universitaria","group":"1CM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"2-3-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 2","isEmpty":false,"title":"Pensamiento Matemático I","group":"3AM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"2-3-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 3","isEmpty":false,"title":"Química de mi Entorno","group":"2BM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"2-4-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 1","isEmpty":false,"title":"Conocimiento y Ciencia","group":"2BM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"2-4-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 2","isEmpty":false,"title":"TAE Iniciación Musical (Lenguaje Musical y Conjuntos)","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"2-4-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 3","isEmpty":false,"title":"Fisiología Celular","group":"4BM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"2-5-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 1","isEmpty":false,"title":"Pensamiento Matemático I","group":"3BM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"2-5-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 2","isEmpty":false,"title":"TAE Técnicas Básicas de Yoga / TAE Alimentación Saludable","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"2-5-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 3","isEmpty":false,"title":"Estilos de Vida Saludable","group":"1CM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"2-6-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Artes Visuales / TAE Gestión de Riesgos","group":"3BV","shift":"Vespertino","semester":3,"type":"tae"},{"id":"2-6-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 2","isEmpty":false,"title":"Conocimiento y Ciencia","group":"2CV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"2-6-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 3","isEmpty":false,"title":"Diseño de Áreas de Servicio","group":"2BTT","shift":"Bachillerato Tecnológico (BTT)","semester":2,"type":"turismo"},{"id":"2-7-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 1","isEmpty":false,"title":"Espacio y Legado Turístico","group":"4BTT","shift":"Bachillerato Tecnológico (BTT)","semester":4,"type":"turismo"},{"id":"2-7-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 2","isEmpty":false,"title":"Precálculo","group":"5AV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"2-7-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 3","isEmpty":false,"title":"Historia e Identidad Universitaria","group":"1AV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"2-8-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 1","isEmpty":false,"title":"Desarrollo Personal y Actividad Física","group":"2CV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"2-8-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 2","isEmpty":false,"title":"TAE Protección Civil (Difusión y Atención a Contingencias)","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"2-8-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 3","isEmpty":false,"title":"Áreas de Servicio al Huésped","group":"2BTT","shift":"Bachillerato Tecnológico (BTT)","semester":2,"type":"turismo"},{"id":"2-9-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 1","isEmpty":false,"title":"Equidad de Género y Turismo","group":"6BTT","shift":"Bachillerato Tecnológico (BTT)","semester":6,"type":"turismo"},{"id":"2-9-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 2","isEmpty":false,"title":"Habilidad Verbal","group":"6BV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"2-9-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 3","isEmpty":false,"title":"El Mundo a través del Arte","group":"3BV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"2-10-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 1","isEmpty":false,"title":"Sexualidad y Género","group":"1AV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"2-10-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 2","isEmpty":false,"title":"Desarrollo Personal y Actividad Física","group":"2BV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"2-10-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 3","isEmpty":false,"title":"Conocimiento Matemático","group":"1BV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"2-11-Lab1","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 1","isEmpty":false,"title":"Educación Socioemocional y Cultura de Paz","group":"2CV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"2-11-Lab2","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 2","isEmpty":false,"title":"Procedimientos Operativos","group":"4BTT","shift":"Bachillerato Tecnológico (BTT)","semester":4,"type":"turismo"},{"id":"2-11-Lab3","dayIndex":2,"day":"Martes 24 de noviembre","date":"2026-11-24","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},
+
+    {"id":"3-0-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 1","isEmpty":false,"title":"Comprensión Lectora II","group":"3BM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"3-0-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 2","isEmpty":false,"title":"Deporte y Recreación","group":"3AM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"3-0-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 3","isEmpty":false,"title":"Estilo y Corrección","group":"5BM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"3-1-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 1","isEmpty":false,"title":"Comprensión Lectora I","group":"2AM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"3-1-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 2","isEmpty":false,"title":"Análisis Filosófico","group":"4AM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"3-1-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 3","isEmpty":false,"title":"Gastronomía","group":"3BTT","shift":"Bachillerato Tecnológico (BTT)","semester":3,"type":"turismo"},{"id":"3-2-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 1","isEmpty":false,"title":"Biología II","group":"5AM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"3-2-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 2","isEmpty":false,"title":"Análisis Literario I","group":"4AM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"3-2-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 3","isEmpty":false,"title":"Precálculo","group":"5BM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"3-3-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 1","isEmpty":false,"title":"Historia y Arte Regional","group":"4AM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"3-3-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 2","isEmpty":false,"title":"Ciudadanía Mundial","group":"5BM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"3-3-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 3","isEmpty":false,"title":"Empresas de Servicios Turísticos","group":"1BTT","shift":"Bachillerato Tecnológico (BTT)","semester":1,"type":"turismo"},{"id":"3-4-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 1","isEmpty":false,"title":"Conocimiento Matemático","group":"2AM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"3-4-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 2","isEmpty":false,"title":"TAE Principios de Yoga / TAEV Gestión de Riesgos y P. Civil","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"3-4-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 3","isEmpty":false,"title":"TAE Iniciación Musical (Lenguaje Musical y Conjuntos)","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"3-5-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 1","isEmpty":false,"title":"Pensamiento Matemático II","group":"4BM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"3-5-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 2","isEmpty":false,"title":"Función Celular","group":"1BTT","shift":"Bachillerato Tecnológico (BTT)","semester":1,"type":"turismo"},{"id":"3-5-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 3","isEmpty":false,"title":"Ciudadanía Mundial","group":"5AM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"3-6-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 1","isEmpty":false,"title":"Ubicación Espacial Turística","group":"6BTT","shift":"Bachillerato Tecnológico (BTT)","semester":6,"type":"turismo"},{"id":"3-6-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 2","isEmpty":false,"title":"TAE Policultivo","group":"5AV","shift":"Vespertino","semester":5,"type":"tae"},{"id":"3-6-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 3","isEmpty":false,"title":"Historia e Identidad Universitaria","group":"1BV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"3-7-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Creación de Dibujo y Pintura (Composición Visual)","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"3-7-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 2","isEmpty":false,"title":"Comprensión Lectora II","group":"3BV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"3-7-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 3","isEmpty":false,"title":"TAE Yoga / TAE Alimentación Saludable","group":"4AV","shift":"Vespertino","semester":4,"type":"tae"},{"id":"3-8-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 1","isEmpty":false,"title":"Estudio del Movimiento","group":"4BV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"3-8-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 2","isEmpty":false,"title":"Análisis Literario I","group":"4AV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"3-8-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 3","isEmpty":false,"title":"Ética Aplicada al Campo Laboral","group":"4BTT","shift":"Bachillerato Tecnológico (BTT)","semester":4,"type":"turismo"},{"id":"3-9-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 1","isEmpty":false,"title":"Educación Socioemocional y Cultura de Paz","group":"2AV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"3-9-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 2","isEmpty":false,"title":"Historia y Arte Regional","group":"4AV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"3-9-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 3","isEmpty":false,"title":"Identidad y Filosofía de Vida","group":"5BV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"3-10-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 1","isEmpty":false,"title":"Análisis Filosófico","group":"4BV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"3-10-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 2","isEmpty":false,"title":"Biología II","group":"5AV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"3-10-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 3","isEmpty":false,"title":"Conocimiento Matemático","group":"2BV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"3-11-Lab1","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 1","isEmpty":false,"title":"Deporte y Recreación","group":"3AV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"3-11-Lab2","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 2","isEmpty":false,"title":"Química de mi Entorno","group":"2CV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"3-11-Lab3","dayIndex":3,"day":"Miércoles 25 de noviembre","date":"2026-11-25","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 3","isEmpty":false,"title":"Equidad de Género y Turismo","group":"6BTT","shift":"Bachillerato Tecnológico (BTT)","semester":6,"type":"turismo"},
+
+    {"id":"4-0-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 1","isEmpty":false,"title":"Estilo y Corrección","group":"5AM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"4-0-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 2","isEmpty":false,"title":"El Mundo a través del Arte","group":"3BM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"4-0-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 3","isEmpty":false,"title":"Pensamiento Matemático I","group":"3CM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"4-1-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 1","isEmpty":false,"title":"Fisiología Celular","group":"4AM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"4-1-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 2","isEmpty":false,"title":"Habilidad Numérica","group":"1BTT","shift":"Bachillerato Tecnológico (BTT)","semester":1,"type":"turismo"},{"id":"4-1-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 3","isEmpty":false,"title":"Geografía y Cuidado del Entorno","group":"6AM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"4-2-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 1","isEmpty":false,"title":"Comprensión Lectora I","group":"2BM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"4-2-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 2","isEmpty":false,"title":"Pensamiento Matemático I","group":"4AM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"4-2-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 3","isEmpty":false,"title":"Análisis Económico","group":"6AM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"4-3-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 1","isEmpty":false,"title":"Lengua y Comunicación","group":"1BM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"4-3-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 2","isEmpty":false,"title":"Matemática Avanzada","group":"6AM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"4-3-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 3","isEmpty":false,"title":"Conocimiento Matemático","group":"1AM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"4-4-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 1","isEmpty":false,"title":"Estilos de Vida Saludable","group":"1BM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"4-4-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 2","isEmpty":false,"title":"Educación Socioemocional y Cultura de Paz","group":"2BM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"4-4-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 3","isEmpty":false,"title":"Toma de Decisiones","group":"5BTT","shift":"Bachillerato Tecnológico (BTT)","semester":5,"type":"turismo"},{"id":"4-5-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Protección Civil (Primeros Auxilios) / TAE Danza Folclórica","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"4-5-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 2","isEmpty":false,"title":"Análisis Literario I","group":"4BV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"4-5-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 3","isEmpty":false,"title":"Conocimiento Matemático I","group":"2BM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"4-6-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 1","isEmpty":false,"title":"Biología II","group":"5BV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"4-6-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 2","isEmpty":false,"title":"TAE Alimentación Saludable","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"4-6-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 3","isEmpty":false,"title":"Pensamiento Matemático I","group":"3BV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"4-7-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 1","isEmpty":false,"title":"Análisis Económico","group":"6AV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"4-7-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 2","isEmpty":false,"title":"El Mundo a través del Arte","group":"3AV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"4-7-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 3","isEmpty":false,"title":"Análisis Filosófico","group":"4AV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"4-8-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 1","isEmpty":false,"title":"Precálculo","group":"5BV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"4-8-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 2","isEmpty":false,"title":"Identidad y Filosofía de Vida","group":"5AV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"4-8-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 3","isEmpty":false,"title":"Análisis Económico","group":"6BV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"4-9-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 1","isEmpty":false,"title":"Comprensión Lectora I","group":"2BV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"4-9-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 2","isEmpty":false,"title":"Química del Carbono","group":"3AV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"4-9-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 3","isEmpty":false,"title":"Estilo y Corrección","group":"5AV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"4-10-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 1","isEmpty":false,"title":"Conocimiento Matemático","group":"1AV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"4-10-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 2","isEmpty":false,"title":"Estudio del Movimiento","group":"4AV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"4-10-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 3","isEmpty":false,"title":"Comprensión Lectora I","group":"2AV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"4-11-Lab1","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Danza Folclórica","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"4-11-Lab2","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 2","isEmpty":false,"title":"Historia y Arte Regional","group":"4BV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"4-11-Lab3","dayIndex":4,"day":"Jueves 26 de noviembre","date":"2026-11-26","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 3","isEmpty":false,"title":"Pensamiento Matemático I","group":"3AV","shift":"Vespertino","semester":3,"type":"bachillerato"},
+
+    {"id":"5-0-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 1","isEmpty":false,"title":"Química del Carbono","group":"3BM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"5-0-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 2","isEmpty":false,"title":"Historia y Arte Regional","group":"4BM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"5-0-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 3","isEmpty":false,"title":"Identidad y Filosofía de Vida","group":"5AM","shift":"Matutino","semester":5,"type":"bachillerato"},{"id":"5-1-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 1","isEmpty":false,"title":"Deporte y Recreación","group":"3CM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"5-1-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 2","isEmpty":false,"title":"Estudio del Movimiento","group":"4BM","shift":"Matutino","semester":4,"type":"bachillerato"},{"id":"5-1-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 3","isEmpty":false,"title":"Estilos de Vida Saludable","group":"1AM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"5-2-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 1","isEmpty":false,"title":"Química de mi Entorno","group":"2AM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"5-2-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 2","isEmpty":false,"title":"Equivalencias Proporcionales","group":"3BTT","shift":"Bachillerato Tecnológico (BTT)","semester":3,"type":"turismo"},{"id":"5-2-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 3","isEmpty":false,"title":"Geografía y Cuidado del Entorno","group":"6BM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"5-3-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 1","isEmpty":false,"title":"Química del Carbono","group":"3AM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"5-3-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 2","isEmpty":false,"title":"Deporte y Recreación","group":"3BM","shift":"Matutino","semester":3,"type":"bachillerato"},{"id":"5-3-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 3","isEmpty":false,"title":"Reflexión y Ética","group":"6AM","shift":"Matutino","semester":6,"type":"bachillerato"},{"id":"5-4-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 1","isEmpty":false,"title":"Sexualidad y Género","group":"1AM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"5-4-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 2","isEmpty":false,"title":"Conocimiento Matemático","group":"1BM","shift":"Matutino","semester":1,"type":"bachillerato"},{"id":"5-4-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 3","isEmpty":false,"title":"Eventos y Grupos","group":"3BTT","shift":"Bachillerato Tecnológico (BTT)","semester":3,"type":"turismo"},{"id":"5-5-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 1","isEmpty":false,"title":"Conocimiento y Ciencia","group":"2AM","shift":"Matutino","semester":2,"type":"bachillerato"},{"id":"5-5-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 2","isEmpty":false,"title":"Manejo del Servicio Hotelero","group":"1BTT","shift":"Bachillerato Tecnológico (BTT)","semester":1,"type":"turismo"},{"id":"5-5-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 3","isEmpty":false,"title":"TAEV Formación en Artes Visuales / TAE Policultivo","group":"TAE","shift":"Trayectoria Especializante","semester":null,"type":"tae"},{"id":"5-6-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 1","isEmpty":false,"title":"Química de mi Entorno","group":"2BV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"5-6-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 2","isEmpty":false,"title":"Pensamiento Matemático I","group":"4BV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"5-6-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 3","isEmpty":false,"title":"Geografía y Cuidado del Entorno","group":"6AV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"5-7-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 1","isEmpty":false,"title":"Conocimiento Matemático","group":"2AV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"5-7-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 2","isEmpty":false,"title":"Estilos de Vida Saludable","group":"1AV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"5-7-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 3","isEmpty":false,"title":"Educación Socioemocional y Cultura de Paz","group":"2BV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"5-8-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 1","isEmpty":false,"title":"Pensamiento Matemático I","group":"4AV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"5-8-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 2","isEmpty":false,"title":"Reflexión y Ética","group":"6BV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"5-8-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 3","isEmpty":false,"title":"Sexualidad y Género","group":"1BV","shift":"Vespertino","semester":1,"type":"bachillerato"},{"id":"5-9-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 1","isEmpty":false,"title":"Matemática Avanzada","group":"6AV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"5-9-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 2","isEmpty":false,"title":"Geografía y Cuidado del Entorno","group":"6BV","shift":"Vespertino","semester":6,"type":"bachillerato"},{"id":"5-9-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 3","isEmpty":false,"title":"Química del Carbono","group":"3BV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"5-10-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 1","isEmpty":false,"title":"Fisiología Celular","group":"4AV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"5-10-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 2","isEmpty":false,"title":"Química de mi Entorno","group":"2AV","shift":"Vespertino","semester":2,"type":"bachillerato"},{"id":"5-10-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 3","isEmpty":false,"title":"Deporte y Recreación","group":"3AV","shift":"Vespertino","semester":3,"type":"bachillerato"},{"id":"5-11-Lab1","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 1","isEmpty":false,"title":"Fisiología Celular","group":"4BV","shift":"Vespertino","semester":4,"type":"bachillerato"},{"id":"5-11-Lab2","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 2","isEmpty":false,"title":"Ciudadanía Mundial","group":"5BV","shift":"Vespertino","semester":5,"type":"bachillerato"},{"id":"5-11-Lab3","dayIndex":5,"day":"Viernes 27 de noviembre","date":"2026-11-27","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 3","isEmpty":false,"title":"Gestión en Alimentos y Bebidas","group":"2BTT","shift":"Bachillerato Tecnológico (BTT)","semester":2,"type":"turismo"},
+
+    {"id":"6-0-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-0-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-0-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":0,"time":"07:00 - 08:00","startTime":"07:00","endTime":"08:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-1-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 1","isEmpty":false,"title":"Lectura Interpretativa","group":"5BTT","shift":"Bachillerato Tecnológico (BTT)","semester":5,"type":"turismo"},{"id":"6-1-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-1-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":1,"time":"08:00 - 09:00","startTime":"08:00","endTime":"09:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-2-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-2-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-2-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":2,"time":"09:00 - 10:00","startTime":"09:00","endTime":"10:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-3-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-3-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-3-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":3,"time":"10:00 - 11:00","startTime":"10:00","endTime":"11:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-4-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 1","isEmpty":false,"title":"TAE Creación de Dibujo y Pintura","group":"6BM","shift":"Matutino","semester":6,"type":"tae"},{"id":"6-4-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-4-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":4,"time":"11:00 - 12:00","startTime":"11:00","endTime":"12:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-5-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-5-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-5-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":5,"time":"12:00 - 13:00","startTime":"12:00","endTime":"13:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-6-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-6-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-6-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":6,"time":"13:00 - 14:00","startTime":"13:00","endTime":"14:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-7-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-7-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-7-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":7,"time":"14:00 - 15:00","startTime":"14:00","endTime":"15:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-8-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-8-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-8-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":8,"time":"15:00 - 16:00","startTime":"15:00","endTime":"16:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-9-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-9-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-9-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":9,"time":"16:00 - 17:00","startTime":"16:00","endTime":"17:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-10-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-10-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-10-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":10,"time":"17:00 - 18:00","startTime":"17:00","endTime":"18:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-11-Lab1","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 1","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-11-Lab2","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 2","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"},{"id":"6-11-Lab3","dayIndex":6,"day":"Lunes 30 de noviembre","date":"2026-11-30","slotIndex":11,"time":"18:00 - 19:00","startTime":"18:00","endTime":"19:00","lab":"Lab. 3","isEmpty":true,"title":"Sin examen programado","group":"","shift":"","semester":null,"type":"libre"}];
+
+    const DAYS = [
+      {"index":0,"name":"Viernes 20 de noviembre","short":"Vie 20 Nov","date":"2026-11-20"},
+      {"index":1,"name":"Lunes 23 de noviembre","short":"Lun 23 Nov","date":"2026-11-23"},
+      {"index":2,"name":"Martes 24 de noviembre","short":"Mar 24 Nov","date":"2026-11-24"},
+      {"index":3,"name":"Miércoles 25 de noviembre","short":"Mié 25 Nov","date":"2026-11-25"},
+      {"index":4,"name":"Jueves 26 de noviembre","short":"Jue 26 Nov","date":"2026-11-26"},
+      {"index":5,"name":"Viernes 27 de noviembre","short":"Vie 27 Nov","date":"2026-11-27"},
+      {"index":6,"name":"Lunes 30 de noviembre","short":"Lun 30 Nov","date":"2026-11-30"}
+    ];
     const LABS = ["Lab. 1","Lab. 2","Lab. 3"];
 
     let activeDay = 0;
+    let viewMode = 'labs'; // 'labs' or 'agenda'
 
-    // Populate groups
+    // Update stats
+    const totalRealExams = SCHEDULE.filter(e => !e.isEmpty && e.type !== 'tics').length;
+    document.getElementById('statTotalExams').textContent = totalRealExams;
     const groups = Array.from(new Set(SCHEDULE.map(e => e.group).filter(Boolean))).sort();
+    document.getElementById('statTotalGroups').textContent = groups.length;
+
+    // Populate group select
     const groupSelect = document.getElementById('groupFilter');
     groups.forEach(g => {
       const opt = document.createElement('option');
       opt.value = g;
-      opt.textContent = g;
+      opt.textContent = g === 'TAE' ? 'TAE (Trayectorias Especializantes)' : (g === "TIC'S" ? "TIC'S (Clases regulares)" : `Grupo ${g}`);
       groupSelect.appendChild(opt);
     });
 
-    // Render day tabs
-    const dayTabs = document.getElementById('dayTabs');
-    DAYS.forEach(d => {
-      const btn = document.createElement('button');
-      btn.className = 'day-tab' + (d.index === activeDay ? ' active' : '');
-      btn.textContent = d.short;
-      btn.onclick = () => {
-        activeDay = d.index;
-        document.querySelectorAll('.day-tab').forEach((b, i) => b.classList.toggle('active', i === activeDay));
-        renderApp();
-      };
-      dayTabs.appendChild(btn);
-    });
-
+    // Theme toggle
     function toggleDarkMode() {
-      document.documentElement.classList.toggle('dark');
+      const isDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('chapala_theme', isDark ? 'dark' : 'light');
+      updateThemeButtons();
+    }
+
+    function updateThemeButtons() {
+      const isDark = document.documentElement.classList.contains('dark');
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+      if (icon && label) {
+        icon.textContent = isDark ? '☀️' : '🌙';
+        label.textContent = isDark ? 'Modo Claro' : 'Modo Oscuro';
+      }
+    }
+    updateThemeButtons();
+
+    function setViewMode(mode) {
+      viewMode = mode;
+      document.getElementById('btnViewLabs').classList.toggle('active', mode === 'labs');
+      document.getElementById('btnViewAgenda').classList.toggle('active', mode === 'agenda');
+      document.getElementById('dayTabs').style.display = mode === 'labs' ? 'flex' : 'none';
+      document.getElementById('labsContainer').style.display = mode === 'labs' ? 'grid' : 'none';
+      document.getElementById('timelineContainer').style.display = mode === 'agenda' ? 'flex' : 'none';
+      renderApp();
+    }
+
+    function clearFilters() {
+      document.getElementById('searchInput').value = '';
+      document.getElementById('shiftFilter').value = 'todos';
+      document.getElementById('groupFilter').value = 'todos';
+      renderApp();
+    }
+
+    function renderDayTabs(filteredExams) {
+      const dayTabs = document.getElementById('dayTabs');
+      dayTabs.innerHTML = '';
+
+      DAYS.forEach(d => {
+        const dayCount = filteredExams.filter(e => e.dayIndex === d.index).length;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'day-tab' + (d.index === activeDay ? ' active' : '');
+        btn.innerHTML = `
+          <span>${d.short}</span>
+          <span class="tab-badge">${dayCount}</span>
+        `;
+        btn.onclick = () => {
+          activeDay = d.index;
+          document.querySelectorAll('.day-tab').forEach((b, i) => b.classList.toggle('active', i === activeDay));
+          renderApp();
+        };
+        dayTabs.appendChild(btn);
+      });
     }
 
     function renderApp() {
@@ -277,9 +700,18 @@
       const shift = document.getElementById('shiftFilter').value;
       const group = document.getElementById('groupFilter').value;
 
+      const hasFilters = q !== '' || shift !== 'todos' || group !== 'todos';
+      document.getElementById('clearFiltersBtn').style.display = hasFilters ? 'inline-block' : 'none';
+
       const filtered = SCHEDULE.filter(e => {
         if (e.isEmpty) return false;
-        if (q && !e.title.toLowerCase().includes(q) && !e.group.toLowerCase().includes(q) && !e.time.includes(q)) return false;
+        if (q) {
+          const matchTitle = e.title.toLowerCase().includes(q);
+          const matchGroup = e.group.toLowerCase().includes(q);
+          const matchTime = e.time.toLowerCase().includes(q);
+          const matchLab = e.lab.toLowerCase().includes(q);
+          if (!matchTitle && !matchGroup && !matchTime && !matchLab) return false;
+        }
         if (group !== 'todos' && e.group !== group) return false;
         if (shift !== 'todos') {
           if (shift === 'BTT' && !e.shift.includes('BTT') && e.type !== 'turismo') return false;
@@ -290,8 +722,18 @@
         return true;
       });
 
-      document.getElementById('counter').textContent = filtered.length + ' exámenes coincidentes';
+      document.getElementById('counter').textContent = `${filtered.length} exámenes`;
 
+      renderDayTabs(filtered);
+
+      if (viewMode === 'labs') {
+        renderLabsView(filtered);
+      } else {
+        renderAgendaView(filtered);
+      }
+    }
+
+    function renderLabsView(filtered) {
       const container = document.getElementById('labsContainer');
       container.innerHTML = '';
 
@@ -303,23 +745,28 @@
         
         let itemsHtml = '';
         if (labExams.length === 0) {
-          itemsHtml = '<div style="padding:2rem; text-align:center; color:var(--text-muted); font-size:0.85rem;">Sin exámenes programados para este filtro</div>';
+          itemsHtml = '<div style="padding:2.5rem 1rem; text-align:center; color:var(--text-muted); font-size:0.875rem;">Sin exámenes programados con este filtro en este laboratorio</div>';
         } else {
           labExams.forEach(e => {
             let badgeClass = 'badge';
             if (e.type === 'turismo') badgeClass += ' badge-turismo';
             else if (e.type === 'tae') badgeClass += ' badge-tae';
+            else if (e.type === 'tics') badgeClass += ' badge-tics';
             else if (e.shift === 'Matutino') badgeClass += ' badge-matutino';
             else if (e.shift === 'Vespertino') badgeClass += ' badge-vespertino';
 
             itemsHtml += `
-              <div class="exam-item">
+              <div class="exam-item" onclick="openModal('${e.id}')">
                 <div class="exam-time">
                   <span>⏱️ ${e.time}</span>
                   <span class="${badgeClass}">${e.group || 'General'}</span>
                 </div>
                 <div class="exam-title">${e.title}</div>
-                <div class="exam-meta">${e.shift} · ${e.day}</div>
+                <div class="exam-meta">
+                  <span>${e.shift}</span>
+                  <span>·</span>
+                  <span>${e.day}</span>
+                </div>
               </div>
             `;
           });
@@ -327,8 +774,8 @@
 
         labCard.innerHTML = `
           <div class="lab-header">
-            <span>${lab}</span>
-            <span style="font-size:0.75rem; font-weight:normal;">${labExams.length} exámenes</span>
+            <span>💻 ${lab}</span>
+            <span style="font-size:0.75rem; font-weight:600; opacity:0.85;">${labExams.length} exámenes</span>
           </div>
           <div>${itemsHtml}</div>
         `;
@@ -336,6 +783,98 @@
       });
     }
 
+    function renderAgendaView(filtered) {
+      const container = document.getElementById('timelineContainer');
+      container.innerHTML = '';
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="padding:3rem 1rem; text-align:center; background:var(--card-bg); border:1px solid var(--border); border-radius:14px; color:var(--text-muted);">No se encontraron exámenes con los criterios de búsqueda seleccionados.</div>';
+        return;
+      }
+
+      DAYS.forEach(day => {
+        const dayExams = filtered.filter(e => e.dayIndex === day.index);
+        if (dayExams.length === 0) return;
+
+        // Sort chronologically
+        dayExams.sort((a, b) => a.slotIndex - b.slotIndex);
+
+        const card = document.createElement('div');
+        card.className = 'timeline-day-card';
+
+        let rowsHtml = '';
+        dayExams.forEach(e => {
+          let badgeClass = 'badge';
+          if (e.type === 'turismo') badgeClass += ' badge-turismo';
+          else if (e.type === 'tae') badgeClass += ' badge-tae';
+          else if (e.type === 'tics') badgeClass += ' badge-tics';
+          else if (e.shift === 'Matutino') badgeClass += ' badge-matutino';
+          else if (e.shift === 'Vespertino') badgeClass += ' badge-vespertino';
+
+          rowsHtml += `
+            <tr onclick="openModal('${e.id}')" style="cursor:pointer;">
+              <td style="font-family:monospace; font-weight:600; white-space:nowrap;">${e.time}</td>
+              <td style="font-weight:600;">${e.lab}</td>
+              <td style="font-weight:700;"><span class="${badgeClass}">${e.group}</span></td>
+              <td style="font-weight:600; color:var(--text);">${e.title}</td>
+              <td style="color:var(--text-muted); font-size:0.8rem;">${e.shift}</td>
+            </tr>
+          `;
+        });
+
+        card.innerHTML = `
+          <div class="timeline-day-header">
+            <span>📅 ${day.name}</span>
+            <span style="font-size:0.8rem; font-weight:600; color:var(--text-muted);">${dayExams.length} exámenes</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="timeline-table">
+              <thead>
+                <tr>
+                  <th>Horario</th>
+                  <th>Laboratorio</th>
+                  <th>Grupo</th>
+                  <th>Unidad de Aprendizaje</th>
+                  <th>Turno</th>
+                </tr>
+              </thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Modal logic
+    function openModal(examId) {
+      const exam = SCHEDULE.find(e => e.id === examId);
+      if (!exam) return;
+      document.getElementById('modalDay').textContent = `${exam.day} (${exam.date})`;
+      document.getElementById('modalTitle').textContent = exam.title;
+      document.getElementById('modalLab').textContent = exam.lab;
+      document.getElementById('modalTime').textContent = exam.time;
+      document.getElementById('modalGroup').textContent = exam.group || 'General';
+      document.getElementById('modalShift').textContent = exam.shift;
+      document.getElementById('examModal').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('examModal').classList.remove('open');
+    }
+
+    function closeModalOnBackdrop(e) {
+      if (e.target === document.getElementById('examModal')) {
+        closeModal();
+      }
+    }
+
+    // Keyboard escape closes modal
+    window.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Initial render
     renderApp();
   </script>
 </body>
