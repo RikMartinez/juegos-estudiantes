@@ -499,6 +499,29 @@
       color: #334155;
       border: 1px solid #e2e8f0;
     }
+    .tic-cell-block {
+      border-radius: 6px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      padding: 6px;
+      min-height: 58px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    .tic-label {
+      font-size: 10px;
+      font-weight: 800;
+      color: #475569;
+    }
+    .tic-sub {
+      font-size: 8px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
 
     /* ========================================================================== */
     /* Dark Mode Theme Rules                                                      */
@@ -688,6 +711,16 @@
     }
     body.dark .exam-shift { 
       color: #94a3b8 !important; 
+    }
+    body.dark .tic-cell-block {
+      background: rgba(30, 41, 59, 0.75) !important;
+      border-color: #334155 !important;
+    }
+    body.dark .tic-label {
+      color: #cbd5e1 !important;
+    }
+    body.dark .tic-sub {
+      color: #64748b !important;
     }
 
     /* Day View Dark Mode */
@@ -895,6 +928,7 @@
         <span class="legend-tag"><span class="dot dot-sem-5"></span> 5° Semestre</span>
         <span class="legend-tag"><span class="dot dot-sem-6"></span> 6° Semestre</span>
         <span class="legend-tag"><span class="dot dot-btt"></span> Técnico BTT</span>
+        <span id="ticLegendTag" class="legend-tag" style="display:none;"><span class="dot" style="background:#64748b; border-radius:2px;"></span> Clase regular TIC's</span>
       </div>
       <div style="color:#64748b;">
         Haz clic en cualquier examen para ver los detalles y agendarlo
@@ -1135,6 +1169,69 @@
     const LABS_DEF = ['Lab. 1', 'Lab. 2', 'Lab. 3'];
     const SLOTS_DEF = ['7 a 8', '8 a 9', '9 a 10', '10 a 11', '11 a 12', '12 a 13', '13 a 14', '14 a 15', '15 a 16', '16 a 17', '17 a 18', '18 a 19'];
 
+    // Regular TIC's class slots
+    const TIC_SLOTS_DEF = [
+      // Martes 17
+      { day: 'Martes 17 de noviembre', slot: '8 a 9', lab: 'Lab. 2' },
+      { day: 'Martes 17 de noviembre', slot: '9 a 10', lab: 'Lab. 2' },
+      { day: 'Martes 17 de noviembre', slot: '10 a 11', lab: 'Lab. 1' },
+      { day: 'Martes 17 de noviembre', slot: '10 a 11', lab: 'Lab. 2' },
+      { day: 'Martes 17 de noviembre', slot: '13 a 14', lab: 'Lab. 2' },
+      { day: 'Martes 17 de noviembre', slot: '14 a 15', lab: 'Lab. 2' },
+      { day: 'Martes 17 de noviembre', slot: '15 a 16', lab: 'Lab. 1' },
+      { day: 'Martes 17 de noviembre', slot: '16 a 17', lab: 'Lab. 1' },
+
+      // Miércoles 18
+      { day: 'Miércoles 18 de noviembre', slot: '7 a 8', lab: 'Lab. 1' },
+      { day: 'Miércoles 18 de noviembre', slot: '8 a 9', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '9 a 10', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '9 a 10', lab: 'Lab. 3' },
+      { day: 'Miércoles 18 de noviembre', slot: '10 a 11', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '10 a 11', lab: 'Lab. 3' },
+      { day: 'Miércoles 18 de noviembre', slot: '11 a 12', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '11 a 12', lab: 'Lab. 3' },
+      { day: 'Miércoles 18 de noviembre', slot: '12 a 13', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '12 a 13', lab: 'Lab. 3' },
+      { day: 'Miércoles 18 de noviembre', slot: '13 a 14', lab: 'Lab. 1' },
+      { day: 'Miércoles 18 de noviembre', slot: '13 a 14', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '13 a 14', lab: 'Lab. 3' },
+      { day: 'Miércoles 18 de noviembre', slot: '14 a 15', lab: 'Lab. 1' },
+      { day: 'Miércoles 18 de noviembre', slot: '14 a 15', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '14 a 15', lab: 'Lab. 3' },
+      { day: 'Miércoles 18 de noviembre', slot: '15 a 16', lab: 'Lab. 1' },
+      { day: 'Miércoles 18 de noviembre', slot: '15 a 16', lab: 'Lab. 2' },
+      { day: 'Miércoles 18 de noviembre', slot: '15 a 16', lab: 'Lab. 3' },
+      { day: 'Miércoles 18 de noviembre', slot: '16 a 17', lab: 'Lab. 2' },
+
+      // Jueves 19
+      { day: 'Jueves 19 de noviembre', slot: '8 a 9', lab: 'Lab. 2' },
+      { day: 'Jueves 19 de noviembre', slot: '8 a 9', lab: 'Lab. 3' },
+      { day: 'Jueves 19 de noviembre', slot: '10 a 11', lab: 'Lab. 2' },
+      { day: 'Jueves 19 de noviembre', slot: '10 a 11', lab: 'Lab. 3' },
+      { day: 'Jueves 19 de noviembre', slot: '11 a 12', lab: 'Lab. 1' },
+      { day: 'Jueves 19 de noviembre', slot: '11 a 12', lab: 'Lab. 2' },
+      { day: 'Jueves 19 de noviembre', slot: '11 a 12', lab: 'Lab. 3' },
+      { day: 'Jueves 19 de noviembre', slot: '12 a 13', lab: 'Lab. 1' },
+      { day: 'Jueves 19 de noviembre', slot: '13 a 14', lab: 'Lab. 2' },
+      { day: 'Jueves 19 de noviembre', slot: '14 a 15', lab: 'Lab. 1' },
+      { day: 'Jueves 19 de noviembre', slot: '14 a 15', lab: 'Lab. 2' },
+      { day: 'Jueves 19 de noviembre', slot: '14 a 15', lab: 'Lab. 3' },
+      { day: 'Jueves 19 de noviembre', slot: '15 a 16', lab: 'Lab. 2' },
+      { day: 'Jueves 19 de noviembre', slot: '15 a 16', lab: 'Lab. 3' },
+      { day: 'Jueves 19 de noviembre', slot: '16 a 17', lab: 'Lab. 3' },
+
+      // Viernes 20
+      { day: 'Viernes 20 de noviembre', slot: '7 a 8', lab: 'Lab. 1' },
+      { day: 'Viernes 20 de noviembre', slot: '8 a 9', lab: 'Lab. 1' },
+      { day: 'Viernes 20 de noviembre', slot: '9 a 10', lab: 'Lab. 1' },
+      { day: 'Viernes 20 de noviembre', slot: '10 a 11', lab: 'Lab. 1' },
+      { day: 'Viernes 20 de noviembre', slot: '10 a 11', lab: 'Lab. 3' },
+      { day: 'Viernes 20 de noviembre', slot: '11 a 12', lab: 'Lab. 2' },
+      { day: 'Viernes 20 de noviembre', slot: '11 a 12', lab: 'Lab. 3' },
+      { day: 'Viernes 20 de noviembre', slot: '12 a 13', lab: 'Lab. 2' },
+      { day: 'Viernes 20 de noviembre', slot: '12 a 13', lab: 'Lab. 3' },
+    ];
+
     let curView = 'matrix';
     let curDay = 'Martes 17 de noviembre';
     let filterSem = 'all';
@@ -1174,6 +1271,9 @@
       const map = new Map();
       EXAMS.forEach(e => map.set(e.day + '|' + e.lab + '|' + e.slot, e));
 
+      const ticMap = new Set();
+      TIC_SLOTS_DEF.forEach(s => ticMap.add(s.day + '|' + s.lab + '|' + s.slot));
+
       SLOTS_DEF.forEach(time => {
         const tr = document.createElement('tr');
         const tdH = document.createElement('td');
@@ -1186,6 +1286,7 @@
             const td = document.createElement('td');
             const key = d.key + '|' + lab + '|' + time;
             const exam = map.get(key);
+            const isTic = ticMap.has(key);
 
             if (exam) {
               const isVis = list.some(i => i.id === exam.id);
@@ -1203,8 +1304,15 @@
                 '</div>' +
                 '<div class="exam-subject">' + exam.subject + '</div>';
               td.appendChild(card);
+            } else if (isTic && showTics) {
+              const ticCard = document.createElement('div');
+              ticCard.className = 'tic-cell-block';
+              ticCard.innerHTML =
+                '<span class="tic-label">TIC'S</span>' +
+                '<span class="tic-sub">Clase regular</span>';
+              td.appendChild(ticCard);
             } else {
-              td.innerHTML = '<span style="color:#cbd5e1; display:block; text-align:center;">·</span>';
+              td.innerHTML = '<div style="height:100%; min-height:58px;"></div>';
             }
             tr.appendChild(td);
           });
@@ -1345,6 +1453,8 @@
 
     function toggleTics(c) {
       showTics = c;
+      const tag = document.getElementById('ticLegendTag');
+      if (tag) tag.style.display = c ? 'inline-flex' : 'none';
       render();
     }
 
