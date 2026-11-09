@@ -481,120 +481,294 @@
       gap: 12px;
     }
 
-    /* Dark Mode Theme */
+    /* Base Helper classes */
+    .tics-toggle-label {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+      transition: all 0.15s ease;
+    }
+    .matrix-title { color: #0f172a; }
+    .matrix-count-badge {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+    }
+    .lab-badge {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid #e2e8f0;
+    }
+
+    /* ========================================================================== */
+    /* Dark Mode Theme Rules                                                      */
+    /* ========================================================================== */
     body.dark {
-      background-color: #0b1120;
-      color: #f1f5f9;
+      background-color: #0b1120 !important;
+      color: #f1f5f9 !important;
     }
     body.dark .header, body.dark .footer {
-      background: #0f172a;
-      border-color: #1e293b;
-    }
-    body.dark .brand-title, body.dark .banner-text h2, body.dark .modal-title, body.dark th, body.dark .stat-num {
-      color: #f8fafc;
-    }
-    body.dark .brand-sub, body.dark .banner-meta, body.dark .banner-desc, body.dark .stat-lbl {
-      color: #94a3b8;
-    }
-    body.dark .banner, body.dark .table-card, body.dark .day-card, body.dark .guideline-card, body.dark .modal-box {
       background: #0f172a !important;
       border-color: #1e293b !important;
-      color: #f1f5f9;
+    }
+    body.dark .brand-title, 
+    body.dark .banner-text h2, 
+    body.dark .modal-title, 
+    body.dark .matrix-title,
+    body.dark .table-header strong {
+      color: #f8fafc !important;
+    }
+    body.dark .brand-sub, 
+    body.dark .banner-meta, 
+    body.dark .banner-desc, 
+    body.dark .stat-lbl, 
+    body.dark .table-header span {
+      color: #94a3b8 !important;
+    }
+    body.dark .banner, 
+    body.dark .table-card, 
+    body.dark .guideline-card, 
+    body.dark .modal-box {
+      background: #0f172a !important;
+      border-color: #1e293b !important;
+      color: #f1f5f9 !important;
     }
     body.dark .stats-box {
-      background: #1e293b;
-      border-color: #334155;
+      background: #1e293b !important;
+      border-color: #334155 !important;
     }
+    body.dark .stat-num {
+      color: #f8fafc !important;
+    }
+
+    /* Controls Dark Mode */
     body.dark .search-input {
-      background: #1e293b;
-      color: #f8fafc;
-      border-color: #334155;
+      background: #1e293b !important;
+      color: #f8fafc !important;
+      border-color: #334155 !important;
+    }
+    body.dark .search-input::placeholder {
+      color: #64748b !important;
     }
     body.dark .view-switcher {
-      background: #1e293b;
+      background: #1e293b !important;
+      border: 1px solid #334155 !important;
     }
     body.dark .view-btn {
-      color: #94a3b8;
+      color: #94a3b8 !important;
     }
     body.dark .view-btn.active {
-      background: #0f172a;
-      color: #f8fafc;
+      background: #0f172a !important;
+      color: #f8fafc !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+    }
+    body.dark .filter-group {
+      background: #1e293b !important;
+      border-color: #334155 !important;
     }
     body.dark .filter-btn {
-      background: #0f172a;
-      border-color: #334155;
-      color: #cbd5e1;
+      background: transparent !important;
+      color: #94a3b8 !important;
     }
     body.dark .filter-btn.active {
-      background: #4f46e5;
-      border-color: #4f46e5;
-      color: #fff;
+      background: #4f46e5 !important;
+      color: #ffffff !important;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
     }
-    body.dark .btn-secondary {
-      background: #1e293b;
-      color: #f1f5f9;
-      border-color: #334155;
-    }
-    body.dark .btn-secondary:hover {
-      background: #334155;
-    }
-    body.dark .timetable th {
-      background: #1e293b;
-      color: #cbd5e1;
-      border-color: #334155;
-    }
-    body.dark .timetable td {
-      border-color: #334155;
-    }
-    body.dark .time-col {
+    body.dark .tics-toggle-label {
       background: #1e293b !important;
       color: #cbd5e1 !important;
+      border-color: #334155 !important;
     }
-    body.dark .day-tab {
-      background: #0f172a;
-      border-color: #1e293b;
-      color: #f1f5f9;
+    body.dark .btn-secondary {
+      background: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
     }
-    body.dark .day-tab.active {
-      background: #4f46e5;
-      border-color: #4f46e5;
-      color: #fff;
+    body.dark .btn-secondary:hover {
+      background: #334155 !important;
+      color: #ffffff !important;
     }
-    body.dark .day-col {
-      background: #0f172a;
-      border-color: #1e293b;
+
+    /* Legend Bar Dark Mode */
+    body.dark .legend-bar {
+      background: #0f172a !important;
+      border-color: #1e293b !important;
+      color: #94a3b8 !important;
     }
-    body.dark .day-col-head {
-      background: #1e293b;
-      border-color: #334155;
+    body.dark .legend-tag {
+      background: #1e293b !important;
+      border-color: #334155 !important;
+      color: #e2e8f0 !important;
     }
-    body.dark .day-col-head h4 {
-      color: #f8fafc;
+    body.dark .dot-btt {
+      background: #cbd5e1 !important;
     }
+
+    /* Table Matrix (Horario Completo) Dark Mode */
+    body.dark .table-card {
+      background: #0f172a !important;
+      border-color: #1e293b !important;
+    }
+    body.dark .table-header {
+      background: #131d33 !important;
+      border-bottom: 1px solid #1e293b !important;
+    }
+    body.dark .matrix-count-badge, body.dark #matrixCount {
+      background: #1e293b !important;
+      color: #cbd5e1 !important;
+      border: 1px solid #334155 !important;
+    }
+    body.dark .grid-table {
+      border-color: #1e293b !important;
+    }
+    body.dark .grid-table th {
+      background: #141f36 !important;
+      border-color: #1e293b !important;
+      color: #cbd5e1 !important;
+    }
+    body.dark .grid-table td {
+      border-color: #1e293b !important;
+      background: #0b1120 !important;
+    }
+    body.dark .th-day {
+      background: #111a2e !important;
+      color: #f8fafc !important;
+      border-color: #1e293b !important;
+    }
+    body.dark .th-lab {
+      background: #141f36 !important;
+      color: #94a3b8 !important;
+      border-color: #1e293b !important;
+    }
+    body.dark .td-hour {
+      background: #111a2e !important;
+      color: #cbd5e1 !important;
+      border-color: #1e293b !important;
+    }
+
+    /* Semester Exam Cards in Dark Mode */
+    body.dark .card-sem-1 { 
+      background: rgba(79, 70, 229, 0.22) !important; 
+      border-color: rgba(99, 102, 241, 0.5) !important; 
+      color: #c7d2fe !important; 
+    }
+    body.dark .card-sem-2 { 
+      background: rgba(2, 132, 199, 0.22) !important; 
+      border-color: rgba(14, 165, 233, 0.5) !important; 
+      color: #bae6fd !important; 
+    }
+    body.dark .card-sem-3 { 
+      background: rgba(5, 150, 105, 0.22) !important; 
+      border-color: rgba(16, 185, 129, 0.5) !important; 
+      color: #a7f3d0 !important; 
+    }
+    body.dark .card-sem-4 { 
+      background: rgba(217, 119, 6, 0.22) !important; 
+      border-color: rgba(245, 158, 11, 0.5) !important; 
+      color: #fde68a !important; 
+    }
+    body.dark .card-sem-5 { 
+      background: rgba(225, 29, 72, 0.22) !important; 
+      border-color: rgba(244, 63, 94, 0.5) !important; 
+      color: #fecdd3 !important; 
+    }
+    body.dark .card-sem-6 { 
+      background: rgba(147, 51, 234, 0.22) !important; 
+      border-color: rgba(168, 85, 247, 0.5) !important; 
+      color: #e9d5ff !important; 
+    }
+    body.dark .card-btt {
+      background: rgba(30, 41, 59, 0.8) !important;
+      border-color: #475569 !important;
+      color: #f1f5f9 !important;
+    }
+    body.dark .exam-subject { 
+      color: #f8fafc !important; 
+    }
+    body.dark .exam-shift { 
+      color: #94a3b8 !important; 
+    }
+
+    /* Day View Dark Mode */
+    body.dark .day-tab-card {
+      background: #0f172a !important;
+      border-color: #1e293b !important;
+      color: #f1f5f9 !important;
+    }
+    body.dark .day-tab-card.active {
+      background: #4f46e5 !important;
+      border-color: #4f46e5 !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3) !important;
+    }
+    body.dark .lab-col {
+      background: #0f172a !important;
+      border-color: #1e293b !important;
+    }
+    body.dark .lab-col-header {
+      background: #141f36 !important;
+      border-color: #1e293b !important;
+      color: #f8fafc !important;
+    }
+    body.dark .lab-col-header span {
+      color: #94a3b8 !important;
+    }
+
+    /* Directory Table Dark Mode */
     body.dark .dir-table th {
-      background: #1e293b;
-      color: #cbd5e1;
-      border-color: #334155;
+      background: #141f36 !important;
+      border-color: #1e293b !important;
+      color: #cbd5e1 !important;
     }
     body.dark .dir-table td {
-      border-color: #1e293b;
-      color: #e2e8f0;
+      border-color: #1e293b !important;
+      color: #e2e8f0 !important;
     }
     body.dark .dir-table tr:hover {
+      background: #141f36 !important;
+    }
+    body.dark .dir-table td strong {
+      color: #f8fafc !important;
+    }
+    body.dark .lab-badge {
       background: #1e293b !important;
+      color: #f1f5f9 !important;
+      border-color: #334155 !important;
+    }
+
+    /* Modals Dark Mode */
+    body.dark .modal-box {
+      background: #0f172a !important;
+      border-color: #334155 !important;
+      color: #f1f5f9 !important;
+    }
+    body.dark .modal-header {
+      border-color: #1e293b !important;
+    }
+    body.dark .modal-header h3 {
+      color: #f8fafc !important;
     }
     body.dark .info-tile {
-      background: #1e293b;
-      border-color: #334155;
+      background: #1e293b !important;
+      border-color: #334155 !important;
+    }
+    body.dark .info-tile-lbl {
+      color: #94a3b8 !important;
     }
     body.dark .info-tile-val {
-      color: #f8fafc;
+      color: #f8fafc !important;
     }
     body.dark .instructions-box {
-      background: #1e1b4b;
-      border-color: #3730a3;
-      color: #c7d2fe;
+      background: #1e1b4b !important;
+      border-color: #3730a3 !important;
+      color: #c7d2fe !important;
     }
+    body.dark .instructions-box strong {
+      color: #e0e7ff !important;
+    }
+
+    /* Guidelines Cards Dark Mode */
     body.dark .guideline-card {
       background: #0f172a !important;
       border-color: #1e293b !important;
@@ -602,14 +776,8 @@
     body.dark .guideline-card p {
       color: #94a3b8 !important;
     }
-    body.dark .legend-bar {
-      background: #0f172a;
-      border-color: #1e293b;
-    }
-    body.dark .legend-chip {
-      background: #1e293b;
-      border-color: #334155;
-      color: #cbd5e1;
+    body.dark .guideline-card p strong {
+      color: #e2e8f0 !important;
     }
 
     /* Print styling */
@@ -709,7 +877,7 @@
           <button class="filter-btn" onclick="setLab('Lab. 3')">Lab 3</button>
         </div>
 
-        <label style="display:flex; align-items:center; gap:6px; cursor:pointer; margin-left:auto; background:#f1f5f9; padding:4px 10px; border-radius:6px; font-size:11px;">
+        <label class="tics-toggle-label" style="display:flex; align-items:center; gap:6px; cursor:pointer; margin-left:auto; padding:4px 10px; border-radius:6px; font-size:11px;">
           <input type="checkbox" id="ticsCheck" onchange="toggleTics(this.checked)">
           <span>Ver horas de clase TIC's</span>
         </label>
@@ -737,10 +905,10 @@
     <section id="sec-matrix" class="table-card">
       <div class="table-header">
         <div>
-          <strong style="font-size:14px; color:#0f172a;">Matriz General de Horarios (Ciclo 2026B)</strong>
+          <strong class="matrix-title" style="font-size:14px;">Matriz General de Horarios (Ciclo 2026B)</strong>
           <span style="font-size:12px; color:#64748b; display:block;">Laboratorios 1, 2 y 3 · 17 al 20 de noviembre</span>
         </div>
-        <span id="matrixCount" style="font-size:12px; font-family:monospace; background:#f1f5f9; padding:3px 8px; border-radius:4px;">
+        <span id="matrixCount" class="matrix-count-badge" style="font-size:12px; font-family:monospace; padding:3px 8px; border-radius:4px;">
           31 de 31 exámenes visibles
         </span>
       </div>
@@ -1125,7 +1293,7 @@
           '<td>' + exam.shift + '</td>' +
           '<td>' + exam.day + '</td>' +
           '<td style="font-family:monospace; font-weight:600;">' + exam.start + ' - ' + exam.end + ' hrs</td>' +
-          '<td><span style="background:#f1f5f9; padding:2px 6px; border-radius:4px; font-weight:600;">' + exam.lab + '</span></td>' +
+          '<td><span class="lab-badge" style="padding:2px 6px; border-radius:4px; font-weight:600;">' + exam.lab + '</span></td>' +
           '<td><button class="btn btn-secondary" style="padding:3px 8px; font-size:11px;" onclick="event.stopPropagation(); downloadIcs(EXAMS.find(x=>x.id===\'' + exam.id + '\'))">.ICS</button></td>';
         tbody.appendChild(tr);
       });
